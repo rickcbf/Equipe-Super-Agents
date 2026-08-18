@@ -7,6 +7,7 @@ Peças prontas para postar (alta resolução 2×, capa oficial embutida).
 | `instagram-post-lancamento.png` | 2160×2700 (1080×1350 · 4:5) | Post de feed — Lançamento Oficial |
 | `instagram-stories-cta.png` | 2160×3840 (1080×1920 · 9:16) | Stories com CTA |
 | `instagram-pacote-premium.png` | 2160×2700 (1080×1350 · 4:5) | Post de feed — Pacote + Bônus |
+| `reels-lancamento-teoria-dow.mp4` | 1080×1920 · 58s · H.264+AAC | Reels/Stories em vídeo (com trilha) |
 
 **Oferta comunicada:** De R$39,99 → **R$10,00** com o cupom **RICK50** (à vista ou 3× R$3,57).
 **Link:** página de vendas `https://equipe-super-agents.vercel.app/` · pagamento `pay.hotmart.com/M107215100L`
