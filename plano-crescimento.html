@@ -1,0 +1,273 @@
+<!-- Plano de Crescimento — @ri.chartrader -->
+<title>Plano @ri.chartrader</title>
+<meta name="description" content="Diagnóstico e plano de 30 dias para crescer seguidores e vendas do @ri.chartrader — baseado nos dados do Metricool.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  :root{
+    color-scheme:dark;
+    --ground:#06080D;--surface:#0D1017;--surface-2:#141A26;--surface-3:#1B2233;
+    --ink:#E9EEF9;--muted:#8B95AA;--faint:#5A6377;
+    --neon:#38BDF8;--orange:#FF7A29;--up:#16C784;--down:#EA3943;--gold:#F2C14E;
+    --line:rgba(120,150,200,.14);--line-strong:rgba(120,160,220,.28);
+    --maxw:1080px;
+    --ff-d:"Rajdhani",system-ui,sans-serif;--ff-b:"Orbitron",system-ui,sans-serif;
+    --ff-body:"Manrope",system-ui,sans-serif;--ff-m:"JetBrains Mono",ui-monospace,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;font-family:var(--ff-body);background:var(--ground);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.55}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(55% 40% at 85% -5%,rgba(56,189,248,.13),transparent 60%),radial-gradient(50% 40% at 5% 100%,rgba(255,122,41,.09),transparent 55%)}
+  .wrap{max-width:var(--maxw);margin-inline:auto;padding:38px 22px 72px;position:relative;z-index:1}
+  a{color:var(--neon)}
+  h1,h2,h3{margin:0;font-family:var(--ff-d);font-weight:700;line-height:1.05;text-wrap:balance}
+  .eyebrow{font-family:var(--ff-m);font-size:.72rem;letter-spacing:.24em;text-transform:uppercase;color:var(--neon)}
+  section{margin-top:44px}
+  .sec-h{display:flex;align-items:baseline;gap:14px;margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:12px}
+  .sec-h h2{font-size:1.5rem}
+  .sec-h .n{font-family:var(--ff-b);font-weight:800;color:transparent;-webkit-text-stroke:1.4px var(--neon);font-size:1.3rem}
+
+  .top{display:flex;align-items:center;gap:14px;padding-bottom:26px;border-bottom:1px solid var(--line)}
+  .helmet{width:44px;height:44px;filter:drop-shadow(0 0 8px rgba(56,189,248,.55))}
+  .bn{font-family:var(--ff-b);font-weight:800;letter-spacing:.1em;font-size:1.05rem;line-height:1}
+  .bn small{display:block;font-family:var(--ff-m);font-weight:500;font-size:.58rem;letter-spacing:.28em;color:var(--muted);margin-top:5px}
+  .top .meta{margin-left:auto;text-align:right;font-family:var(--ff-m);font-size:.72rem;color:var(--faint);letter-spacing:.1em}
+
+  .hero{margin-top:30px}
+  .hero h1{font-size:clamp(1.9rem,4.4vw,2.7rem)}
+  .hero p{color:var(--muted);margin-top:12px;max-width:66ch;font-size:1.05rem}
+
+  .kpis{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-top:26px}
+  .kpi{border:1px solid var(--line);border-radius:14px;padding:20px;background:linear-gradient(180deg,var(--surface-2),var(--surface))}
+  .kpi .lab{font-family:var(--ff-m);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .kpi .val{font-family:var(--ff-d);font-weight:700;font-size:2.4rem;line-height:1;margin-top:10px}
+  .kpi .val.flat{color:var(--gold)} .kpi .val.bad{color:var(--down)} .kpi .val.ok{color:var(--up)}
+  .kpi .sub{font-size:.85rem;color:var(--faint);margin-top:6px}
+
+  .diag{display:grid;gap:12px}
+  .diag .item{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--surface-2),var(--surface))}
+  .diag .dot{width:12px;height:12px;border-radius:50%;margin-top:6px}
+  .diag b{font-family:var(--ff-d);font-weight:700;font-size:1.05rem}
+  .diag p{color:var(--muted);font-size:.95rem;margin-top:2px}
+
+  /* heatmap */
+  .heat-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--surface-2),var(--surface));padding:18px}
+  table.heat{border-collapse:collapse;font-family:var(--ff-m);font-size:.7rem;min-width:640px;width:100%}
+  table.heat th{color:var(--muted);font-weight:500;padding:4px;text-align:center}
+  table.heat td{padding:0;text-align:center}
+  .cell{height:26px;border-radius:4px;margin:2px;display:flex;align-items:center;justify-content:center;color:#04060a;font-weight:700;font-size:.62rem}
+  .heat .rowlab{color:var(--muted);text-align:right;padding-right:10px;white-space:nowrap}
+  .legend{display:flex;align-items:center;gap:10px;margin-top:12px;font-family:var(--ff-m);font-size:.72rem;color:var(--muted)}
+  .legend .bar{height:10px;width:160px;border-radius:5px;background:linear-gradient(90deg,#12263a,#1e6fae,#38BDF8,#FF7A29)}
+
+  .pillars{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  .pillar{border:1px solid var(--line);border-radius:14px;padding:22px;background:linear-gradient(180deg,var(--surface-2),var(--surface))}
+  .pillar .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:rgba(56,189,248,.1);border:1px solid var(--line-strong);color:var(--neon);margin-bottom:12px}
+  .pillar h3{font-size:1.15rem} .pillar p{color:var(--muted);font-size:.92rem;margin-top:6px}
+  .pillar ul{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:.9rem}
+  .pillar li{margin:5px 0}
+
+  .cal-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--surface-2),var(--surface))}
+  table.cal{width:100%;border-collapse:collapse;font-size:.9rem;min-width:640px}
+  table.cal th,table.cal td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+  table.cal th{font-family:var(--ff-m);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  table.cal tr:last-child td{border-bottom:none}
+  table.cal .d{font-family:var(--ff-m);color:var(--neon)}
+  .tag{font-family:var(--ff-m);font-size:.66rem;padding:3px 9px;border-radius:999px;border:1px solid var(--line-strong);color:var(--muted)}
+  .tag.reel{color:var(--neon);border-color:rgba(56,189,248,.4)}
+  .tag.carr{color:var(--gold);border-color:rgba(242,193,78,.4)}
+  .tag.story{color:var(--orange);border-color:rgba(255,122,41,.4)}
+
+  .check{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+  @media(max-width:680px){.check{grid-template-columns:1fr}}
+  .check div{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:linear-gradient(180deg,var(--surface-2),var(--surface));font-size:.95rem}
+  .check svg{flex:0 0 auto;color:var(--up);margin-top:2px}
+
+  .goals{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+  .goal{border:1px dashed var(--line-strong);border-radius:14px;padding:20px;text-align:center}
+  .goal .lab{font-family:var(--ff-m);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .goal .v{font-family:var(--ff-d);font-weight:700;font-size:1.9rem;margin-top:8px}
+  .goal .v small{color:var(--faint);font-size:.9rem;font-weight:500}
+  .goal .v b{color:var(--up)}
+
+  footer{margin-top:50px;padding-top:22px;border-top:1px solid var(--line);color:var(--faint);font-size:.82rem;text-align:center}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eaf6ff"/><stop offset="1" stop-color="#9fc9e8"/></linearGradient>
+</defs></svg>
+
+<div class="wrap">
+  <div class="top">
+    <svg class="helmet" viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M24 4C13.5 4 6 12 6 22.5c0 4 1.4 6.8 3.4 8.6-.5 1.4-1.7 3-3.4 4 3 .8 5.2.2 6.6-.6C15.8 37 19.6 38 24 38s8.2-1 11.4-3.5c1.4.8 3.6 1.4 6.6.6-1.7-1-2.9-2.6-3.4-4 2-1.8 3.4-4.6 3.4-8.6C42 12 34.5 4 24 4Z" fill="url(#hg)"/>
+      <path d="M15 18c1.6-3.6 5-6 9-6s7.4 2.4 9 6c1 2.2 1 5 0 7-1.6 3.4-5 5-9 5s-7.4-1.6-9-5c-1-2-1-4.8 0-7Z" fill="#05070b"/>
+      <path d="M17 16.5c2.4-2.6 8-3 11 0" stroke="#38BDF8" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span class="bn">@ri.chartrader<small>PLANO DE CRESCIMENTO</small></span>
+    <span class="meta">Base: Metricool<br>05/07 – 18/08 · 2026</span>
+  </div>
+
+  <div class="hero">
+    <p class="eyebrow">Gestão de conta · diagnóstico + plano de 30 dias</p>
+    <h1>De 73 seguidores parados para uma máquina de alcance e vendas</h1>
+    <p>O problema não é consistência — você posta quase todo dia. O gargalo é <b>alcance para não-seguidores</b> e <b>conversão em seguidor</b>. Este plano ataca exatamente isso, com conteúdo de retenção, gatilhos de salvamento e os horários certos. Tudo orgânico, sem investir em mídia paga.</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpis">
+    <div class="kpi"><div class="lab">Seguidores</div><div class="val flat">73</div><div class="sub">~+7 em 6 semanas · praticamente estagnado</div></div>
+    <div class="kpi"><div class="lab">Saldo diário médio</div><div class="val bad">≈ 0</div><div class="sub">quase nenhum novo seguidor por dia</div></div>
+    <div class="kpi"><div class="lab">Melhor dia (01/08)</div><div class="val ok">185</div><div class="sub">views no reel · 13 contas engajadas</div></div>
+    <div class="kpi"><div class="lab">Stories no período</div><div class="val bad">~0</div><div class="sub">canal de nutrição não usado</div></div>
+  </div>
+
+  <!-- DIAGNÓSTICO -->
+  <section>
+    <div class="sec-h"><span class="n">01</span><h2>Diagnóstico</h2></div>
+    <div class="diag" id="diag"></div>
+  </section>
+
+  <!-- HORÁRIOS -->
+  <section>
+    <div class="sec-h"><span class="n">02</span><h2>Melhores horários (dados da conta)</h2></div>
+    <p style="color:var(--muted);margin-bottom:14px;max-width:70ch">Quanto mais quente a célula, maior a atividade da sua audiência. Os picos estão em <b>terça a sexta, 10h–12h</b>, com um segundo pico às <b>18h</b>. Seus posts atuais (14:30 e 17:30) caem em vales — dá pra ganhar alcance só ajustando o horário.</p>
+    <div class="heat-wrap">
+      <table class="heat"><thead><tr id="heatHead"></tr></thead><tbody id="heatBody"></tbody></table>
+    </div>
+    <div class="legend"><span>menos ativo</span><span class="bar"></span><span>mais ativo</span></div>
+  </section>
+
+  <!-- PLANO -->
+  <section>
+    <div class="sec-h"><span class="n">03</span><h2>Plano de 30 dias — 5 pilares</h2></div>
+    <div class="pillars" id="pillars"></div>
+  </section>
+
+  <!-- CALENDÁRIO -->
+  <section>
+    <div class="sec-h"><span class="n">04</span><h2>Calendário — semana modelo</h2></div>
+    <p style="color:var(--muted);margin-bottom:14px;max-width:70ch">Ritmo sustentável e focado em alcance: <b>1 reel curto + 1 carrossel salvável por semana no pico da manhã</b>, reforçados por <b>Stories diários</b>. Repete a estrutura toda semana, variando o tema.</p>
+    <div class="cal-wrap">
+      <table class="cal"><thead><tr><th>Dia</th><th>Formato</th><th>Horário (ET)</th><th>Objetivo</th></tr></thead><tbody id="cal"></tbody></table>
+    </div>
+  </section>
+
+  <!-- PERFIL -->
+  <section>
+    <div class="sec-h"><span class="n">05</span><h2>Otimização do perfil (base da conversão)</h2></div>
+    <div class="check" id="check"></div>
+  </section>
+
+  <!-- METAS -->
+  <section>
+    <div class="sec-h"><span class="n">06</span><h2>Metas em 30 dias</h2></div>
+    <div class="goals">
+      <div class="goal"><div class="lab">Seguidores</div><div class="v">73 → <b>250+</b></div></div>
+      <div class="goal"><div class="lab">Alcance/post (mediana)</div><div class="v">~18 → <b>150+</b></div></div>
+      <div class="goal"><div class="lab">Salvamentos/reel</div><div class="v"><b>10×</b><small> vs hoje</small></div></div>
+      <div class="goal"><div class="lab">Stories/dia</div><div class="v">0 → <b>3–5</b></div></div>
+    </div>
+  </section>
+
+  <footer>Plano gerado a partir dos dados reais da conta no Metricool · @ri.chartrader · RickEA Investments</footer>
+</div>
+
+<script>
+(function(){
+  // ---- Diagnóstico ----
+  var diag=[
+    ["var(--down)","Seguidores estagnados","~73 há semanas, com saldo diário perto de zero. A base não cresce apesar da frequência de posts."],
+    ["var(--orange)","Alcance preso nos seguidores","Mediana de alcance ~15–20 por post. O conteúdo raramente é entregue a não-seguidores — por isso não entram seguidores novos."],
+    ["var(--gold)","Reels funcionam, mas não convertem","Picos de 185–188 views mostram potencial. Falta hook forte, retenção e um motivo claro pra seguir."],
+    ["var(--neon)","Salvamentos e compart. baixos","São o principal sinal que faz o algoritmo expandir o alcance. Conteúdo precisa ser 'salvável' e compartilhável."],
+    ["var(--down)","Stories abandonados","Quase nenhum story no período — o canal que mais aquece e fideliza uma base pequena está parado."],
+    ["var(--orange)","Horário fora do pico","Posts às 14:30/17:30 caem em vales de audiência. Picos reais: 10h–12h e 18h (dias de semana)."]
+  ];
+  var d=document.getElementById('diag');
+  diag.forEach(function(x){var e=document.createElement('div');e.className='item';
+    e.innerHTML='<span class="dot" style="background:'+x[0]+'"></span><div><b>'+x[1]+'</b><p>'+x[2]+'</p></div>';d.appendChild(e);});
+
+  // ---- Heatmap ----
+  var days=["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"];
+  var H={
+   1:[508,283,221,203,255,427,878,1874,3127,4646,5528,5117,4994,3663,3537,3825,3792,3988,4206,3533,2455,1463,901,555],
+   2:[466,283,165,131,177,369,773,1591,2765,3835,4942,4642,4656,3326,3324,3589,3532,4140,4788,3984,2916,1704,1018,866],
+   3:[1121,474,258,177,230,433,1142,2125,3781,5201,6506,6063,5774,4327,4263,4104,4357,4541,4869,3992,3024,1799,963,706],
+   4:[556,384,221,174,182,412,1082,1996,3269,4737,6275,5713,5730,4438,4261,4563,4515,4697,5078,4124,3156,1834,1034,688],
+   5:[576,401,226,176,247,470,1120,1908,3573,5039,6734,5952,5909,4641,4336,4517,4490,4570,4418,3360,2339,1440,864,546],
+   6:[525,289,174,143,144,282,511,957,1656,2430,3409,2816,2822,2010,1910,2009,2091,1938,2393,2028,1376,1031,617,487],
+   7:[385,271,161,92,175,228,403,822,1330,1968,2582,2218,2410,1777,1634,1759,1696,1890,2253,2232,1523,1021,597,488]
+  };
+  var hoursShown=[]; for(var h=6;h<=22;h++)hoursShown.push(h);
+  var max=6734;
+  function col(v){
+    var t=v/max; // 0..1
+    // interpolate: dark-blue -> blue -> neon -> orange
+    var stops=[[18,38,58],[30,111,174],[56,189,248],[255,122,41]];
+    var p=t*(stops.length-1); var i=Math.min(Math.floor(p),stops.length-2); var f=p-i;
+    var c=stops[i].map(function(a,k){return Math.round(a+(stops[i+1][k]-a)*f);});
+    return 'rgb('+c[0]+','+c[1]+','+c[2]+')';
+  }
+  var head=document.getElementById('heatHead');
+  head.innerHTML='<th></th>'+hoursShown.map(function(h){return '<th>'+h+'h</th>';}).join('');
+  var body=document.getElementById('heatBody');
+  [1,2,3,4,5,6,7].forEach(function(dn,idx){
+    var tr=document.createElement('tr');
+    var cells='<td class="rowlab">'+days[idx]+'</td>';
+    hoursShown.forEach(function(h){
+      var v=H[dn][h]; var show=v>=4200?Math.round(v/1000)+'k':'';
+      cells+='<td><div class="cell" style="background:'+col(v)+'">'+show+'</div></td>';
+    });
+    tr.innerHTML=cells; body.appendChild(tr);
+  });
+
+  // ---- Pilares ----
+  var svg=function(p){return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'+p+'</svg>';};
+  var pillars=[
+    ["Alcance por retenção","Prender nos 2 primeiros segundos.","<path d='M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z'/><circle cx='12' cy='12' r='3'/>",
+      ["Reels curtos (10–20s): 1 conceito por vídeo","Hook forte no 1º segundo + legenda na tela","Corte rápido, sem enrolação"]],
+    ["Conteúdo salvável","Salvamento e compartilhamento expandem o alcance.","<path d='M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z'/>",
+      ["Carrosséis 'guia' que a pessoa quer guardar","Checklists, passo a passo, 'salva pra não esquecer'","CTA: 'compartilha com quem precisa'"]],
+    ["Stories diários","Aquecer e fidelizar a base todo dia.","<rect x='3' y='3' width='18' height='18' rx='5'/><path d='M12 8v8M8 12h8'/>",
+      ["3–5 stories/dia: bastidor, dica, enquete","Caixinha de pergunta + enquete = engajamento","Direcionar pro post/link do dia"]],
+    ["Gatilho de seguir","Dar sempre um motivo pra seguir.","<path d='M16 21v-2a4 4 0 0 0-8 0v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8z'/>",
+      ["Fechar todo conteúdo com 'segue pra…' claro","Comentário fixado com resumo + CTA","'Comenta EU QUERO' → resposta no direct"]],
+    ["Descoberta (SEO + hashtags)","Ser encontrado por quem ainda não segue.","<circle cx='11' cy='11' r='7'/><path d='M21 21l-4-4'/>",
+      ["Legenda com palavras que o público busca","Mix de hashtags nicho (pequenas + médias)","Responder comentários na 1ª hora"]]
+  ];
+  var pc=document.getElementById('pillars');
+  pillars.forEach(function(p){var e=document.createElement('div');e.className='pillar';
+    e.innerHTML='<div class="ic">'+svg(p[2])+'</div><h3>'+p[0]+'</h3><p>'+p[1]+'</p><ul>'+p[3].map(function(l){return '<li>'+l+'</li>';}).join('')+'</ul>';pc.appendChild(e);});
+
+  // ---- Calendário ----
+  var cal=[
+    ["Segunda","Reel curto (dica de 15s)","10:30","reel","Alcance + retenção"],
+    ["Terça","Stories (3–5) + enquete","ao longo do dia","story","Engajamento da base"],
+    ["Quarta","Carrossel salvável","10:30","carr","Salvamentos → alcance"],
+    ["Quinta","Stories (bastidor + CTA)","ao longo do dia","story","Nutrição + link"],
+    ["Sexta","Reel curto (erro comum)","10:30","reel","Alcance + seguir"],
+    ["Sábado","Stories leves / repost","ao longo do dia","story","Presença"],
+    ["Domingo","Planejar + responder DMs","—","","Comunidade"]
+  ];
+  var ct=document.getElementById('cal');
+  cal.forEach(function(r){var tr=document.createElement('tr');
+    var tag=r[3]?'<span class="tag '+r[3]+'">'+(r[3]==='reel'?'REEL':r[3]==='carr'?'CARROSSEL':'STORY')+'</span>':'';
+    tr.innerHTML='<td class="d">'+r[0]+'</td><td>'+r[1]+' '+tag+'</td><td>'+r[2]+'</td><td style="color:var(--muted)">'+r[4]+'</td>';ct.appendChild(tr);});
+
+  // ---- Checklist perfil ----
+  var check=[
+    "Bio clara: o que a pessoa ganha ao seguir (ex.: 'Aprenda a ler o gráfico como um trader profissional')",
+    "1 CTA na bio: link único (ebook / página de vendas)",
+    "Foto e nome consistentes com a marca",
+    "Destaques (Highlights): 'Comece aqui', 'Teoria de Dow', 'Provas/Resultados', 'Ebook'",
+    "Post fixado: melhor conteúdo + oferta do ebook",
+    "Nome de usuário/nome com palavra-chave ('trader', 'trading')"
+  ];
+  var chk=document.getElementById('check');
+  check.forEach(function(t){var e=document.createElement('div');
+    e.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5 9-11"/></svg><span>'+t+'</span>';chk.appendChild(e);});
+})();
+</script>
