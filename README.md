@@ -12,8 +12,30 @@ Todos os botões de compra ("Comprar agora") apontam para a página de pagamento
 - Página do produto: https://go.hotmart.com/M107215100L?dp=1
 
 ## Como publicar
-1. Hospede o `index.html` (Hotmart Pages, Netlify, Vercel, GitHub Pages ou qualquer host estático).
-2. Ou cole o conteúdo direto num bloco de HTML do editor de páginas.
+
+### Vercel (recomendado)
+Site estático, sem build. O `vercel.json` já está configurado (framework "Other").
+
+**Opção A — pelo site (2 min, sem instalar nada):**
+1. Acesse https://vercel.com/new
+2. "Import Git Repository" → escolha `rickcbf/Equipe-Super-Agents`
+3. Framework Preset: **Other** · Build Command: *(vazio)* · Output Directory: *(vazio / raiz)*
+4. Deploy → você recebe uma URL `https://<projeto>.vercel.app`
+
+Obs.: a Vercel publica em produção a partir da branch padrão (`main`). Faça o merge desta
+branch para `main` antes, ou selecione a branch no deploy.
+
+**Opção B — pela CLI (na sua máquina):**
+```bash
+npm i -g vercel      # ou use: npx vercel
+cd Equipe-Super-Agents
+vercel               # login + deploy de preview
+vercel --prod        # publica em produção
+```
+
+### Outras opções
+Também funciona em GitHub Pages, Netlify, ou colando o `index.html` num bloco de HTML do
+editor de páginas da Hotmart.
 
 ## Capa do ebook
 A capa oficial (astronauta) já está **embutida** no `index.html` como data URI, dentro de uma
