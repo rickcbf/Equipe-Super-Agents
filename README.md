@@ -16,9 +16,8 @@ Todos os botões de compra ("Comprar agora") apontam para a página de pagamento
 2. Ou cole o conteúdo direto num bloco de HTML do editor de páginas.
 
 ## Capa do ebook
-A capa exibida no hero é uma versão feita em CSS/SVG. Para usar a capa oficial (astronauta),
-suba a imagem para o Google Drive ou coloque em `assets/capa-ebook.png` que ela pode ser
-embutida no lugar.
+A capa oficial (astronauta) já está **embutida** no `index.html` como data URI, dentro de uma
+moldura 3D. O arquivo original também está salvo em `assets/capa-ebook.png` (642×955).
 
 ## Identidade visual
 - Fundo carbono `#06080D`, neon azul `#38BDF8`, laranja RickEA `#FF7A29`
