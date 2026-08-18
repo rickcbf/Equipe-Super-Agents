@@ -1,0 +1,245 @@
+<!-- Página de Obrigado — pós-compra · RickEA Investments -->
+<title>Obrigado · RickEA</title>
+<meta name="description" content="Compra confirmada — acesso liberado ao ebook A Teoria de Dow Aplicada ao Trading Moderno.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+
+<style>
+  :root{
+    color-scheme:dark;
+    --ground:#06080D;--surface:#0D1017;--surface-2:#141A26;
+    --ink:#E9EEF9;--muted:#8B95AA;--faint:#5A6377;
+    --neon:#38BDF8;--orange:#FF7A29;--up:#16C784;--gold:#F2C14E;
+    --line:rgba(120,150,200,.14);--line-strong:rgba(120,160,220,.28);
+    --r:16px;--r-lg:24px;--maxw:900px;
+    --ff-display:"Rajdhani",system-ui,sans-serif;--ff-brand:"Orbitron",system-ui,sans-serif;
+    --ff-body:"Manrope",system-ui,-apple-system,sans-serif;--ff-mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--ff-body);background:var(--ground);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(60% 45% at 50% -5%,rgba(22,199,132,.16),transparent 60%),radial-gradient(60% 50% at 85% 20%,rgba(56,189,248,.14),transparent 55%),radial-gradient(70% 50% at 10% 100%,rgba(255,122,41,.10),transparent 55%)}
+  .wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:22px;position:relative;z-index:1}
+  h1,h2,h3{margin:0;font-family:var(--ff-display);font-weight:700;line-height:1.05;text-wrap:balance}
+  p{margin:0}
+  a{color:inherit;text-decoration:none}
+  section{padding-block:clamp(34px,6vw,60px)}
+  .eyebrow{font-family:var(--ff-brand);font-size:.72rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:var(--neon);display:inline-flex;align-items:center;gap:.6em}
+  .eyebrow::before{content:"";width:24px;height:2px;background:linear-gradient(90deg,var(--neon),transparent)}
+
+  header.top{border-bottom:1px solid var(--line);background:rgba(6,8,13,.6);backdrop-filter:blur(12px)}
+  .top-in{display:flex;align-items:center;gap:12px;padding-block:14px}
+  .helmet{width:36px;height:36px;filter:drop-shadow(0 0 8px rgba(56,189,248,.55))}
+  .brand-name{font-family:var(--ff-brand);font-weight:800;letter-spacing:.12em;font-size:1rem;line-height:1}
+  .brand-name small{display:block;font-family:var(--ff-mono);font-weight:500;font-size:.58rem;letter-spacing:.32em;color:var(--muted);margin-top:4px}
+
+  /* hero */
+  .hero{text-align:center;padding-top:clamp(40px,7vw,74px)}
+  .check{width:96px;height:96px;margin:0 auto 26px;border-radius:50%;display:grid;place-items:center;
+    background:radial-gradient(circle at 50% 35%,rgba(22,199,132,.25),rgba(22,199,132,.06));border:1px solid rgba(22,199,132,.5);
+    box-shadow:0 0 50px rgba(22,199,132,.35)}
+  .hero h1{font-size:clamp(2rem,5.4vw,3.2rem);margin-top:8px}
+  .hero h1 .hl{color:var(--up)}
+  .hero p.lead{color:var(--muted);font-size:clamp(1.05rem,1.7vw,1.25rem);margin-top:18px;max-width:60ch;margin-inline:auto}
+  .accesscard{margin:32px auto 0;max-width:560px;border:1px solid var(--line-strong);border-radius:var(--r-lg);
+    background:linear-gradient(180deg,var(--surface-2),var(--surface));padding:26px}
+  .accesscard .tag{font-family:var(--ff-mono);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--up)}
+  .accesscard h3{font-size:1.3rem;margin:8px 0 6px}
+  .accesscard p{color:var(--muted);font-size:.95rem}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;font-family:var(--ff-display);font-weight:700;
+    font-size:1.05rem;letter-spacing:.02em;padding:15px 28px;border-radius:999px;cursor:pointer;transition:transform .18s,box-shadow .25s;margin-top:18px}
+  .btn-primary{background:linear-gradient(180deg,#ff8c42,#f2641a);color:#1a0d03;box-shadow:0 0 34px rgba(255,122,41,.45),inset 0 1px 0 rgba(255,255,255,.35)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 46px rgba(255,122,41,.6)}
+  .btn-ig{background:rgba(56,189,248,.08);border:1px solid var(--line-strong);color:var(--ink)}
+  .btn-ig:hover{border-color:var(--neon);background:rgba(56,189,248,.14)}
+  .hint{margin-top:14px;font-family:var(--ff-mono);font-size:.82rem;color:var(--faint)}
+
+  .head{max-width:640px;margin-bottom:26px}
+  .head h2{font-size:clamp(1.6rem,3.6vw,2.3rem);margin-top:14px}
+
+  .list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  @media(min-width:640px){.list{grid-template-columns:1fr 1fr}}
+  .list li{display:flex;gap:13px;align-items:center;padding:15px 18px;border:1px solid var(--line);border-radius:12px;
+    background:linear-gradient(180deg,var(--surface-2),var(--surface));font-size:1rem}
+  .list li svg{flex:0 0 auto;color:var(--up)}
+
+  .bonus-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .bonus{border:1px solid rgba(242,193,78,.28);border-radius:var(--r);padding:22px;
+    background:radial-gradient(120% 100% at 100% 0%,rgba(242,193,78,.08),transparent 55%),linear-gradient(180deg,var(--surface-2),var(--surface))}
+  .bonus .tag{font-family:var(--ff-mono);font-size:.66rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+  .bonus h3{font-size:1.15rem;margin:8px 0 6px}
+  .bonus p{color:var(--muted);font-size:.92rem}
+
+  .steps{display:grid;gap:14px}
+  .step{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;padding:18px 22px;border:1px solid var(--line);border-radius:14px;
+    background:linear-gradient(180deg,var(--surface-2),var(--surface))}
+  .step .n{font-family:var(--ff-brand);font-weight:800;font-size:1.3rem;color:transparent;-webkit-text-stroke:1.4px var(--neon);min-width:42px}
+  .step p{font-size:1.02rem}
+
+  .community{text-align:center;border:1px solid var(--line-strong);border-radius:var(--r-lg);padding:clamp(28px,5vw,44px);
+    background:radial-gradient(90% 120% at 50% 0%,rgba(56,189,248,.1),transparent 55%),linear-gradient(180deg,var(--surface-2),var(--surface))}
+  .community h2{font-size:clamp(1.6rem,3.6vw,2.3rem)}
+  .chips{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:24px}
+  .chip{font-family:var(--ff-mono);font-size:.85rem;letter-spacing:.06em;padding:10px 18px;border-radius:999px;
+    border:1px solid var(--line-strong);color:var(--ink);background:rgba(56,189,248,.06)}
+
+  .support{text-align:center}
+  .support h2{font-size:clamp(1.5rem,3.2vw,2.1rem)}
+  .support p{color:var(--muted);margin-top:12px;max-width:52ch;margin-inline:auto}
+
+  .final{text-align:center;border-top:1px solid var(--line);margin-top:20px}
+  .final blockquote{margin:0;font-family:var(--ff-display);font-weight:600;font-size:clamp(1.3rem,3vw,1.9rem);line-height:1.3;max-width:24ch;margin-inline:auto}
+  .final .sig{margin-top:20px;font-family:var(--ff-mono);font-size:.82rem;letter-spacing:.12em;color:var(--neon);text-transform:uppercase}
+
+  footer{border-top:1px solid var(--line);padding-block:30px;text-align:center}
+  footer p{color:var(--faint);font-size:.82rem}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eaf6ff"/><stop offset="1" stop-color="#9fc9e8"/></linearGradient>
+</defs></svg>
+
+<header class="top">
+  <div class="wrap top-in">
+    <svg class="helmet" viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M24 4C13.5 4 6 12 6 22.5c0 4 1.4 6.8 3.4 8.6-.5 1.4-1.7 3-3.4 4 3 .8 5.2.2 6.6-.6C15.8 37 19.6 38 24 38s8.2-1 11.4-3.5c1.4.8 3.6 1.4 6.6.6-1.7-1-2.9-2.6-3.4-4 2-1.8 3.4-4.6 3.4-8.6C42 12 34.5 4 24 4Z" fill="url(#hg)"/>
+      <path d="M15 18c1.6-3.6 5-6 9-6s7.4 2.4 9 6c1 2.2 1 5 0 7-1.6 3.4-5 5-9 5s-7.4-1.6-9-5c-1-2-1-4.8 0-7Z" fill="#05070b"/>
+      <path d="M17 16.5c2.4-2.6 8-3 11 0" stroke="#38BDF8" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span class="brand-name">RICKEA<small>INVESTMENTS</small></span>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="check">
+      <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#16C784" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>
+    </div>
+    <p class="eyebrow" style="justify-content:center">Compra confirmada</p>
+    <h1 style="margin-top:14px">Parabéns! Sua compra foi <span class="hl">confirmada</span>.</h1>
+    <p class="lead">Você acaba de dar um passo enorme na sua evolução como trader. A partir de agora, você não está mais operando no escuro — você está operando com <strong>estrutura, clareza e lógica</strong>.</p>
+
+    <div class="accesscard">
+      <span class="tag">✓ Acesso liberado</span>
+      <h3>A Teoria de Dow Aplicada ao Trading Moderno</h3>
+      <p>Seu acesso já está liberado na sua conta Hotmart. Verifique também o seu e-mail — enviamos o link de acesso e as instruções.</p>
+      <a class="btn btn-primary" href="https://hotmart.com/pt-br/club" target="_blank" rel="noopener">Acessar meu conteúdo <span aria-hidden="true">→</span></a>
+      <p class="hint">Acesso pela conta Hotmart (mesmo e-mail usado na compra)</p>
+    </div>
+  </div>
+</section>
+
+<!-- O QUE GARANTIU -->
+<section>
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">📘 O que você garantiu</p>
+      <h2>Tudo que já está liberado pra você</h2>
+    </div>
+    <ul class="list" id="gotList"></ul>
+  </div>
+</section>
+
+<!-- BÔNUS -->
+<section>
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">🎁 Bônus exclusivos RickEA</p>
+      <h2>Criados para acelerar sua evolução</h2>
+    </div>
+    <div class="bonus-grid" id="bonusGrid"></div>
+  </div>
+</section>
+
+<!-- COMO APROVEITAR -->
+<section>
+  <div class="wrap">
+    <div class="head">
+      <p class="eyebrow">🚀 Como aproveitar ao máximo</p>
+      <h2>O caminho da consistência</h2>
+    </div>
+    <div class="steps" id="steps"></div>
+  </div>
+</section>
+
+<!-- COMUNIDADE -->
+<section>
+  <div class="wrap">
+    <div class="community">
+      <p class="eyebrow" style="justify-content:center">🔥 Bem-vindo</p>
+      <h2 style="margin-top:14px">Você agora faz parte da comunidade RickEA</h2>
+      <div class="chips">
+        <span class="chip">Disciplina</span><span class="chip">Clareza</span><span class="chip">Estrutura</span>
+        <span class="chip">Leitura profissional</span><span class="chip">Evolução contínua</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUPORTE -->
+<section class="support">
+  <div class="wrap">
+    <p class="eyebrow" style="justify-content:center">📩 Se precisar de ajuda</p>
+    <h2 style="margin-top:14px">Estou aqui pra te ajudar a evoluir</h2>
+    <p>Qualquer dúvida sobre o conteúdo, acesso ou suporte, fale diretamente comigo pelo Instagram.</p>
+    <a class="btn btn-ig" href="https://instagram.com/rickea.investments" target="_blank" rel="noopener">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+      @rickea.investments
+    </a>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="final">
+  <div class="wrap">
+    <p class="eyebrow" style="justify-content:center">🎯 Mensagem final</p>
+    <blockquote style="margin-top:20px">Obrigado por confiar na RickEA. Agora é hora de estudar, aplicar e evoluir.</blockquote>
+    <p class="sig">— Vamos juntos · RickEA Investments</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>RickEA Investments — Transformando traders iniciantes em traders profissionais.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var got=[
+    "O ebook completo da Teoria de Dow",
+    "Explicações claras e aplicáveis",
+    "Exemplo prático no EUR/USD",
+    "Checklist do Trader Dow",
+    "Mentalidade RickEA",
+    "Erros que destroem iniciantes",
+    "Estrutura profissional de leitura de mercado"
+  ];
+  var bonus=[
+    ["Bônus 1","Mini Guia de Psicologia do Trader","Controle emocional, disciplina e mentalidade profissional."],
+    ["Bônus 3","Guia de Gestão de Risco RickEA","RR, stop técnico, risco diário e semanal, proteção de capital."],
+    ["Bônus 4","Checklist de Entrada Imprimível","Use antes de cada operação. Se algo estiver errado, não entre."]
+  ];
+  var steps=[
+    "Leia o ebook com calma.",
+    "Estude o checklist diariamente.",
+    "Aplique a leitura de tendência e volume no gráfico.",
+    "Use o checklist imprimível antes de cada operação.",
+    "Releia o capítulo de psicologia sempre que sentir ansiedade.",
+    "Siga a gestão de risco RickEA sem exceções."
+  ];
+  function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;}
+  var chk='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5 9-11"/></svg>';
+  var gl=document.getElementById('gotList');
+  got.forEach(function(t){gl.appendChild(el('li',null,chk+'<span>'+t+'</span>'));});
+  var bg=document.getElementById('bonusGrid');
+  bonus.forEach(function(b){bg.appendChild(el('div','bonus','<span class="tag">'+b[0]+'</span><h3>'+b[1]+'</h3><p>'+b[2]+'</p>'));});
+  var st=document.getElementById('steps');
+  steps.forEach(function(t,i){st.appendChild(el('div','step','<div class="n">'+('0'+(i+1)).slice(-2)+'</div><p>'+t+'</p>'));});
+})();
+</script>
