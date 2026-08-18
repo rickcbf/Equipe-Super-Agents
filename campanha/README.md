@@ -8,6 +8,7 @@ Peças prontas para postar (alta resolução 2×, capa oficial embutida).
 | `instagram-stories-cta.png` | 2160×3840 (1080×1920 · 9:16) | Stories com CTA |
 | `instagram-pacote-premium.png` | 2160×2700 (1080×1350 · 4:5) | Post de feed — Pacote + Bônus |
 | `reels-lancamento-teoria-dow.mp4` | 1080×1920 · 58s · H.264+AAC | Reels/Stories em vídeo (com trilha) |
+| `reels-anuncio-30s.mp4` | 1080×1920 · 30s · H.264+AAC | Anúncio pago (tráfego) |
 | `carrossel/card-1..7.png` | 2160×2700 (1080×1350 · 4:5) | Carrossel de 7 cards (feed) |
 
 ## 📝 Legenda — Carrossel (7 cards)
@@ -91,6 +92,23 @@ Tudo isso por **R$10,00** com o cupom **RICK50** (de R$39,99).
 > Se você quer operar com consistência, esse é o seu próximo passo.
 
 ---
+
+## 📣 Textos para o anúncio pago (Meta Ads — `reels-anuncio-30s.mp4`)
+
+**Texto principal (primary text):**
+> Cansado de tomar stop por entrar cedo, sair por ansiedade ou cair em rompimento falso? 📉
+> O problema não é o setup — é não entender a estrutura do mercado.
+> A Teoria de Dow é a base da análise técnica, e o ebook da RickEA te ensina a ler tendência, fase, volume, entradas e saídas com clareza. + 3 bônus exclusivos.
+> 💥 Com o cupom RICK50: apenas R$10,00 (de R$39,99). Garantia de 7 dias.
+
+**Título (headline):** Domine a Teoria de Dow — R$10 com o cupom RICK50
+**Descrição:** Ebook + bônus · acesso imediato · garantia de 7 dias
+**Botão (CTA):** Comprar agora
+**Destino:** https://pay.hotmart.com/M107215100L
+
+**Sugestão de público (frio):** 18–45 · interesses: day trade, análise técnica, forex, mercado
+financeiro, trading, XAUUSD, price action, TradingView. Otimizar por conversão (compra) se o
+pixel estiver instalado; senão, por cliques no link.
 
 ## Como as imagens foram geradas
 `.build/build.py` monta cada peça em HTML/CSS (capa real + fontes da marca embutidas) e renderiza
