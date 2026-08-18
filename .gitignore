@@ -1,0 +1,2 @@
+# build artifacts (fonts + generated HTML for the campaign renders)
+.build/
