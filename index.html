@@ -1,0 +1,760 @@
+<!--
+  Página de vendas — A Teoria de Dow Aplicada ao Trading Moderno
+  RickEA Investments · Hotmart
+-->
+<title>Teoria de Dow · RickEA</title>
+<meta name="description" content="Domine a Teoria de Dow e aprenda a ler o mercado como um trader profissional. Ebook da RickEA Investments — lançamento com 50% OFF.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+
+<style>
+  :root{
+    color-scheme: dark;
+    --ground:#06080D;
+    --surface:#0D1017;
+    --surface-2:#141A26;
+    --surface-3:#1B2233;
+    --ink:#E9EEF9;
+    --muted:#8B95AA;
+    --faint:#5A6377;
+    --neon:#38BDF8;
+    --neon-deep:#1E7FD4;
+    --orange:#FF7A29;
+    --orange-soft:#FFB07A;
+    --up:#16C784;
+    --down:#EA3943;
+    --gold:#F2C14E;
+    --line:rgba(120,150,200,.14);
+    --line-strong:rgba(120,160,220,.28);
+    --glow-blue:0 0 40px rgba(56,189,248,.35);
+    --glow-orange:0 0 34px rgba(255,122,41,.45);
+    --maxw:1140px;
+    --r:16px;
+    --r-lg:24px;
+    --ff-display:"Rajdhani",system-ui,sans-serif;
+    --ff-brand:"Orbitron",system-ui,sans-serif;
+    --ff-body:"Manrope",system-ui,-apple-system,sans-serif;
+    --ff-mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+  body{
+    margin:0;
+    font-family:var(--ff-body);
+    background:var(--ground);
+    color:var(--ink);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* ambient page glow */
+  body::before{
+    content:"";
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(70% 55% at 78% -5%, rgba(56,189,248,.16), transparent 60%),
+      radial-gradient(60% 50% at 10% 8%, rgba(255,122,41,.10), transparent 55%),
+      radial-gradient(90% 60% at 50% 108%, rgba(30,127,212,.14), transparent 60%);
+  }
+
+  .wrap{max-width:var(--maxw);margin-inline:auto;padding-inline:22px;position:relative;z-index:1}
+
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+
+  h1,h2,h3{margin:0;font-family:var(--ff-display);font-weight:700;line-height:1.05;text-wrap:balance;letter-spacing:.2px}
+  p{margin:0}
+
+  .eyebrow{
+    font-family:var(--ff-brand);
+    font-size:.72rem;font-weight:700;letter-spacing:.32em;text-transform:uppercase;
+    color:var(--neon);
+    display:inline-flex;align-items:center;gap:.6em;
+  }
+  .eyebrow::before{content:"";width:26px;height:2px;background:linear-gradient(90deg,var(--neon),transparent);display:inline-block}
+
+  section{position:relative;z-index:1;padding-block:clamp(56px,9vw,104px)}
+  .section-head{max-width:760px;margin-bottom:44px}
+  .section-head h2{font-size:clamp(1.9rem,4.2vw,3rem);margin-top:16px}
+  .section-head p{color:var(--muted);margin-top:14px;font-size:1.08rem;max-width:62ch}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    --b:var(--orange);
+    display:inline-flex;align-items:center;justify-content:center;gap:.6em;
+    font-family:var(--ff-display);font-weight:700;font-size:1.05rem;letter-spacing:.03em;
+    padding:15px 28px;border-radius:999px;border:1px solid transparent;
+    cursor:pointer;position:relative;transition:transform .18s ease,box-shadow .25s ease,background .2s;
+    text-align:center;
+  }
+  .btn-primary{
+    background:linear-gradient(180deg,#ff8c42,#f2641a);
+    color:#1a0d03;box-shadow:var(--glow-orange), inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 46px rgba(255,122,41,.6), inset 0 1px 0 rgba(255,255,255,.4)}
+  .btn-ghost{
+    background:rgba(56,189,248,.06);color:var(--ink);
+    border:1px solid var(--line-strong);
+  }
+  .btn-ghost:hover{border-color:var(--neon);color:#fff;background:rgba(56,189,248,.12)}
+  .btn .arw{font-size:1.15em;line-height:0}
+  .btn:focus-visible{outline:3px solid var(--neon);outline-offset:3px}
+
+  .price-inline{font-family:var(--ff-mono);font-weight:700}
+
+  /* ---------- Header ---------- */
+  header.top{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(14px);
+    background:rgba(6,8,13,.72);
+    border-bottom:1px solid var(--line);
+  }
+  .top-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-name{font-family:var(--ff-brand);font-weight:800;font-size:1.02rem;letter-spacing:.12em;line-height:1}
+  .brand-name small{display:block;font-family:var(--ff-mono);font-weight:500;font-size:.6rem;letter-spacing:.34em;color:var(--muted);margin-top:4px}
+  .top .btn{padding:10px 20px;font-size:.95rem}
+  .top-cta-price{font-family:var(--ff-mono);opacity:.85;font-size:.82em}
+  @media (max-width:560px){.top .btn .hide-sm{display:none}}
+
+  /* Helmet mark */
+  .helmet{width:38px;height:38px;flex:0 0 auto;filter:drop-shadow(0 0 8px rgba(56,189,248,.55))}
+
+  /* ---------- Hero ---------- */
+  .hero{padding-top:clamp(38px,6vw,70px);padding-bottom:clamp(48px,8vw,96px);overflow:hidden}
+  #chartCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.5;mask-image:linear-gradient(180deg,transparent,#000 22%,#000 70%,transparent)}
+  .hero-grid{
+    position:relative;z-index:2;
+    display:grid;grid-template-columns:1.08fr .92fr;gap:clamp(30px,5vw,64px);align-items:center;
+  }
+  .hero-copy{max-width:600px}
+  .offer-chip{
+    display:inline-flex;align-items:center;gap:10px;margin-bottom:22px;
+    padding:7px 8px 7px 16px;border-radius:999px;
+    background:rgba(255,122,41,.08);border:1px solid rgba(255,122,41,.32);
+    font-family:var(--ff-mono);font-size:.8rem;font-weight:500;color:var(--orange-soft);letter-spacing:.02em;
+  }
+  .offer-chip b{
+    background:var(--orange);color:#1a0d03;padding:3px 10px;border-radius:999px;
+    font-weight:700;font-size:.78rem;letter-spacing:.04em;
+  }
+  .hero h1{font-size:clamp(2.35rem,5.6vw,4rem);letter-spacing:0}
+  .hero h1 .hl{color:var(--neon);text-shadow:0 0 30px rgba(56,189,248,.45)}
+  .hero-sub{color:var(--muted);font-size:clamp(1.05rem,1.6vw,1.24rem);margin-top:22px;max-width:54ch}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+  .trust{display:flex;flex-wrap:wrap;gap:18px 26px;margin-top:30px;padding-top:26px;border-top:1px solid var(--line)}
+  .trust span{display:inline-flex;align-items:center;gap:9px;font-size:.9rem;color:var(--muted)}
+  .trust svg{flex:0 0 auto;color:var(--neon)}
+
+  /* ---------- Ebook 3D cover ---------- */
+  .book-stage{display:flex;justify-content:center;perspective:1600px}
+  .book{
+    position:relative;width:min(310px,74vw);aspect-ratio:0.72;
+    transform:rotateY(-22deg) rotateX(4deg);transform-style:preserve-3d;
+    animation:floaty 6.5s ease-in-out infinite;
+  }
+  @keyframes floaty{0%,100%{transform:rotateY(-22deg) rotateX(4deg) translateY(0)}50%{transform:rotateY(-18deg) rotateX(4deg) translateY(-14px)}}
+  @media (prefers-reduced-motion:reduce){.book{animation:none}}
+  .book-face{
+    position:absolute;inset:0;border-radius:6px 12px 12px 6px;overflow:hidden;
+    background:
+      radial-gradient(120% 90% at 80% 0%, rgba(56,189,248,.16), transparent 55%),
+      linear-gradient(155deg,#12161f 0%, #0a0d14 55%, #05070b 100%);
+    border:1px solid rgba(120,160,220,.22);
+    box-shadow:
+      0 40px 70px -30px rgba(0,0,0,.9),
+      var(--glow-blue),
+      inset 0 0 0 1px rgba(255,255,255,.03);
+  }
+  /* carbon texture */
+  .book-face::before{
+    content:"";position:absolute;inset:0;opacity:.5;
+    background-image:
+      linear-gradient(45deg, rgba(255,255,255,.03) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.03) 75%),
+      linear-gradient(45deg, rgba(255,255,255,.03) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.03) 75%);
+    background-size:8px 8px;background-position:0 0,4px 4px;
+  }
+  /* neon top edge */
+  .book-face::after{
+    content:"";position:absolute;left:0;right:0;top:0;height:3px;
+    background:linear-gradient(90deg,var(--orange),var(--neon),transparent);
+  }
+  /* spine */
+  .book-spine{
+    position:absolute;left:0;top:0;height:100%;width:26px;
+    transform:translateX(-25px) rotateY(-88deg);transform-origin:right center;
+    background:linear-gradient(90deg,#04060a,#0c1018);
+    border-radius:4px 0 0 4px;
+  }
+  .book-inner{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;padding:26px 22px}
+  .book-brand{display:flex;align-items:center;gap:9px;font-family:var(--ff-brand);font-weight:700;font-size:.62rem;letter-spacing:.22em;color:var(--muted)}
+  .book-brand .helmet{width:24px;height:24px}
+  .book-title{margin-top:auto;font-family:var(--ff-display);font-weight:700;font-size:1.62rem;line-height:1.02;letter-spacing:.3px}
+  .book-title em{color:var(--neon);font-style:normal;display:block}
+  .book-kicker{font-family:var(--ff-mono);font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--orange-soft);margin-bottom:10px}
+  .book-author{font-family:var(--ff-mono);font-size:.64rem;color:var(--faint);margin-top:14px;letter-spacing:.06em}
+  .book-chart{margin-top:16px;height:64px;width:100%}
+  .book-glow{
+    position:absolute;left:8%;right:8%;bottom:-42px;height:60px;z-index:0;
+    background:radial-gradient(50% 100% at 50% 0%, rgba(56,189,248,.4), transparent 70%);
+    filter:blur(6px);transform:rotateX(78deg);
+  }
+
+  /* ---------- Cards / grids ---------- */
+  .card{
+    background:linear-gradient(180deg,var(--surface-2),var(--surface));
+    border:1px solid var(--line);border-radius:var(--r);
+    padding:24px;transition:border-color .22s,transform .22s,box-shadow .22s;
+  }
+  .card:hover{border-color:var(--line-strong);transform:translateY(-4px)}
+
+  .reveal-list{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .reveal-list li{
+    display:flex;align-items:center;gap:14px;padding:16px 20px;
+    background:linear-gradient(180deg,var(--surface-2),var(--surface));
+    border:1px solid var(--line);border-radius:12px;font-size:1.02rem;
+  }
+  .reveal-list .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:var(--neon);box-shadow:0 0 12px var(--neon)}
+  @media (min-width:640px){.reveal-list{grid-template-columns:1fr 1fr}}
+
+  .learn-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .learn-item{display:flex;gap:14px;align-items:flex-start}
+  .learn-item .chk{
+    flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+    background:rgba(22,199,132,.12);border:1px solid rgba(22,199,132,.35);color:var(--up);
+  }
+  .learn-item p{font-weight:600;font-size:1.02rem}
+  .learn-item small{color:var(--muted);font-weight:400;display:block;margin-top:2px;font-size:.9rem}
+
+  /* chapters */
+  .chapters{display:grid;gap:14px}
+  .chapter{
+    display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;
+    padding:20px 24px;border-radius:14px;
+    background:linear-gradient(180deg,var(--surface-2),var(--surface));
+    border:1px solid var(--line);transition:border-color .22s,background .22s;
+  }
+  .chapter:hover{border-color:var(--neon);background:linear-gradient(180deg,var(--surface-3),var(--surface))}
+  .chapter .num{
+    font-family:var(--ff-brand);font-weight:800;font-size:1.5rem;
+    color:transparent;-webkit-text-stroke:1.4px var(--neon-deep);
+    min-width:56px;line-height:1;
+  }
+  .chapter h3{font-size:1.22rem;letter-spacing:.3px}
+  .chapter p{color:var(--muted);margin-top:4px;font-size:.98rem}
+
+  /* bonus */
+  .bonus-band{
+    border:1px solid rgba(242,193,78,.28);border-radius:var(--r-lg);
+    background:
+      radial-gradient(120% 100% at 100% 0%, rgba(242,193,78,.10), transparent 55%),
+      linear-gradient(180deg,var(--surface-2),var(--surface));
+    padding:clamp(24px,4vw,40px);
+  }
+  .bonus-head{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-bottom:28px}
+  .bonus-head h2{font-size:clamp(1.7rem,3.6vw,2.5rem)}
+  .seal{
+    font-family:var(--ff-mono);font-size:.74rem;font-weight:700;letter-spacing:.06em;
+    color:var(--gold);border:1px solid rgba(242,193,78,.5);border-radius:999px;padding:6px 14px;white-space:nowrap;
+  }
+  .bonus-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .bonus-card{position:relative;overflow:hidden}
+  .bonus-card .tag{font-family:var(--ff-mono);font-size:.68rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+  .bonus-card h3{font-size:1.2rem;margin:10px 0 8px}
+  .bonus-card p{color:var(--muted);font-size:.95rem}
+  .bonus-ic{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;margin-bottom:6px;
+    background:rgba(56,189,248,.1);border:1px solid var(--line-strong);color:var(--neon)}
+
+  /* for whom */
+  .whom{display:grid;gap:22px;grid-template-columns:1fr 1fr}
+  @media (max-width:720px){.whom{grid-template-columns:1fr}}
+  .whom-col{padding:28px;border-radius:var(--r-lg)}
+  .whom-yes{background:linear-gradient(180deg,rgba(22,199,132,.08),transparent);border:1px solid rgba(22,199,132,.28)}
+  .whom-no{background:linear-gradient(180deg,rgba(234,57,67,.07),transparent);border:1px solid rgba(234,57,67,.24)}
+  .whom-col h3{font-size:1.3rem;display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .whom-col ul{list-style:none;margin:0;padding:0;display:grid;gap:13px}
+  .whom-col li{display:flex;gap:12px;align-items:flex-start;color:var(--ink);font-size:1rem}
+  .whom-col li span{flex:0 0 auto;margin-top:2px}
+  .whom-no li{color:var(--muted)}
+
+  /* quote */
+  .quote-wrap{
+    border-radius:var(--r-lg);border:1px solid var(--line-strong);
+    background:
+      radial-gradient(90% 120% at 0% 0%, rgba(56,189,248,.1), transparent 55%),
+      linear-gradient(180deg,var(--surface-2),var(--surface));
+    padding:clamp(30px,5vw,56px);text-align:center;max-width:860px;margin-inline:auto;
+  }
+  .quote-wrap .helmet{width:56px;height:56px;margin:0 auto 22px}
+  .quote-wrap blockquote{margin:0;font-family:var(--ff-display);font-weight:600;font-size:clamp(1.3rem,3vw,1.9rem);line-height:1.32}
+  .quote-wrap .attr{margin-top:22px;font-family:var(--ff-mono);font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;color:var(--neon)}
+
+  /* pricing */
+  .pricing{display:grid;grid-template-columns:1fr .9fr;gap:clamp(24px,4vw,48px);align-items:center}
+  @media (max-width:820px){.pricing{grid-template-columns:1fr}}
+  .why-price{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:12px}
+  .why-price li{display:flex;gap:12px;align-items:center;color:var(--muted)}
+  .why-price li b{color:var(--ink);font-weight:600}
+  .price-card{
+    position:relative;border-radius:var(--r-lg);padding:38px 34px;text-align:center;
+    background:
+      radial-gradient(120% 90% at 50% -10%, rgba(56,189,248,.16), transparent 60%),
+      linear-gradient(180deg,var(--surface-3),var(--surface));
+    border:1px solid var(--line-strong);
+    box-shadow:0 40px 90px -50px rgba(0,0,0,.9), var(--glow-blue);
+  }
+  .price-card .badge{
+    position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+    background:var(--orange);color:#1a0d03;font-family:var(--ff-mono);font-weight:700;
+    font-size:.76rem;letter-spacing:.08em;padding:6px 18px;border-radius:999px;white-space:nowrap;
+    box-shadow:var(--glow-orange);
+  }
+  .price-label{font-family:var(--ff-mono);font-size:.76rem;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-top:10px}
+  .price-old{font-family:var(--ff-mono);color:var(--faint);text-decoration:line-through;font-size:1.05rem;margin-top:14px}
+  .price-now{font-family:var(--ff-display);font-weight:700;line-height:1;margin-top:4px;letter-spacing:0}
+  .price-now .cur{font-size:1.6rem;vertical-align:top;color:var(--neon)}
+  .price-now .val{font-size:clamp(3.4rem,9vw,4.6rem);color:#fff;text-shadow:0 0 34px rgba(56,189,248,.4)}
+  .price-card .btn{width:100%;margin-top:26px;font-size:1.15rem;padding:17px}
+  .price-card .fine{margin-top:16px;font-size:.82rem;color:var(--faint);display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center}
+  .price-card .fine span{display:inline-flex;align-items:center;gap:7px}
+
+  /* guarantee */
+  .guarantee{display:flex;gap:28px;align-items:center;flex-wrap:wrap;
+    border:1px solid var(--line-strong);border-radius:var(--r-lg);padding:clamp(24px,4vw,40px);
+    background:linear-gradient(180deg,var(--surface-2),var(--surface))}
+  .guar-seal{flex:0 0 auto}
+  .guar-body{flex:1;min-width:260px}
+  .guar-body h2{font-size:clamp(1.5rem,3vw,2.1rem);margin-bottom:12px}
+  .guar-body p{color:var(--muted);font-size:1.05rem}
+  .guar-body strong{color:var(--ink)}
+
+  /* final cta */
+  .final{text-align:center}
+  .final-band{
+    border-radius:var(--r-lg);padding:clamp(36px,6vw,72px) 28px;
+    background:
+      radial-gradient(90% 130% at 50% 0%, rgba(255,122,41,.14), transparent 60%),
+      radial-gradient(90% 130% at 50% 100%, rgba(56,189,248,.16), transparent 60%),
+      linear-gradient(180deg,var(--surface-2),var(--surface));
+    border:1px solid var(--line-strong);
+  }
+  .final-band h2{font-size:clamp(2rem,5vw,3.2rem);max-width:20ch;margin-inline:auto}
+  .final-band p{color:var(--muted);margin-top:18px;font-size:1.12rem;max-width:52ch;margin-inline:auto}
+  .final-band .btn{margin-top:32px}
+  .final-note{margin-top:18px;font-family:var(--ff-mono);font-size:.8rem;color:var(--faint)}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding-block:40px;position:relative;z-index:1}
+  .foot-inner{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between}
+  .foot-inner p{color:var(--faint);font-size:.85rem}
+  .foot-brand{display:flex;align-items:center;gap:10px}
+
+  /* sticky mobile cta */
+  .mcta{
+    position:fixed;left:0;right:0;bottom:0;z-index:60;
+    display:none;gap:14px;align-items:center;justify-content:space-between;
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+    background:rgba(6,8,13,.9);backdrop-filter:blur(14px);border-top:1px solid var(--line-strong);
+  }
+  .mcta .mp{display:flex;flex-direction:column;line-height:1.1}
+  .mcta .mp s{color:var(--faint);font-size:.7rem;font-family:var(--ff-mono)}
+  .mcta .mp b{font-family:var(--ff-display);font-size:1.35rem;color:#fff}
+  .mcta .btn{padding:13px 22px}
+  @media (max-width:720px){
+    .mcta{display:flex}
+    body{padding-bottom:78px}
+    .hero-grid{grid-template-columns:1fr;text-align:center}
+    .hero-copy{margin-inline:auto}
+    .eyebrow{justify-content:center}
+    .hero-cta,.trust{justify-content:center}
+    .book-stage{order:-1;margin-bottom:20px}
+  }
+
+  /* reveal on scroll */
+  .r-anim{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+  .r-anim.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.r-anim{opacity:1;transform:none;transition:none}}
+</style>
+
+<!-- ================= HEADER ================= -->
+<header class="top">
+  <div class="wrap top-inner">
+    <a class="brand" href="#top" aria-label="RickEA Investments">
+      <svg class="helmet" viewBox="0 0 48 48" aria-hidden="true">
+        <defs>
+          <linearGradient id="hg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#eaf6ff"/><stop offset="1" stop-color="#9fc9e8"/>
+          </linearGradient>
+        </defs>
+        <path d="M24 4C13.5 4 6 12 6 22.5c0 4 1.4 6.8 3.4 8.6-.5 1.4-1.7 3-3.4 4 3 .8 5.2.2 6.6-.6C15.8 37 19.6 38 24 38s8.2-1 11.4-3.5c1.4.8 3.6 1.4 6.6.6-1.7-1-2.9-2.6-3.4-4 2-1.8 3.4-4.6 3.4-8.6C42 12 34.5 4 24 4Z" fill="url(#hg)"/>
+        <path d="M15 18c1.6-3.6 5-6 9-6s7.4 2.4 9 6c1 2.2 1 5 0 7-1.6 3.4-5 5-9 5s-7.4-1.6-9-5c-1-2-1-4.8 0-7Z" fill="#05070b"/>
+        <path d="M17 16.5c2.4-2.6 8-3 11 0" stroke="#38BDF8" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".9"/>
+        <circle cx="19.5" cy="21.5" r="1.6" fill="#38BDF8"/>
+      </svg>
+      <span class="brand-name">RICKEA<small>INVESTMENTS</small></span>
+    </a>
+    <a class="btn btn-primary" href="https://pay.hotmart.com/M107215100L" target="_blank" rel="noopener">
+      Comprar agora <span class="top-cta-price hide-sm">R$19,99</span>
+    </a>
+  </div>
+</header>
+
+<span id="top"></span>
+
+<!-- ================= HERO ================= -->
+<section class="hero" aria-label="Apresentação">
+  <canvas id="chartCanvas" aria-hidden="true"></canvas>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="offer-chip"><b>50% OFF</b> Preço de lançamento · De R$39,99 por R$19,99</p>
+      <p class="eyebrow">Ebook · RickEA Investments</p>
+      <h1 style="margin-top:16px">Domine a <span class="hl">Teoria de Dow</span> e leia o mercado como um trader profissional</h1>
+      <p class="hero-sub">Identifique tendências, fases, volume, entradas e saídas com precisão cirúrgica — usando a base que sustenta toda a análise técnica moderna. Mesmo que você seja iniciante.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://pay.hotmart.com/M107215100L" target="_blank" rel="noopener">Comprar agora <span class="arw">→</span></a>
+        <a class="btn btn-ghost" href="#conteudo">Ver o conteúdo</a>
+      </div>
+      <div class="trust">
+        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>Garantia de 7 dias</span>
+        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Compra segura Hotmart</span>
+        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Acesso imediato</span>
+      </div>
+    </div>
+
+    <!-- 3D ebook cover -->
+    <div class="book-stage">
+      <div class="book">
+        <div class="book-glow"></div>
+        <div class="book-spine"></div>
+        <div class="book-face">
+          <div class="book-inner">
+            <div class="book-brand">
+              <svg class="helmet" viewBox="0 0 48 48" aria-hidden="true">
+                <path d="M24 4C13.5 4 6 12 6 22.5c0 4 1.4 6.8 3.4 8.6-.5 1.4-1.7 3-3.4 4 3 .8 5.2.2 6.6-.6C15.8 37 19.6 38 24 38s8.2-1 11.4-3.5c1.4.8 3.6 1.4 6.6.6-1.7-1-2.9-2.6-3.4-4 2-1.8 3.4-4.6 3.4-8.6C42 12 34.5 4 24 4Z" fill="url(#hg)"/>
+                <path d="M15 18c1.6-3.6 5-6 9-6s7.4 2.4 9 6c1 2.2 1 5 0 7-1.6 3.4-5 5-9 5s-7.4-1.6-9-5c-1-2-1-4.8 0-7Z" fill="#05070b"/>
+                <path d="M17 16.5c2.4-2.6 8-3 11 0" stroke="#38BDF8" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+              </svg>
+              RICKEA INVESTMENTS
+            </div>
+            <svg class="book-chart" viewBox="0 0 240 64" preserveAspectRatio="none" aria-hidden="true">
+              <polyline points="0,50 30,44 55,48 85,34 115,38 150,22 185,26 240,8" fill="none" stroke="#38BDF8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="0,50 30,44 55,48 85,34 115,38 150,22 185,26 240,8" fill="none" stroke="#38BDF8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" opacity=".18"/>
+              <g fill="#16C784"><rect x="46" y="40" width="4" height="12" rx="1"/><rect x="106" y="30" width="4" height="14" rx="1"/><rect x="176" y="18" width="4" height="14" rx="1"/></g>
+              <circle cx="240" cy="8" r="3.4" fill="#FF7A29"/>
+            </svg>
+            <div class="book-title">
+              <span class="book-kicker">A Teoria de</span>
+              Dow <em>Aplicada</em> ao Trading Moderno
+            </div>
+            <div class="book-author">POR RICKEA INVESTMENTS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= APRESENTAÇÃO ================= -->
+<section aria-label="O que é a Teoria de Dow">
+  <div class="wrap">
+    <div class="section-head r-anim">
+      <p class="eyebrow">O fundamento da análise técnica</p>
+      <h2>A estrutura que revela como o mercado realmente se move</h2>
+      <p>A Teoria de Dow é a base sobre a qual toda a leitura profissional de gráficos foi construída. Este ebook traduz essa estrutura em linguagem clara, exemplos reais e aplicação prática — para transformar iniciantes em traders com leitura de verdade.</p>
+    </div>
+    <ul class="reveal-list r-anim">
+      <li><span class="dot"></span>Onde a tendência começa</li>
+      <li><span class="dot"></span>Onde ela ganha força</li>
+      <li><span class="dot"></span>Onde ela perde força</li>
+      <li><span class="dot"></span>Onde a tendência termina</li>
+      <li><span class="dot"></span>Onde os institucionais entram</li>
+      <li><span class="dot"></span>Onde os iniciantes são enganados</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= O QUE VAI APRENDER ================= -->
+<section aria-label="O que você vai aprender">
+  <div class="wrap">
+    <div class="section-head r-anim">
+      <p class="eyebrow">O que você vai aprender</p>
+      <h2>Da leitura de tendências ao seu próprio checklist operacional</h2>
+    </div>
+    <div class="learn-grid r-anim" id="learnGrid"></div>
+  </div>
+</section>
+
+<!-- ================= CONTEÚDO / CAPÍTULOS ================= -->
+<section id="conteudo" aria-label="Conteúdo do ebook">
+  <div class="wrap">
+    <div class="section-head r-anim">
+      <p class="eyebrow">Conteúdo completo · 9 capítulos</p>
+      <h2>Um caminho estruturado do zero à leitura profissional</h2>
+    </div>
+    <div class="chapters" id="chapters"></div>
+  </div>
+</section>
+
+<!-- ================= BÔNUS ================= -->
+<section aria-label="Bônus exclusivos">
+  <div class="wrap">
+    <div class="bonus-band r-anim">
+      <div class="bonus-head">
+        <p class="eyebrow" style="width:100%">Bônus exclusivos RickEA</p>
+        <h2>Não é só o ebook. É um pacote operacional completo.</h2>
+        <span class="seal">Incluído no lançamento</span>
+      </div>
+      <div class="bonus-grid" id="bonusGrid"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PARA QUEM É / NÃO É ================= -->
+<section aria-label="Para quem é">
+  <div class="wrap">
+    <div class="section-head r-anim">
+      <p class="eyebrow">Antes de comprar</p>
+      <h2>Este ebook é para você?</h2>
+    </div>
+    <div class="whom">
+      <div class="whom-col whom-yes r-anim">
+        <h3><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16C784" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>É para você que…</h3>
+        <ul id="forYes"></ul>
+      </div>
+      <div class="whom-col whom-no r-anim">
+        <h3><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EA3943" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>Não é para quem…</h3>
+        <ul id="forNo"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DEPOIMENTO ================= -->
+<section aria-label="Depoimento do autor">
+  <div class="wrap">
+    <div class="quote-wrap r-anim">
+      <svg class="helmet" viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M24 4C13.5 4 6 12 6 22.5c0 4 1.4 6.8 3.4 8.6-.5 1.4-1.7 3-3.4 4 3 .8 5.2.2 6.6-.6C15.8 37 19.6 38 24 38s8.2-1 11.4-3.5c1.4.8 3.6 1.4 6.6.6-1.7-1-2.9-2.6-3.4-4 2-1.8 3.4-4.6 3.4-8.6C42 12 34.5 4 24 4Z" fill="url(#hg)"/>
+        <path d="M15 18c1.6-3.6 5-6 9-6s7.4 2.4 9 6c1 2.2 1 5 0 7-1.6 3.4-5 5-9 5s-7.4-1.6-9-5c-1-2-1-4.8 0-7Z" fill="#05070b"/>
+        <path d="M17 16.5c2.4-2.6 8-3 11 0" stroke="#38BDF8" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      </svg>
+      <blockquote>“A Teoria de Dow é a base da análise técnica moderna. Se você dominar isso, nunca mais vai olhar para o gráfico da mesma forma. Este ebook foi criado para te dar clareza, disciplina e leitura profissional de mercado.”</blockquote>
+      <p class="attr">— RickEA Investments</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PREÇO ================= -->
+<section id="oferta" aria-label="Oferta">
+  <div class="wrap">
+    <div class="pricing">
+      <div class="r-anim">
+        <p class="eyebrow">Preço de lançamento · 50% OFF</p>
+        <h2 style="font-size:clamp(1.9rem,4vw,2.8rem);margin-top:14px">Por que R$19,99 apenas no lançamento?</h2>
+        <ul class="why-price">
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2.4"><path d="M5 12l5 5 9-11"/></svg><span>Para gerar <b>volume inicial</b> e primeiras avaliações</span></li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2.4"><path d="M5 12l5 5 9-11"/></svg><span>Para construir <b>autoridade</b> da RickEA</span></li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2.4"><path d="M5 12l5 5 9-11"/></svg><span>Para <b>recompensar</b> quem compra primeiro</span></li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2.4"><path d="M5 12l5 5 9-11"/></svg><span>Depois do lançamento, o preço volta para <b>R$39,99</b></span></li>
+        </ul>
+      </div>
+      <div class="price-card r-anim">
+        <span class="badge">Oferta válida só no lançamento</span>
+        <p class="price-label">Ebook + Bônus exclusivos</p>
+        <p class="price-old">De R$ 39,99</p>
+        <p class="price-now"><span class="cur">R$</span><span class="val">19,99</span></p>
+        <a class="btn btn-primary" href="https://pay.hotmart.com/M107215100L" target="_blank" rel="noopener">Comprar agora <span class="arw">→</span></a>
+        <div class="fine">
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>Pagamento Hotmart</span>
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Acesso imediato</span>
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/></svg>7 dias de garantia</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GARANTIA ================= -->
+<section aria-label="Garantia">
+  <div class="wrap">
+    <div class="guarantee r-anim">
+      <div class="guar-seal">
+        <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+          <circle cx="60" cy="60" r="54" fill="none" stroke="#16C784" stroke-width="2" opacity=".5"/>
+          <circle cx="60" cy="60" r="44" fill="rgba(22,199,132,.08)" stroke="#16C784" stroke-width="1.5"/>
+          <text x="60" y="52" text-anchor="middle" font-family="Rajdhani,sans-serif" font-weight="700" font-size="34" fill="#16C784">7</text>
+          <text x="60" y="74" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" letter-spacing="2" fill="#E9EEF9">DIAS</text>
+          <text x="60" y="88" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="7" letter-spacing="3" fill="#8B95AA">GARANTIA</text>
+        </svg>
+      </div>
+      <div class="guar-body">
+        <h2>Garantia incondicional de 7 dias</h2>
+        <p>Se você não gostar do conteúdo, não aprender nada ou simplesmente mudar de ideia, você recebe <strong>100% do seu dinheiro de volta</strong>. Sem perguntas. Sem burocracia. Sem risco. O risco é todo nosso.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA FINAL ================= -->
+<section class="final" aria-label="Comece agora">
+  <div class="wrap">
+    <div class="final-band r-anim">
+      <p class="eyebrow" style="justify-content:center">Seu próximo passo no trading</p>
+      <h2 style="margin-top:16px">Comece a operar com clareza, lógica e consistência</h2>
+      <p>Garanta agora seu ebook por R$19,99 e passe a enxergar o gráfico como um trader profissional enxerga.</p>
+      <a class="btn btn-primary" href="https://pay.hotmart.com/M107215100L" target="_blank" rel="noopener" style="font-size:1.2rem;padding:18px 40px">Garantir meu ebook por R$19,99 <span class="arw">→</span></a>
+      <p class="final-note">RickEA Investments — Transformando traders iniciantes em traders profissionais.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap foot-inner">
+    <div class="foot-brand">
+      <svg class="helmet" style="width:30px;height:30px" viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M24 4C13.5 4 6 12 6 22.5c0 4 1.4 6.8 3.4 8.6-.5 1.4-1.7 3-3.4 4 3 .8 5.2.2 6.6-.6C15.8 37 19.6 38 24 38s8.2-1 11.4-3.5c1.4.8 3.6 1.4 6.6.6-1.7-1-2.9-2.6-3.4-4 2-1.8 3.4-4.6 3.4-8.6C42 12 34.5 4 24 4Z" fill="url(#hg)"/>
+        <path d="M15 18c1.6-3.6 5-6 9-6s7.4 2.4 9 6c1 2.2 1 5 0 7-1.6 3.4-5 5-9 5s-7.4-1.6-9-5c-1-2-1-4.8 0-7Z" fill="#05070b"/>
+      </svg>
+      <span class="brand-name" style="font-size:.9rem">RICKEA<small>INVESTMENTS</small></span>
+    </div>
+    <p>© 2026 RickEA Investments · Pagamento processado pela Hotmart · Conteúdo educacional, não é recomendação de investimento.</p>
+  </div>
+</footer>
+
+<!-- ================= STICKY MOBILE CTA ================= -->
+<div class="mcta">
+  <div class="mp"><s>De R$39,99</s><b>R$19,99</b></div>
+  <a class="btn btn-primary" href="https://pay.hotmart.com/M107215100L" target="_blank" rel="noopener">Comprar agora</a>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---- data-driven sections ----
+  var learn = [
+    ["Identificar tendências","com precisão, do início ao fim"],
+    ["Reconhecer as fases do mercado","antes da maioria dos traders"],
+    ["Interpretar o volume","como confirmação de força real"],
+    ["Evitar entradas precipitadas","que destroem a conta"],
+    ["Operar com lógica, não emoção","seguindo um plano claro"],
+    ["Aplicar em gráficos reais","incluindo o par EUR/USD"],
+    ["Criar seu checklist operacional","um processo repetível"],
+    ["Pensar como um profissional","a mentalidade RickEA"]
+  ];
+  var chapters = [
+    ["A Origem da Teoria de Dow","Como tudo começou e por que ainda funciona hoje."],
+    ["Os 6 Princípios Fundamentais","A base da leitura profissional de mercado."],
+    ["As 3 Tendências do Mercado","Primária, secundária e terciária — e como não confundir."],
+    ["As 3 Fases da Tendência","Acumulação, participação e distribuição."],
+    ["Volume e Confirmação","Como identificar força real e evitar armadilhas."],
+    ["Exemplo Prático EUR/USD","Aplicação real da teoria no mercado."],
+    ["Checklist do Trader Dow","Guia operacional completo."],
+    ["Erros que Destroem Iniciantes","Como evitar as armadilhas mais comuns."],
+    ["Conclusão e Mentalidade RickEA","A mentalidade que sustenta a consistência."]
+  ];
+  var bonus = [
+    ["M","Mini Guia de Psicologia do Trader","Controle emocional, disciplina e mentalidade profissional."],
+    ["R","Guia de Gestão de Risco RickEA","RR, stop técnico, risco diário e semanal e proteção de capital."],
+    ["C","Checklist de Entrada Imprimível","Use antes de qualquer operação. Se algo estiver errado, não entre."]
+  ];
+  var yes = [
+    "Quer aprender do jeito certo, desde o começo",
+    "Está cansado de operar por emoção",
+    "Quer entender o mercado com clareza",
+    "Busca consistência e disciplina",
+    "Quer evoluir para setups avançados",
+    "Quer operar com lógica, não impulsos"
+  ];
+  var no = [
+    "Busca “setup milagroso”",
+    "Quer enriquecer rápido",
+    "Não aceita estudar",
+    "Não segue um plano",
+    "Opera por emoção"
+  ];
+
+  function el(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;}
+
+  var lg=document.getElementById('learnGrid');
+  learn.forEach(function(it){
+    var d=el('div','learn-item',
+      '<span class="chk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12l5 5 9-11"/></svg></span>'+
+      '<div><p>'+it[0]+'</p><small>'+it[1]+'</small></div>');
+    lg.appendChild(d);
+  });
+
+  var ch=document.getElementById('chapters');
+  chapters.forEach(function(it,i){
+    var n=('0'+(i+1)).slice(-2);
+    ch.appendChild(el('div','chapter','<div class="num">'+n+'</div><div><h3>'+it[0]+'</h3><p>'+it[1]+'</p></div>'));
+  });
+
+  var bg=document.getElementById('bonusGrid');
+  bonus.forEach(function(it){
+    bg.appendChild(el('div','card bonus-card',
+      '<div class="bonus-ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 22V7M12 7C12 7 9 2 6.5 3.5S8 8 12 7M12 7c0 0 3-5 5.5-3.5S16 8 12 7"/></svg></div>'+
+      '<span class="tag">Bônus</span><h3>'+it[1]+'</h3><p>'+it[2]+'</p>'));
+  });
+
+  var fy=document.getElementById('forYes');
+  yes.forEach(function(t){fy.appendChild(el('li',null,'<span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16C784" stroke-width="2.6"><path d="M5 12l5 5 9-11"/></svg></span>'+t));});
+  var fn=document.getElementById('forNo');
+  no.forEach(function(t){fn.appendChild(el('li',null,'<span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EA3943" stroke-width="2.4"><path d="M6 6l12 12M18 6L6 18"/></svg></span>'+t));});
+
+  // ---- reveal on scroll ----
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:.12});
+  document.querySelectorAll('.r-anim').forEach(function(n){io.observe(n);});
+
+  // ---- ambient candlestick chart ----
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var c=document.getElementById('chartCanvas'), ctx=c.getContext('2d'), W,H,dpr,candles=[],raf;
+  function rs(){
+    dpr=Math.min(window.devicePixelRatio||1,2);
+    W=c.clientWidth;H=c.clientHeight;
+    c.width=W*dpr;c.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+    build();
+  }
+  function build(){
+    candles=[];
+    var n=Math.max(14,Math.floor(W/34)), price=H*0.62, cw=W/n;
+    for(var i=0;i<n;i++){
+      var dir=Math.random()>0.42?1:-1, body=8+Math.random()*34;
+      var open=price, close=price-dir*body;
+      price=close+(Math.random()-0.5)*10;
+      price=Math.max(H*0.2,Math.min(H*0.82,price));
+      var top=Math.min(open,close)-(4+Math.random()*16);
+      var bot=Math.max(open,close)+(4+Math.random()*16);
+      candles.push({x:i*cw+cw/2,w:cw*0.42,open:open,close:close,top:top,bot:bot,up:close<open});
+    }
+  }
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<candles.length;i++){
+      var k=candles[i];
+      var col=k.up?'rgba(22,199,132,':'rgba(234,57,67,';
+      var a=0.55+0.25*Math.sin((t/900)+i*0.5);
+      ctx.strokeStyle=col+(0.5*a)+')';ctx.lineWidth=1.4;
+      ctx.beginPath();ctx.moveTo(k.x,k.top);ctx.lineTo(k.x,k.bot);ctx.stroke();
+      ctx.fillStyle=col+a+')';
+      var y=Math.min(k.open,k.close),h=Math.max(3,Math.abs(k.close-k.open));
+      ctx.fillRect(k.x-k.w/2,y,k.w,h);
+    }
+  }
+  function loop(t){draw(t);raf=requestAnimationFrame(loop);}
+  if(c){
+    rs();
+    window.addEventListener('resize',function(){cancelAnimationFrame(raf);rs();if(!reduce)raf=requestAnimationFrame(loop);else draw(0);});
+    if(reduce)draw(0);else raf=requestAnimationFrame(loop);
+  }
+})();
+</script>
