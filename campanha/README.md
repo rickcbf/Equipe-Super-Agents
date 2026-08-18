@@ -8,6 +8,22 @@ Peças prontas para postar (alta resolução 2×, capa oficial embutida).
 | `instagram-stories-cta.png` | 2160×3840 (1080×1920 · 9:16) | Stories com CTA |
 | `instagram-pacote-premium.png` | 2160×2700 (1080×1350 · 4:5) | Post de feed — Pacote + Bônus |
 | `reels-lancamento-teoria-dow.mp4` | 1080×1920 · 58s · H.264+AAC | Reels/Stories em vídeo (com trilha) |
+| `carrossel/card-1..7.png` | 2160×2700 (1080×1350 · 4:5) | Carrossel de 7 cards (feed) |
+
+## 📝 Legenda — Carrossel (7 cards)
+
+Você está operando no escuro? 📉 A maioria dos traders iniciantes comete os mesmos erros — e o motivo é um só: não entender a estrutura do mercado.
+
+Nesse carrossel eu te mostro a base que muda tudo: a **Teoria de Dow**.
+
+📘 Acabei de lançar o ebook completo — *A Teoria de Dow Aplicada ao Trading Moderno* — com 9 capítulos + 3 bônus exclusivos.
+
+💥 De R$39,99 por R$19,99 — e com o cupom **RICK50** sai por **R$10,00**.
+🔗 Link na bio | pay.hotmart.com/M107215100L
+
+Arrasta até o fim e comenta EU QUERO! 🔥
+
+`#teoriadedow #trading #analisetecnica #priceaction #daytrader #forex #xauusd #mercadofinanceiro #tradingbrasil #tradereducacao #estruturademercado #tendencia #rickea`
 
 **Oferta comunicada:** De R$39,99 → **R$10,00** com o cupom **RICK50** (à vista ou 3× R$3,57).
 **Link:** página de vendas `https://equipe-super-agents.vercel.app/` · pagamento `pay.hotmart.com/M107215100L`
