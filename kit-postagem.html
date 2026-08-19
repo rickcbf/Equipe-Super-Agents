@@ -1,0 +1,171 @@
+<!-- Kit de Postagem Manual — @ri.chartrader / RickEA -->
+<title>Kit de Postagem · RickEA</title>
+<meta name="description" content="Todos os posts prontos para publicar manualmente no @ri.chartrader — arquivo + legenda para copiar.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800&family=Rajdhani:wght@600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  :root{
+    color-scheme:dark;
+    --ground:#06080D;--surface:#0D1017;--surface-2:#141A26;--surface-3:#1B2233;
+    --ink:#E9EEF9;--muted:#8B95AA;--faint:#5A6377;
+    --neon:#38BDF8;--orange:#FF7A29;--up:#16C784;--gold:#F2C14E;
+    --line:rgba(120,150,200,.14);--line-strong:rgba(120,160,220,.28);
+    --ff-d:"Rajdhani",system-ui,sans-serif;--ff-b:"Orbitron",system-ui,sans-serif;
+    --ff-body:"Manrope",system-ui,sans-serif;--ff-m:"JetBrains Mono",ui-monospace,monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;font-family:var(--ff-body);background:var(--ground);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(60% 40% at 85% -5%,rgba(56,189,248,.12),transparent 60%),radial-gradient(50% 40% at 5% 100%,rgba(255,122,41,.08),transparent 55%)}
+  .wrap{max-width:760px;margin-inline:auto;padding:34px 18px 70px;position:relative;z-index:1}
+  h1,h2,h3{margin:0;font-family:var(--ff-d);font-weight:700;line-height:1.05}
+  a{color:var(--neon)}
+  .top{display:flex;align-items:center;gap:12px;padding-bottom:22px;border-bottom:1px solid var(--line)}
+  .helmet{width:40px;height:40px;filter:drop-shadow(0 0 8px rgba(56,189,248,.55))}
+  .bn{font-family:var(--ff-b);font-weight:800;letter-spacing:.1em;font-size:1rem}
+  .bn small{display:block;font-family:var(--ff-m);font-weight:500;font-size:.56rem;letter-spacing:.28em;color:var(--muted);margin-top:4px}
+  .hero{margin-top:22px}
+  .hero h1{font-size:clamp(1.7rem,5vw,2.3rem)}
+  .hero p{color:var(--muted);margin-top:10px;font-size:1rem}
+  .how{margin-top:18px;border:1px solid var(--line-strong);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,var(--surface-2),var(--surface))}
+  .how b{color:var(--ink)}
+  .how ol{margin:8px 0 0;padding-left:20px;color:var(--muted);font-size:.94rem}
+  .how li{margin:4px 0}
+  .prog{margin-top:20px;font-family:var(--ff-m);font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:10px}
+  .bar{flex:1;height:8px;border-radius:5px;background:var(--surface-3);overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--neon),var(--up));transition:width .3s}
+
+  .post{margin-top:16px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--surface-2),var(--surface));overflow:hidden}
+  .post.done{opacity:.55}
+  .post-h{display:flex;align-items:center;gap:12px;padding:16px 18px;cursor:pointer}
+  .chk{flex:0 0 auto;width:26px;height:26px;border-radius:8px;border:2px solid var(--line-strong);display:grid;place-items:center;color:var(--up)}
+  .post.done .chk{background:rgba(22,199,132,.15);border-color:var(--up)}
+  .date{font-family:var(--ff-m);font-size:.8rem;color:var(--neon);min-width:82px}
+  .ttl{font-family:var(--ff-d);font-weight:700;font-size:1.12rem;flex:1}
+  .badge{font-family:var(--ff-m);font-size:.62rem;letter-spacing:.08em;padding:4px 9px;border-radius:999px;border:1px solid var(--line-strong);color:var(--muted)}
+  .badge.reel{color:var(--neon);border-color:rgba(56,189,248,.4)}
+  .badge.carr{color:var(--gold);border-color:rgba(242,193,78,.4)}
+  .badge.story{color:var(--orange);border-color:rgba(255,122,41,.4)}
+  .body{padding:0 18px 18px;display:none}
+  .post.open .body{display:block}
+  .files{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .files a{font-family:var(--ff-m);font-size:.78rem;padding:8px 12px;border-radius:9px;border:1px solid var(--line-strong);background:rgba(56,189,248,.06);color:var(--ink);text-decoration:none}
+  .files a:hover{border-color:var(--neon)}
+  .cap{position:relative}
+  .cap pre{white-space:pre-wrap;font-family:var(--ff-body);font-size:.92rem;color:var(--ink);background:var(--ground);border:1px solid var(--line);border-radius:12px;padding:14px 14px 14px;margin:0;max-height:210px;overflow:auto}
+  .cap.none pre{display:none}
+  .copy{margin-top:10px;display:inline-flex;align-items:center;gap:8px;font-family:var(--ff-d);font-weight:700;font-size:1rem;color:#1a0d03;background:linear-gradient(180deg,#ff9d52,#f2641a);border:none;border-radius:999px;padding:11px 22px;cursor:pointer}
+  .copy.ok{background:linear-gradient(180deg,#3ad07f,#16a862);color:#04120a}
+  .nostory{font-family:var(--ff-m);font-size:.82rem;color:var(--faint);margin-bottom:6px}
+  footer{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);color:var(--faint);font-size:.8rem;text-align:center}
+  .tip{margin-top:12px;font-size:.85rem;color:var(--muted)}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#eaf6ff"/><stop offset="1" stop-color="#9fc9e8"/></linearGradient>
+</defs></svg>
+
+<div class="wrap">
+  <div class="top">
+    <svg class="helmet" viewBox="0 0 48 48" aria-hidden="true">
+      <path d="M24 4C13.5 4 6 12 6 22.5c0 4 1.4 6.8 3.4 8.6-.5 1.4-1.7 3-3.4 4 3 .8 5.2.2 6.6-.6C15.8 37 19.6 38 24 38s8.2-1 11.4-3.5c1.4.8 3.6 1.4 6.6.6-1.7-1-2.9-2.6-3.4-4 2-1.8 3.4-4.6 3.4-8.6C42 12 34.5 4 24 4Z" fill="url(#hg)"/>
+      <path d="M15 18c1.6-3.6 5-6 9-6s7.4 2.4 9 6c1 2.2 1 5 0 7-1.6 3.4-5 5-9 5s-7.4-1.6-9-5c-1-2-1-4.8 0-7Z" fill="#05070b"/>
+      <path d="M17 16.5c2.4-2.6 8-3 11 0" stroke="#38BDF8" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    </svg>
+    <span class="bn">KIT DE POSTAGEM<small>@RI.CHARTRADER</small></span>
+  </div>
+
+  <div class="hero">
+    <h1>Poste manualmente, sem depender do Metricool</h1>
+    <p>Cada card tem o arquivo pra baixar e a legenda pra copiar. Toque no card pra abrir. Marque o ✓ quando postar — fica salvo no seu aparelho.</p>
+  </div>
+
+  <div class="how">
+    <b>Como postar (celular):</b>
+    <ol>
+      <li>Toque em <b>Abrir arquivo</b> e segure a imagem/vídeo pra salvar na galeria (carrossel: salve todos, em ordem).</li>
+      <li>No Instagram, crie o post/reel/story e escolha o arquivo salvo.</li>
+      <li>Toque em <b>Copiar legenda</b> e cole na legenda do post.</li>
+      <li>Publique e volte aqui pra marcar o ✓.</li>
+    </ol>
+    <p class="tip">💡 Reels: publique o .mp4 como Reel. Carrossel: selecione as imagens na ordem 1→N. Stories não levam legenda.</p>
+  </div>
+
+  <div class="prog"><span id="pnum">0/0</span><div class="bar"><i id="pbar"></i></div></div>
+
+  <div id="list"></div>
+
+  <footer>RickEA Investments · gerado a partir do calendário agendado · use no dia indicado (ou quando puder)</footer>
+</div>
+
+<script>
+(function(){
+  var B="https://equipe-super-agents.vercel.app/campanha/";
+  function f(label,url){return {label:label,url:url};}
+  function carr(base,n){var a=[];for(var i=1;i<=n;i++)a.push(f("card "+i,B+base+i+".png"));return a;}
+  var posts=[
+   {d:"19/08",t:"reel",title:"Reel — Lançamento (dor→solução)",files:[f("vídeo .mp4",B+"reels-lancamento-teoria-dow.mp4")],
+    cap:"Se você já tomou stop por entrar cedo, saiu por ansiedade ou caiu em rompimento falso… o problema está na leitura da estrutura do mercado. 📉\n\nA Teoria de Dow é a base da análise técnica moderna — e muda a forma como você enxerga o gráfico.\n\nNo ebook você aprende:\n→ Identificar tendências e fases\n→ Ler volume como confirmação\n→ Entradas e saídas com lógica\n→ Montar seu próprio checklist operacional\n\n+ Bônus: Psicologia do Trader, Gestão de Risco e Checklist de Entrada.\n\n💥 De R$39,99 por R$19,99 — e com o cupom RICK50 você paga só R$10,00 (ou 3× R$3,57).\n🔗 Garanta agora: pay.hotmart.com/M107215100L\n\nSalva esse vídeo e comenta EU QUERO! 🔥\n\n#teoriadedow #trading #analisetecnica #priceaction #daytrader #forex #xauusd #mercadofinanceiro #tradingbrasil #tradereducacao #setuptrading #forexbrasil #tendencia #tradingview #rickea"},
+   {d:"20/08",t:"carr",title:"Feed — Lançamento Oficial",files:[f("imagem",B+"instagram-post-lancamento.png")],
+    cap:"🚀 LANÇAMENTO OFICIAL — A Teoria de Dow Aplicada ao Trading Moderno\n\nA base da análise técnica que separa o trader profissional do iniciante. Aprenda a identificar tendências, fases, volume, entradas e saídas com clareza — mesmo que você seja iniciante.\n\n✅ 9 capítulos + 3 bônus exclusivos\n✅ Garantia incondicional de 7 dias\n✅ Acesso imediato\n\n💥 De R$39,99 por R$19,99 — e com o cupom RICK50 você paga só R$10,00 (ou 3× R$3,57).\n🔗 Garanta agora: pay.hotmart.com/M107215100L\n\nSalva e comenta EU QUERO! 🔥\n\n#teoriadedow #trading #analisetecnica #priceaction #daytrader #forex #xauusd #mercadofinanceiro #tradingbrasil #tradereducacao #rickea"},
+   {d:"21/08",t:"story",title:"Story — CTA",files:[f("imagem",B+"instagram-stories-cta.png")],cap:""},
+   {d:"22/08",t:"carr",title:"Feed — Pacote + Bônus",files:[f("imagem",B+"instagram-pacote-premium.png")],
+    cap:"📦 PACOTE COMPLETO RICKEA — Teoria de Dow + Bônus Exclusivos\n\nNão é só um ebook. É um sistema completo pra você operar com lógica e disciplina:\n📘 Ebook Teoria de Dow (9 capítulos)\n🎁 Psicologia do Trader\n🎁 Gestão de Risco RickEA\n🎁 Checklist de Entrada Imprimível\n\n💥 Tudo por R$10,00 com o cupom RICK50 (de R$39,99 · ou 3× R$3,57).\n🔗 Garanta agora: pay.hotmart.com/M107215100L\n\nSalva e comenta EU QUERO! 🔥\n\n#teoriadedow #gestaoderisco #psicologiadotrader #trading #daytrader #analisetecnica #forex #xauusd #tradingbrasil #priceaction #rickea"},
+   {d:"23/08",t:"carr",title:"Carrossel — Lançamento (7 cards)",files:carr("carrossel/card-",7),
+    cap:"Você está operando no escuro? 📉 A maioria dos traders iniciantes comete os mesmos erros — e o motivo é um só: não entender a estrutura do mercado.\n\nNesse carrossel eu te mostro a base que muda tudo: a Teoria de Dow.\n\n📘 Acabei de lançar o ebook completo — A Teoria de Dow Aplicada ao Trading Moderno — com 9 capítulos + 3 bônus exclusivos.\n\n💥 De R$39,99 por R$19,99 — e com o cupom RICK50 sai por R$10,00.\n🔗 Link na bio | pay.hotmart.com/M107215100L\n\nArrasta até o fim e comenta EU QUERO! 🔥\n\n#teoriadedow #trading #analisetecnica #priceaction #daytrader #forex #xauusd #mercadofinanceiro #tradingbrasil #tradereducacao #estruturademercado #tendencia #rickea"},
+   {d:"25/08",t:"reel",title:"Reel — Correção x Reversão",files:[f("vídeo .mp4",B+"growth/reel-correcao-reversao.mp4")],
+    cap:"Correção ou REVERSÃO? A maioria dos iniciantes confunde — e é isso que faz tomar stop no pior momento. 📉\n\nA regra simples: correção respeita a estrutura, reversão quebra a estrutura. Enquanto os fundos ascendentes se mantêm, a tendência continua.\n\nSalva pra não esquecer e segue @ri.chartrader pra aprender a ler o gráfico de verdade. 🔥\n\n📘 Guia completo no ebook A Teoria de Dow (link na bio).\n\n#teoriadedow #priceaction #analisetecnica #tendencia #tradingbrasil #daytrader #forex #xauusd #estruturademercado #tradereducacao #smartmoney #rickea"},
+   {d:"27/08",t:"carr",title:"Carrossel — Como ler a tendência (6 cards)",files:carr("educativo/dow-",6),
+    cap:"📈 SALVA ESSE POST — Como ler a tendência de verdade (Teoria de Dow)\n\nA maioria dos iniciantes lê a tendência errado e acaba operando contra o mercado. Nesse guia rápido você aprende:\n→ O que é tendência (topos e fundos)\n→ As 3 tendências: primária, secundária e terciária\n→ As 3 fases: acumulação, participação e distribuição\n→ Correção x reversão: a diferença que te salva de um stop\n\nSalva pra estudar depois e segue @ri.chartrader pra aprender a ler o gráfico como um profissional. 🔥\n\n📘 Quer o passo a passo completo? O ebook A Teoria de Dow está na bio.\n\n#teoriadedow #analisetecnica #priceaction #tendencia #tradingbrasil #daytrader #forex #xauusd #estruturademercado #tradereducacao #mercadofinanceiro #smartmoney #tradingview #rickea"},
+   {d:"27/08",t:"story",title:"Story — cross-promo do carrossel",files:[f("imagem",B+"growth/story-carrossel.png")],cap:""},
+   {d:"29/08",t:"reel",title:"Reel — O erro que te faz tomar stop",files:[f("vídeo .mp4",B+"growth/reel-erro-stop.mp4")],
+    cap:"O erro que te faz tomar STOP: entrar no meio do movimento, sem confirmação. ⚠️\n\nO caminho profissional é esperar o reteste da estrutura. Sem confirmação, você não entra. É disciplina, não impulso.\n\nSalva esse reel e segue @ri.chartrader pra operar com processo. 🔥\n\n📘 O passo a passo está no ebook A Teoria de Dow (link na bio).\n\n#trading #priceaction #gestaoderisco #setupdeentrada #tendencia #tradingbrasil #daytrader #forex #xauusd #tradereducacao #smartmoney #rickea"},
+   {d:"01/09",t:"reel",title:"Reel — Volume (a confirmação)",files:[f("vídeo .mp4",B+"semana-2/reel-volume.mp4")],
+    cap:"📊 O que confirma a tendência e quase ninguém olha: o VOLUME.\n\nNesse reel:\n→ Alta com volume crescente = força real\n→ Alta com volume caindo = alerta\n→ Preço sem volume mente\n\nSalva e segue @ri.chartrader pra aprender a confirmar antes de entrar. 🔥\n\n📘 Ebook A Teoria de Dow na bio.\n\n#teoriadedow #volume #analisetecnica #priceaction #tendencia #tradingbrasil #daytrader #forex #xauusd #tradereducacao #mercadofinanceiro #rickea"},
+   {d:"03/09",t:"carr",title:"Carrossel — Gestão de Risco (6 cards)",files:carr("semana-2/risco-",6),
+    cap:"💰 SALVA ESSE POST — Gestão de risco: 4 regras que salvam sua conta\n\nA maioria não quebra por análise ruim, quebra por gestão. As 4 regras:\n→ Risco de 1% a 2% por operação\n→ Stop técnico (na estrutura), não no achismo\n→ RR mínimo 1:2 — ganhe mais do que arrisca\n→ Risco diário: bateu o limite, parou por hoje\n\nSalva pra aplicar e segue @ri.chartrader. 🔥\n\n📘 Passo a passo completo? Ebook A Teoria de Dow na bio.\n\n#gestaoderisco #trading #analisetecnica #priceaction #daytrader #forex #xauusd #tradingbrasil #tradereducacao #mercadofinanceiro #gerenciamentoderisco #rickea"},
+   {d:"03/09",t:"story",title:"Story — cross-promo gestão de risco",files:[f("imagem",B+"semana-2/story-risco.png")],cap:""},
+   {d:"04/09",t:"reel",title:"Reel — Rompimento falso",files:[f("vídeo .mp4",B+"semana-2/reel-rompimento.mp4")],
+    cap:"🚨 Rompimento FALSO te pegou de novo?\n\nRompeu e voltou rápido? Era liquidez sendo caçada. O jeito certo:\n→ Espere o FECHAMENTO acima/abaixo da zona\n→ Espere o reteste\n→ Sem confirmação, você NÃO entra\n\nSegue @ri.chartrader e salva pra parar de cair em armadilha. 🔥\n\n📘 Ebook A Teoria de Dow na bio.\n\n#rompimentofalso #priceaction #analisetecnica #liquidez #tradingbrasil #daytrader #forex #xauusd #smartmoney #tradereducacao #tendencia #rickea"}
+  ];
+  var LB={reel:"REEL",carr:"POST/CARROSSEL",story:"STORY"};
+  var list=document.getElementById('list');
+  var done=JSON.parse(localStorage.getItem('rk_done')||'{}');
+  function key(p,i){return i+"_"+p.d;}
+  function updProg(){
+    var n=posts.filter(function(p,i){return done[key(p,i)];}).length;
+    document.getElementById('pnum').textContent=n+"/"+posts.length;
+    document.getElementById('pbar').style.width=(n/posts.length*100)+"%";
+  }
+  posts.forEach(function(p,i){
+    var el=document.createElement('div'); el.className='post'+(done[key(p,i)]?' done':'');
+    var filesHtml=p.files.map(function(f){return "<a href='"+f.url+"' target='_blank' rel='noopener'>⬇ "+f.label+"</a>";}).join('');
+    var capHtml = p.cap ? ("<div class='cap'><pre>"+p.cap.replace(/</g,'&lt;')+"</pre><button class='copy'>Copiar legenda</button></div>")
+                        : ("<div class='nostory'>Story não leva legenda — é só publicar a imagem.</div>");
+    el.innerHTML=
+     "<div class='post-h'><div class='chk'>"+(done[key(p,i)]?"✓":"")+"</div>"+
+     "<span class='date'>"+p.d+"</span><span class='ttl'>"+p.title+"</span>"+
+     "<span class='badge "+p.t+"'>"+LB[p.t]+"</span></div>"+
+     "<div class='body'><div class='files'>"+filesHtml+"</div>"+capHtml+"</div>";
+    // toggle open (but not when clicking check or links/buttons)
+    el.querySelector('.post-h').addEventListener('click',function(e){
+      if(e.target.closest('.chk')){
+        done[key(p,i)]=!done[key(p,i)]; localStorage.setItem('rk_done',JSON.stringify(done));
+        el.classList.toggle('done'); el.querySelector('.chk').textContent=done[key(p,i)]?"✓":""; updProg(); return;
+      }
+      el.classList.toggle('open');
+    });
+    var btn=el.querySelector('.copy');
+    if(btn) btn.addEventListener('click',function(){
+      navigator.clipboard.writeText(p.cap).then(function(){
+        btn.textContent="Copiado ✓"; btn.classList.add('ok');
+        setTimeout(function(){btn.textContent="Copiar legenda"; btn.classList.remove('ok');},1600);
+      });
+    });
+    list.appendChild(el);
+  });
+  updProg();
+})();
+</script>
