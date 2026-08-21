@@ -1,4 +1,6 @@
-# Página de Vendas — Teoria de Dow (RickEA Investments)
+# RickEA — Teoria de Dow
+
+> 🗺️ **Comece pelo [`CONTEXTO.md`](CONTEXTO.md)** — o mapa de tudo (projetos, pastas, links ao vivo, calendário e convenções). Este README cobre só a página de vendas.
 
 Página de vendas do ebook **"A Teoria de Dow Aplicada ao Trading Moderno"**, para hospedar como página externa da Hotmart.
 
