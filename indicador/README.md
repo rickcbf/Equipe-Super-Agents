@@ -4,8 +4,21 @@ Indicador de tendência (SuperTrend/ATR + EMA + painel visual), portado do MetaT
 para a **cTrader (C# / cAlgo API)**.
 
 ## Arquivos
-- `RickEA_XTrend.cs` — o indicador para cTrader.
+- `RickEA_XTrend.cs` — o **indicador** para cTrader (visual: linha, EMA, níveis, painel, preço grande).
+- `RickEA_XTrend_Alert.cs` — o **cBot de alerta de virada** (avisa quando a tendência vira BUY↔SELL).
 - (original MT5: `RickEA_XTrend_Indicator.mq5` — mantido só como referência da lógica.)
+
+## cBot de alerta (RickEA_XTrend_Alert.cs)
+Roda a MESMA lógica SuperTrend, mas **só na barra fechada** (não repinta) e **não opera a conta** —
+é só um vigia. Quando a tendência vira, ele avisa por: **som** (.wav opcional), **texto grande no
+gráfico** (verde/vermelho), **log** e **e-mail opcional**.
+
+**Instalar:** Automate → **New cBot** → cole o `RickEA_XTrend_Alert.cs` → **Build** → abra o gráfico →
+adicione **RickEA X-Trend Alert** → ajuste ATR (10 / 3.0) → **PLAY**. Deixe rodando na aba Automate.
+
+> **Push no celular:** a API de cBot da cTrader **não** tem push direto pro app. O caminho que
+> funciona é o **e-mail** (ative "Enviar e-mail" e configure o SMTP em *cTrader → Settings → Email*);
+> deixe seu e-mail com notificação no celular. Som e aviso no gráfico funcionam sem configurar nada.
 
 ## Como instalar na cTrader
 1. Abra a cTrader → aba **Automate**.
