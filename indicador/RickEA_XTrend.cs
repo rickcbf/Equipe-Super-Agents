@@ -133,14 +133,19 @@ namespace cAlgo
 
             _trend[i] = _dir[i] == 1 ? _lower[i] : _upper[i];
 
-            // linha SuperTrend colorida (duas séries: cima verde / baixo vermelho)
-            if (_dir[i] == 1) { TrendUp[i] = _trend[i]; TrendDown[i] = double.NaN; }
-            else { TrendDown[i] = _trend[i]; TrendUp[i] = double.NaN; }
+            // linha SuperTrend colorida — MESMA cor da vela, e NUNCA as duas ao mesmo tempo.
+            // Zera as duas séries a cada barra e preenche só a ativa (evita sobra da série antiga
+            // na virada, que causava linha verde e vermelha aparecendo juntas).
+            bool isUp = _dir[i] == 1;
+            TrendUp[i] = double.NaN;
+            TrendDown[i] = double.NaN;
+            if (isUp) TrendUp[i] = _trend[i];
+            else      TrendDown[i] = _trend[i];
 
             Ema[i] = _emaInd.Result[i];
 
-            // cor das velas pela tendência  «SETBARCOLOR» (comente se sua cTrader não tiver)
-            Chart.SetBarColor(i, _dir[i] == 1 ? Color.Lime : Color.Red);
+            // cor das velas pela tendência  «SETBARCOLOR» — mesma regra (isUp) da linha, garante que batem
+            Chart.SetBarColor(i, isUp ? Color.Lime : Color.Red);
 
             // desenhos só quando é a última barra (evita redesenhar o histórico todo)
             if (ShowVisuals && IsLastBar)
@@ -187,12 +192,12 @@ namespace cAlgo
             Line("TP2", tp2, Color.Yellow, LineStyle.Solid, 2, sig, xEnd);
             Line("TP3", tp3, Color.Gold, LineStyle.Solid, 1, sig, xEnd);
 
-            // etiquetas (caixa preenchida + texto) à direita
-            Tag("ENTRY", entry, Color.DodgerBlue, Color.White, last, " " + word + " @ " + Px(entry));
-            Tag("SL", sl, Color.Red, Color.White, last, " SL @ " + Px(sl));
-            Tag("TP1", tp1, Color.Yellow, Color.Black, last, " TP1 @ " + Px(tp1));
-            Tag("TP2", tp2, Color.Yellow, Color.Black, last, " TP2 @ " + Px(tp2));
-            Tag("TP3", tp3, Color.Gold, Color.Black, last, " TP3 @ " + Px(tp3));
+            // etiquetas (caixa preenchida + texto branco CENTRALIZADO dentro da caixa)
+            Tag("ENTRY", entry, Color.DodgerBlue, last, word + " @ " + Px(entry));
+            Tag("SL", sl, Color.Red, last, "SL @ " + Px(sl));
+            Tag("TP1", tp1, Color.Yellow, last, "TP1 @ " + Px(tp1));
+            Tag("TP2", tp2, Color.Yellow, last, "TP2 @ " + Px(tp2));
+            Tag("TP3", tp3, Color.Gold, last, "TP3 @ " + Px(tp3));
 
             // painel + preço grande
             int mins = (int)((Server.Time - Bars.OpenTimes[sig]).TotalMinutes);
@@ -207,16 +212,27 @@ namespace cAlgo
             Chart.DrawTrendLine(PFX + "L_" + id, x1, price, x2, price, clr, width, style);
         }
 
-        private void Tag(string id, double price, Color bg, Color fg, int last, string text)
+        // escurece a cor do nível pra a caixa (mantém o código de cor, mas deixa o texto branco legível)
+        private Color Dark(Color c)
+        {
+            return Color.FromArgb(235, (int)(c.R * 0.42), (int)(c.G * 0.42), (int)(c.B * 0.42));
+        }
+
+        private void Tag(string id, double price, Color level, int last, string text)
         {
             int xA = last + 1;
             int xB = last + TagWidthBars;
+            int mid = (xA + xB) / 2;            // centro horizontal da caixa
             double h = TagHeight / 2.0;
+            Color bg = Dark(level);
+
             var rect = Chart.DrawRectangle(PFX + "BOX_" + id, xA, price + h, xB, price - h, bg, 1);
             rect.IsFilled = true;
             rect.Color = bg;
-            var t = Chart.DrawText(PFX + "TXT_" + id, text, xA, price, fg);
-            t.HorizontalAlignment = HorizontalAlignment.Left;
+
+            // texto BRANCO, centralizado DENTRO da caixa (horizontal e vertical)
+            var t = Chart.DrawText(PFX + "TXT_" + id, text, mid, price, Color.White);
+            t.HorizontalAlignment = HorizontalAlignment.Center;
             t.VerticalAlignment = VerticalAlignment.Center;
             t.IsBold = true;
         }
@@ -224,8 +240,19 @@ namespace cAlgo
         private void DrawBigPrice(int dir, double px)
         {
             Color clr = BigPriceByTrend ? (dir == 1 ? Color.Lime : Color.Red) : Color.Yellow;
-            var t = Chart.DrawStaticText(PFX + "BIGPX", "  " + Px(px) + "  ",
-                                         VerticalAlignment.Top, HorizontalAlignment.Right, clr);
+
+            // canto superior direito, com fonte GRANDE de verdade.
+            // DrawStaticText não deixa aumentar a fonte; por isso usamos DrawText
+            // ancorado na última barra visível, perto do topo da área visível.
+            int x = Chart.LastVisibleBarIndex;
+            double span = Chart.TopY - Chart.BottomY;
+            double y = Chart.TopY - span * 0.06;
+
+            var t = Chart.DrawText(PFX + "BIGPX", " " + Px(px) + " ", x, y, clr);
+            t.FontSize = 36;           // bem maior
+            t.IsBold = true;
+            t.HorizontalAlignment = HorizontalAlignment.Right;
+            t.VerticalAlignment = VerticalAlignment.Top;
         }
 
         private void DrawPanel(int dir, double entry, double tp1, double tp2, double tp3,
@@ -241,8 +268,9 @@ namespace cAlgo
                 "     Target 3: " + Px(tp3) + "\n" +
                 "Stop loss: " + Px(sl) + "\n" +
                 "Current P&L: " + pnl.ToString("F2") + " points";
-            Chart.DrawStaticText(PFX + "PANEL", txt,
+            var panel = Chart.DrawStaticText(PFX + "PANEL", txt,
                                  VerticalAlignment.Bottom, HorizontalAlignment.Left, accent);
+            panel.Color = accent; // garante que o painel acompanhe a cor da tendência (verde/vermelho)
         }
     }
 }

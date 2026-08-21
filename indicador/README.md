@@ -27,12 +27,25 @@ preço grande + cor pela tendência.
 - **Etiquetas** (caixas coloridas) e **painel** (BUY/SELL, targets, stop, minutos, P&L em pontos).
 - **Preço grande** no canto superior direito, colorido pela tendência.
 
+## Ajustes visuais (revisão)
+- **Preço grande** (canto superior direito): agora usa `Chart.DrawText` com **fonte grande de verdade**
+  (`FontSize = 36`, negrito) e **muda de cor pela tendência** (verde/vermelho). Fica ancorado no topo
+  da área visível, à direita.
+- **Etiquetas (TP/SL/Entrada):** o valor agora é **branco, em negrito e centralizado DENTRO da caixa**.
+  A caixa usa uma versão escurecida da cor do nível (pra o texto branco ficar legível), e a **linha**
+  projetada continua na cor viva (amarelo/dourado/vermelho/azul).
+- **Painel:** acompanha a **cor da tendência** (verde no BUY, vermelho no SELL) — cor forçada a cada
+  atualização.
+- **Linha de tendência:** as duas séries (verde/vermelho) são **zeradas a cada barra** e só a ativa é
+  preenchida, então **nunca aparecem as duas ao mesmo tempo** e a linha bate com a cor da vela.
+  (Em mercado lateral o SuperTrend vira rápido — verde e vermelho alternando são viradas reais, não bug;
+  se quiser menos viradas, aumente o **ATR Multiplier**.)
+
 ## Diferenças (limitações da cTrader — não afetam os sinais)
 - **Cor das velas:** usa `Chart.SetBarColor` (cTrader **4.1+**). Se sua versão for antiga e não
   compilar por causa dessa linha, comente a linha marcada com `«SETBARCOLOR»`.
 - **Painel:** na cTrader é **texto fixo de canto** (sem o retângulo preenchido do MT5), mas com a
-  mesma informação e cor pela tendência. O preço grande usa o tamanho de fonte padrão do texto de
-  canto (a cTrader não deixa aumentar como no MT5).
+  mesma informação e cor pela tendência.
 - **Alertas** (push/popup/email do MT5) **não** entraram no indicador — na cTrader isso fica melhor
   num **cBot**. Se quiser, eu faço um cBot de alerta na virada depois.
 
