@@ -18,10 +18,13 @@ Marca de trading **RickEA Investments** / Instagram **@ri.chartrader**. Ebook
 - **Checkout (Hotmart):** https://pay.hotmart.com/M107215100L · cupom **RICK50** → R$10,00
 - **Skill que automatiza:** `rickea-instagram` (ver seção Skill)
 
-### 2) Indicador (a definir) — OUTRO projeto
-> Placeholder. Quando formos mexer no indicador, o ideal é um **repositório separado**
-> (ex.: `indicador-xyz`) ou **outra conversa**, pra não misturar com o RickEA.
-> Preencha aqui: nome, plataforma (MT4/MT5/TradingView), o que ele faz, onde está o código.
+### 2) RickEA X-Trend — Indicador
+Indicador de tendência. **Está pronto e perfeito na MetaTrader 5** (código em **MQL5** — `.mq5`).
+- **Objetivo atual:** portar para a **cTrader** (linguagem **C# / cTrader Automate API**, ex-cAlgo),
+  para usar o mesmo indicador lá também.
+- **Status:** aguardando o **código-fonte `.mq5`** para iniciar a conversão MQL5 → C#.
+- **Recomendação:** projeto separado — repositório próprio (ex.: `rickea-x-trend`) ou pasta
+  `indicador/` neste repo. Definir ao começar.
 
 ---
 
