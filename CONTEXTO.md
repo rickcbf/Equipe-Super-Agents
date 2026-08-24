@@ -14,7 +14,7 @@ de assunto, aponte pra cá: `veja o CONTEXTO.md`. Assim ninguém se perde.
 ### 1) RickEA — Teoria de Dow (este repositório)
 Marca de trading **RickEA Investments** / Instagram **@ri.chartrader**. Ebook
 *"A Teoria de Dow Aplicada ao Trading Moderno"* + página de vendas + campanha de Instagram.
-- **Site (Vercel):** https://equipe-super-agents.vercel.app/
+- **Site (Vercel):** https://rickea.vercel.app/
 - **Checkout (Hotmart):** https://pay.hotmart.com/M107215100L · cupom **RICK50** → R$10,00
 - **Skill que automatiza:** `rickea-instagram` (ver seção Skill)
 
@@ -61,11 +61,11 @@ Equipe-Super-Agents/
 ---
 
 ## 🔗 Links ao vivo
-- **Loja RickEA Investments (home):** https://equipe-super-agents.vercel.app/
-- Página do ebook: https://equipe-super-agents.vercel.app/ebook
-- Obrigado: https://equipe-super-agents.vercel.app/obrigado
-- Painel (hub): https://equipe-super-agents.vercel.app/painel
-- Kit de postagem: https://equipe-super-agents.vercel.app/kit-postagem
+- **Loja RickEA Investments (home):** https://rickea.vercel.app/
+- Página do ebook: https://rickea.vercel.app/ebook
+- Obrigado: https://rickea.vercel.app/obrigado
+- Painel (hub): https://rickea.vercel.app/painel
+- Kit de postagem: https://rickea.vercel.app/kit-postagem
 
 > **Loja (`index.html`, home):** vitrine multi-produto da empresa. Catálogo é um array
 > `PRODUCTS` no `<script>` — pra adicionar produto é só copiar um bloco. Cada `checkout` é um

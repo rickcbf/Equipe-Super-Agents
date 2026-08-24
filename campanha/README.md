@@ -27,7 +27,7 @@ Arrasta até o fim e comenta EU QUERO! 🔥
 `#teoriadedow #trading #analisetecnica #priceaction #daytrader #forex #xauusd #mercadofinanceiro #tradingbrasil #tradereducacao #estruturademercado #tendencia #rickea`
 
 **Oferta comunicada:** De R$39,99 → **R$10,00** com o cupom **RICK50** (à vista ou 3× R$3,57).
-**Link:** página de vendas `https://equipe-super-agents.vercel.app/` · pagamento `pay.hotmart.com/M107215100L`
+**Link:** página de vendas `https://rickea.vercel.app/` · pagamento `pay.hotmart.com/M107215100L`
 
 ---
 
