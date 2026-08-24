@@ -5,7 +5,8 @@
 Página de vendas do ebook **"A Teoria de Dow Aplicada ao Trading Moderno"**, para hospedar como página externa da Hotmart.
 
 ## Arquivos
-- `index.html` — página de vendas completa, **autossuficiente** (um único arquivo, sem dependências externas além do Google Fonts). É só abrir no navegador ou hospedar.
+- `index.html` — **loja RickEA Investments** (home, servida em `/`), vitrine multi-produto.
+- `ebook.html` — página de vendas do ebook (servida em `/ebook`), **autossuficiente**.
 
 ## Links dos botões
 Todos os botões de compra ("Comprar agora") apontam para a página de pagamento:
@@ -40,7 +41,7 @@ Também funciona em GitHub Pages, Netlify, ou colando o `index.html` num bloco d
 editor de páginas da Hotmart.
 
 ## Capa do ebook
-A capa oficial (astronauta) já está **embutida** no `index.html` como data URI, dentro de uma
+A capa oficial (astronauta) já está **embutida** no `ebook.html` como data URI, dentro de uma
 moldura 3D. O arquivo original também está salvo em `assets/capa-ebook.png` (642×955).
 
 ## Identidade visual

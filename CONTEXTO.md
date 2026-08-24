@@ -34,8 +34,8 @@ Indicador de tendência. **Está pronto e perfeito na MetaTrader 5** (código em
 Equipe-Super-Agents/
 ├── CONTEXTO.md            ← este mapa
 ├── README.md              ← índice curto
-├── index.html             ← PÁGINA DE VENDAS do ebook (servida em / na Vercel) — NÃO mover
-├── loja.html              ← LOJA/VITRINE RickEA Investments (/loja) — vários produtos — NÃO mover
+├── index.html             ← LOJA/VITRINE RickEA Investments (servida em / na Vercel) — NÃO mover
+├── ebook.html             ← página de vendas do ebook (/ebook) — NÃO mover
 ├── obrigado.html          ← página de obrigado (/obrigado) — NÃO mover
 ├── painel.html            ← hub de links (/painel) — NÃO mover
 ├── kit-postagem.html      ← kit de postagem manual (/kit-postagem) — NÃO mover
@@ -61,16 +61,17 @@ Equipe-Super-Agents/
 ---
 
 ## 🔗 Links ao vivo
-- Vendas (ebook): https://equipe-super-agents.vercel.app/
-- **Loja RickEA Investments:** https://equipe-super-agents.vercel.app/loja
+- **Loja RickEA Investments (home):** https://equipe-super-agents.vercel.app/
+- Página do ebook: https://equipe-super-agents.vercel.app/ebook
 - Obrigado: https://equipe-super-agents.vercel.app/obrigado
 - Painel (hub): https://equipe-super-agents.vercel.app/painel
 - Kit de postagem: https://equipe-super-agents.vercel.app/kit-postagem
 
-> **Loja (`loja.html`):** vitrine multi-produto da empresa. Catálogo é um array `PRODUCTS`
-> no `<script>` — pra adicionar produto é só copiar um bloco. Cada `checkout` é um link
-> Hotmart (`pay.hotmart.com/...`); sem link vira botão "Tenho interesse" (WhatsApp).
-> **Troque `WHATSAPP` pelo número real** e, se quiser, salve a logo em `assets/logo-rickea.png`.
+> **Loja (`index.html`, home):** vitrine multi-produto da empresa. Catálogo é um array
+> `PRODUCTS` no `<script>` — pra adicionar produto é só copiar um bloco. Cada `checkout` é um
+> link Hotmart (`pay.hotmart.com/...`); sem link vira botão "Tenho interesse" (WhatsApp).
+> WhatsApp já configurado (+1 770 256 2736). Logo: salvar em `assets/logo-rickea.png`
+> (o cabeçalho já usa ela automaticamente; sem o arquivo, mostra o selo "R").
 
 ## 🤖 Skill
 - **`rickea-instagram`** — cria reels/carrosséis/stories na identidade RickEA (grátis) e agenda no
