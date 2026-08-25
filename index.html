@@ -485,7 +485,7 @@
       name:"O Código dos Traders de Elite",
       desc:"Os padrões, decisões e estratégias que separam os 3% lucrativos dos 97% que perdem no XAUUSD (ouro).",
       price:"R$9,99", old:"R$37,00", inst:"Forex · XAUUSD · Price Action",
-      img:"", checkout:"https://pay.hotmart.com/T106424524D"
+      img:"/assets/capa-traders-elite.png", contain:true, checkout:"https://pay.hotmart.com/T106424524D"
     },
     {
       cat:"indicador", kicker:"Indicador", badge:"new", badgeText:"Novo",
@@ -525,10 +525,11 @@
   function card(p){
     // embed:true -> usa a capa embutida no CSS (var --cover), sem depender de arquivo/cache
     var thumbStyle = p.embed ? ' style="background:#0B1730 var(--cover) center/contain no-repeat"' : '';
+    var imgStyle = p.contain ? ' style="object-fit:contain;background:#0b0b0d"' : '';
     var thumb = p.embed
       ? ''
       : (p.img
-          ? '<img src="'+p.img+'" alt="'+p.name+'" loading="lazy" />'
+          ? '<img src="'+p.img+'" alt="'+p.name+'" loading="lazy"'+imgStyle+' />'
           : '<div class="ph">'+({ebook:"📘",robo:"🤖",indicador:"📈",agente:"🧠",mentoria:"🎯"}[p.cat]||"✦")+'</div>');
     var badge = p.badgeText ? '<div class="badge '+p.badge+'">'+p.badgeText+'</div>' : '';
     var priceOld = p.old ? '<span class="old">'+p.old+'</span>' : '';

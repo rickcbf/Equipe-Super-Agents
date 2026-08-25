@@ -15,7 +15,8 @@ de assunto, aponte pra cá: `veja o CONTEXTO.md`. Assim ninguém se perde.
 Marca de trading **RickEA Investments** / Instagram **@ri.chartrader**. Ebook
 *"A Teoria de Dow Aplicada ao Trading Moderno"* + página de vendas + campanha de Instagram.
 - **Site (Vercel):** https://rickea.vercel.app/
-- **Checkout (Hotmart):** https://pay.hotmart.com/M107215100L · cupom **RICK50** → R$10,00
+- **Checkout ebook Teoria de Dow (Hotmart):** https://pay.hotmart.com/M107215100L · cupom **RICK50** → R$10,00
+- **Checkout ebook Código dos Traders de Elite (Hotmart):** https://pay.hotmart.com/T106424524D · R$9,99 (de R$37) · capa `assets/capa-traders-elite.png`
 - **Skill que automatiza:** `rickea-instagram` (ver seção Skill)
 
 ### 2) RickEA X-Trend — Indicador
