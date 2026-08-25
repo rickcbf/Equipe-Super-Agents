@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Compra confirmada — RickEA</title>
+<meta name="description" content="Compra confirmada! Seu acesso ao Código dos Traders de Elite está a caminho. Aproveite uma oferta exclusiva do ebook A Teoria de Dow." />
+<meta name="robots" content="noindex" />
+<link rel="icon" type="image/png" sizes="256x256" href="/assets/favicon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,600;1,500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#070E1C; --bg2:#0B1730; --bg3:#0E1E3B;
+    --panel:rgba(255,255,255,.04); --stroke:rgba(199,205,214,.14); --stroke2:rgba(199,205,214,.22);
+    --blue:#2B6BF3; --blue-lite:#5B8DFF; --blue-deep:#16296B;
+    --platinum:#C7CDD6; --muted:#8A94A6; --gold:#C9A227; --gold-lite:#E7C766;
+    --text:#EEF2F8; --green:#22C48A;
+    --radius:18px; --shadow:0 24px 60px -20px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1000px 600px at 80% -10%, rgba(43,107,243,.18), transparent 60%),
+      radial-gradient(800px 500px at 0% 10%, rgba(201,162,39,.06), transparent 55%),
+      linear-gradient(180deg,var(--bg),#05101F);
+    color:var(--text); font-family:'Inter',system-ui,sans-serif; line-height:1.6;
+    -webkit-font-smoothing:antialiased; min-height:100vh;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:34px 22px 70px}
+  a{color:inherit;text-decoration:none}
+  .brand{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:36px}
+  .brand .mark{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;
+    background:linear-gradient(145deg,var(--blue),var(--blue-deep));border:1px solid rgba(255,255,255,.14);
+    font-family:'Sora';font-weight:800;font-size:1.25rem;box-shadow:0 6px 18px -6px rgba(43,107,243,.7)}
+  .brand b{font-family:'Sora';font-weight:800;font-size:1.1rem;letter-spacing:.02em}
+  .brand span{display:block;font-size:.6rem;letter-spacing:.4em;color:var(--muted);font-weight:600;margin-top:-2px}
+  .brand img.mark{object-fit:contain}
+
+  /* confirmação */
+  .confirm{text-align:center;background:linear-gradient(180deg,var(--panel),transparent);
+    border:1px solid var(--stroke);border-radius:24px;padding:44px 30px}
+  .check{width:76px;height:76px;border-radius:50%;margin:0 auto 20px;display:grid;place-items:center;
+    background:radial-gradient(circle at 50% 35%,rgba(34,196,138,.35),rgba(34,196,138,.08));
+    border:1px solid rgba(34,196,138,.5)}
+  .check svg{width:38px;height:38px;stroke:var(--green);fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .confirm h1{font-family:'Sora';font-weight:800;font-size:clamp(1.7rem,4vw,2.4rem);margin-bottom:12px}
+  .confirm h1 .g{color:var(--gold-lite)}
+  .confirm p{color:var(--platinum);max-width:560px;margin:0 auto 6px}
+  .steps{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+  .stp{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--stroke2);
+    border-radius:12px;padding:12px 16px;font-size:.9rem;color:var(--platinum)}
+  .stp b{color:var(--blue-lite);font-family:'Sora'}
+  .wpp{display:inline-flex;align-items:center;gap:9px;margin-top:24px;border:1px solid rgba(37,211,102,.4);
+    background:rgba(37,211,102,.1);color:#7ef0ab;border-radius:11px;padding:11px 20px;font-weight:600;font-size:.92rem}
+
+  /* separador */
+  .sep{display:flex;align-items:center;gap:16px;margin:44px 0 30px;color:var(--gold-lite);
+    font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.3rem}
+  .sep::before,.sep::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+
+  /* upsell */
+  .upsell{background:linear-gradient(120deg,var(--bg3),var(--blue-deep));border:1px solid var(--stroke2);
+    border-radius:26px;padding:40px;display:grid;grid-template-columns:300px 1fr;gap:36px;align-items:center;
+    position:relative;overflow:hidden;box-shadow:var(--shadow)}
+  .upsell::after{content:"";position:absolute;right:-90px;top:-90px;width:320px;height:320px;
+    background:radial-gradient(circle,rgba(201,162,39,.22),transparent 70%);filter:blur(20px)}
+  .ucover{border-radius:16px;overflow:hidden;border:1px solid var(--stroke2);box-shadow:var(--shadow);position:relative;z-index:1}
+  .ucover img{display:block;width:100%}
+  .ubody{position:relative;z-index:1}
+  .tag{display:inline-flex;align-items:center;gap:8px;background:rgba(201,162,39,.14);border:1px dashed var(--gold);
+    color:var(--gold-lite);border-radius:10px;padding:7px 13px;font-family:'Sora';font-weight:600;font-size:.82rem;margin-bottom:14px}
+  .upsell h2{font-family:'Sora';font-weight:700;font-size:clamp(1.4rem,3vw,2rem);line-height:1.15;margin-bottom:12px}
+  .upsell h2 .b{color:var(--blue-lite)}
+  .upsell .lead{color:var(--platinum);margin-bottom:16px;font-size:.98rem}
+  .benefits{list-style:none;margin:0 0 20px;display:grid;gap:9px}
+  .benefits li{display:flex;align-items:flex-start;gap:10px;color:var(--platinum);font-size:.94rem}
+  .benefits li::before{content:"✓";color:var(--green);font-weight:800;margin-top:1px}
+  .price{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .price .now{font-family:'Sora';font-weight:800;font-size:2.1rem}
+  .price .old{color:var(--muted);text-decoration:line-through}
+  .price .save{font-size:.8rem;color:var(--gold-lite);border:1px solid rgba(201,162,39,.5);border-radius:20px;padding:3px 10px}
+  .coupon{font-size:.86rem;color:var(--platinum);margin-bottom:18px}
+  .coupon b{color:var(--gold-lite);font-family:'Sora';letter-spacing:.04em}
+  .btn{display:inline-flex;align-items:center;gap:10px;justify-content:center;width:100%;
+    font-family:'Sora';font-weight:700;font-size:1.08rem;border-radius:13px;padding:17px 24px;
+    background:linear-gradient(135deg,var(--blue-lite),var(--blue) 45%,var(--blue-deep));color:#fff;
+    box-shadow:0 14px 34px -10px rgba(43,107,243,.85);transition:transform .18s,box-shadow .18s}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 20px 44px -12px rgba(43,107,243,.95)}
+  .minipays{display:flex;gap:7px;align-items:center;justify-content:center;margin-top:12px;flex-wrap:wrap}
+  .paytag{font-family:'Sora';font-weight:700;font-size:.6rem;letter-spacing:.06em;padding:4px 8px;
+    border-radius:6px;border:1px solid var(--stroke2);background:var(--panel);color:var(--platinum)}
+  .skip{text-align:center;margin-top:26px}
+  .skip a{color:var(--muted);font-size:.9rem;border-bottom:1px dashed var(--stroke2);padding-bottom:2px}
+  .skip a:hover{color:var(--platinum)}
+  footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:40px}
+
+  @media(max-width:760px){
+    .upsell{grid-template-columns:1fr;padding:28px}
+    .ucover{max-width:240px;margin:0 auto}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="brand" href="/">
+    <img class="mark" src="/assets/logo-rickea.webp" alt="RickEA Investments" onerror="this.outerHTML='&lt;div class=&quot;mark&quot;&gt;R&lt;/div&gt;'" />
+    <div><b>RickEA</b><span>INVESTMENTS</span></div>
+  </a>
+
+  <!-- CONFIRMAÇÃO -->
+  <section class="confirm">
+    <div class="check"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+    <h1>Compra <span class="g">confirmada!</span></h1>
+    <p>Seu acesso ao <b>Código dos Traders de Elite</b> já está a caminho.</p>
+    <p>Você vai receber tudo por <b>e-mail</b> e na sua área de membros da Hotmart em instantes.</p>
+    <div class="steps">
+      <div class="stp"><b>1</b> Abra seu e-mail</div>
+      <div class="stp"><b>2</b> Confira spam / promoções</div>
+      <div class="stp"><b>3</b> Acesse pela Hotmart</div>
+    </div>
+    <div>
+      <a class="wpp" id="wpp" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="#7ef0ab"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.6-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.5 0-.1-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.2 4.6 2 .8 2.7.9 3.7.8.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2z"/></svg>
+        Não recebeu? Fale com o suporte
+      </a>
+    </div>
+  </section>
+
+  <div class="sep">Antes de sair, uma oferta só sua</div>
+
+  <!-- UPSELL: Teoria de Dow -->
+  <section class="upsell">
+    <div class="ucover"><img src="/assets/capa-teoria-dow.png" alt="A Teoria de Dow Aplicada ao Trading Moderno" /></div>
+    <div class="ubody">
+      <span class="tag">🎟️ Oferta exclusiva desta página</span>
+      <h2>Domine a <span class="b">estrutura</span> por trás de todo movimento do ouro</h2>
+      <p class="lead">Você já deu o primeiro passo. Agora entenda o <b>alicerce</b> que os traders de elite usam pra ler qualquer gráfico: a Teoria de Dow aplicada ao trading moderno.</p>
+      <ul class="benefits">
+        <li>Leia tendências, fases e volume com método</li>
+        <li>Diferencie correção de reversão (pare de tomar stop cedo)</li>
+        <li>O mesmo fundamento que sustenta o price action no XAUUSD</li>
+      </ul>
+      <div class="price">
+        <span class="now">R$10,00</span>
+        <span class="old">R$39,99</span>
+        <span class="save">75% OFF</span>
+      </div>
+      <p class="coupon">Use o cupom <b>RICK50</b> no checkout — o desconto é aplicado automaticamente.</p>
+      <a class="btn" href="https://pay.hotmart.com/M107215100L?off=RICK50" target="_blank" rel="noopener">Quero adicionar por R$10 →</a>
+      <div class="minipays"><span class="paytag">PIX</span><span class="paytag">DÉBITO</span><span class="paytag">CRÉDITO 12×</span></div>
+    </div>
+  </section>
+
+  <div class="skip"><a href="/">Não, obrigado — quero só o meu acesso</a></div>
+
+  <footer>© <span id="year"></span> RickEA Investments · Material exclusivo</footer>
+</div>
+
+<script>
+  var WHATSAPP="17702562736";
+  document.getElementById("wpp").href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent("Ola! Comprei o Codigo dos Traders de Elite e preciso de ajuda com o acesso.");
+  document.getElementById("year").textContent=new Date().getFullYear();
+</script>
+</body>
+</html>

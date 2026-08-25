@@ -37,7 +37,8 @@ Equipe-Super-Agents/
 ├── README.md              ← índice curto
 ├── index.html             ← LOJA/VITRINE RickEA Investments (servida em / na Vercel) — NÃO mover
 ├── ebook.html             ← página de vendas do ebook (/ebook) — NÃO mover
-├── obrigado.html          ← página de obrigado (/obrigado) — NÃO mover
+├── obrigado.html          ← página de obrigado do ebook Teoria de Dow (/obrigado) — NÃO mover
+├── obrigado-elite.html    ← obrigado + UPSELL (Traders de Elite → Teoria de Dow) (/obrigado-elite) — NÃO mover
 ├── painel.html            ← hub de links (/painel) — NÃO mover
 ├── kit-postagem.html      ← kit de postagem manual (/kit-postagem) — NÃO mover
 ├── vercel.json            ← config do deploy
