@@ -36,7 +36,8 @@ Equipe-Super-Agents/
 ├── CONTEXTO.md            ← este mapa
 ├── README.md              ← índice curto
 ├── index.html             ← LOJA/VITRINE RickEA Investments (servida em / na Vercel) — NÃO mover
-├── ebook.html             ← página de vendas do ebook (/ebook) — NÃO mover
+├── ebook.html             ← página de vendas do ebook Teoria de Dow (/ebook) — NÃO mover
+├── traders-elite.html     ← página de vendas do Código dos Traders de Elite (/traders-elite) — NÃO mover
 ├── obrigado.html          ← página de obrigado do ebook Teoria de Dow (/obrigado) — NÃO mover
 ├── obrigado-elite.html    ← obrigado + UPSELL (Traders de Elite → Teoria de Dow) (/obrigado-elite) — NÃO mover
 ├── painel.html            ← hub de links (/painel) — NÃO mover
