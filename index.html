@@ -506,7 +506,7 @@
       name:"MCP TradingView Gold",
       desc:"Dados do ouro (XAUUSD) em tempo real direto no Claude AI. Traz o gráfico pra dentro da sua conversa e analisa com você.",
       price:"R$49,00", old:"R$97,00", inst:"XAUUSD · IA · tempo real",
-      img:"/assets/capa-mcp-tradingview.png", contain:true, checkout:"https://pay.hotmart.com/M106450067D"
+      img:"/assets/capa-mcp-tradingview.png", contain:true, detail:"/mcp-tradingview", checkout:"https://pay.hotmart.com/M106450067D"
     },
     {
       cat:"mentoria", kicker:"Mentoria", badge:"soon", badgeText:"Em breve",
@@ -541,12 +541,13 @@
     var pays = p.checkout
       ? '<div class="minipays"><span class="paytag">PIX</span><span class="paytag">DÉBITO</span><span class="paytag">CRÉDITO 12×</span></div>'
       : '';
+    var detail = p.detail ? '<a href="'+p.detail+'" class="btn btn-ghost">Ver detalhes</a>' : '';
     return '<article class="card" data-cat="'+p.cat+'">'
       + '<div class="thumb"'+thumbStyle+'>'+badge+thumb+'</div>'
       + '<div class="body"><div class="kicker">'+p.kicker+'</div>'
       + '<h3>'+p.name+'</h3><div class="desc">'+p.desc+'</div>'
       + priceBlock + pays
-      + '<div class="actions">'+action+'</div></div></article>';
+      + '<div class="actions">'+action+detail+'</div></div></article>';
   }
 
   var grid = document.getElementById("grid");
