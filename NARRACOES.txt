@@ -1,0 +1,74 @@
+================================================================
+  NARRACOES — VIDEO DE VENDAS MCP TRADINGVIEW GOLD
+  Cole cada trecho no ElevenLabs separadamente
+  Voz: masculina PT-BR | Tom: confiante, profissional
+================================================================
+
+--- CENA 01 - HOOK (0:00 - 0:05) ---
+Arquivo: cena01-hook.mp3
+
+Voce ainda perde tempo alternando entre TradingView, planilhas e anotacoes pra analisar ouro?
+
+--- CENA 02 - DOR (0:05 - 0:15) ---
+Arquivo: cena02-dor.mp3
+
+Abre o TradingView... confere RSI... olha o DXY... verifica a sessao... calcula o risco... e quando termina — o setup ja passou.
+
+--- CENA 03 - REVEAL (0:15 - 0:30) ---
+Arquivo: cena03-reveal.mp3
+
+Eu criei uma ferramenta que resolve isso. O MCP TradingView Gold conecta o Claude AI direto no TradingView. Voce pergunta — ele responde com dados ao vivo.
+
+--- CENA 04 - DEMO AO VIVO (0:30 - 0:55) ---
+Arquivo: cena04-demo.mp3
+
+Olha isso: eu pergunto "como esta o ouro" e em segundos recebo preco atualizado, RSI, ADX, EMAs, MACD, Bollinger Bands — tudo direto do TradingView. Sem abrir nenhuma aba.
+
+--- CENA 05 - GOLD SNAPSHOT (0:55 - 1:05) ---
+Arquivo: cena05-snapshot.mp3
+
+Gold Snapshot — preco, RSI, ADX, MACD e recomendacao em qualquer timeframe. Do minuto ao mensal.
+
+--- CENA 06 - MARKET CONTEXT (1:05 - 1:15) ---
+Arquivo: cena06-context.mp3
+
+Market Context — analise pre-mercado automatica: ouro mais DXY com correlacoes e deteccao de sessao.
+
+--- CENA 07 - TECHNICAL ANALYSIS (1:15 - 1:22) ---
+Arquivo: cena07-ta.mp3
+
+Analise tecnica completa pra qualquer ativo — forex, crypto, indices, acoes.
+
+--- CENA 08 - MULTI-TIMEFRAME (1:22 - 1:32) ---
+Arquivo: cena08-mtf.mp3
+
+Multi-Timeframe — quatro timeframes de uma vez com deteccao automatica de alinhamento HTF. Bull, bear ou misto.
+
+--- CENA 09 - ENTRY FILTERS (1:32 - 1:50) ---
+Arquivo: cena09-filters.mp3
+
+E a mais poderosa: Check Entry Filters. Cinco filtros de entrada automatizados — tendencia, estrutura, momentum, sessao e risco. PASS ou FAIL instantaneo. Acabou o achismo.
+
+--- CENA 10 - INSTALACAO (1:50 - 2:05) ---
+Arquivo: cena10-install.mp3
+
+Instala em dois minutos. Clicou, rodou, pronto. Instalador automatico — nao precisa ser programador. Nao precisa de API key. Nao precisa de conta no TradingView.
+
+--- CENA 11 - CREDIBILIDADE (2:05 - 2:15) ---
+Arquivo: cena11-quem.mp3
+
+Meu nome e Rick, RicharTrader. Eu opero XAUUSD profissionalmente e construo ferramentas de trading com inteligencia artificial. Essa ferramenta e a mesma que eu uso no meu dia a dia.
+
+--- CENA 12 - CTA (2:15 - 2:40) ---
+Arquivo: cena12-cta.mp3
+
+Tudo isso por apenas quarenta e nove reais. Garantia de sete dias — se nao gostar, devolvemos seu dinheiro. Clica no link aqui embaixo e comeca a operar com dados ao vivo do TradingView dentro do Claude AI.
+
+--- CENA 13 - ENCERRAMENTO (2:40 - 2:50) ---
+Arquivo: cena13-fim.mp3
+
+RicharTrader. Opere com inteligencia.
+
+================================================================
+  FIM — 13 trechos | ~2:50 de narracao total
+================================================================

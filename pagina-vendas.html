@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP TradingView Gold — Dados ao Vivo do TradingView no Claude AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0A0A0A;color:#E0E0E0;line-height:1.7;overflow-x:hidden}
+a{color:#F0D078;text-decoration:none}
+a:hover{text-decoration:underline}
+
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+
+/* HERO */
+.hero{padding:80px 0 60px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(200,164,78,0.08) 0%,transparent 70%);border-radius:50%}
+.hero-inner{display:flex;align-items:center;gap:60px;position:relative;z-index:1}
+.hero-text{flex:1}
+.hero-badge{display:inline-block;background:rgba(200,164,78,0.12);border:1px solid rgba(200,164,78,0.3);color:#F0D078;font-size:13px;font-weight:700;padding:6px 16px;border-radius:20px;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+.hero-title{font-size:48px;font-weight:900;color:#fff;line-height:1.1;margin-bottom:16px}
+.hero-title .gold{color:#F0D078}
+.hero-title .ai{color:#4FC3F7}
+.hero-sub{font-size:20px;color:#aaa;margin-bottom:32px;line-height:1.6}
+.hero-sub strong{color:#F0D078}
+.hero-img{flex:0 0 340px}
+.hero-img img{width:340px;border-radius:16px;border:2px solid rgba(200,164,78,0.2)}
+
+.cta-btn{display:inline-block;background:linear-gradient(135deg,#C8A44E,#F0D078);color:#0A0A0A;font-size:18px;font-weight:800;padding:16px 40px;border-radius:10px;text-decoration:none;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 24px rgba(200,164,78,0.3)}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(200,164,78,0.4);text-decoration:none}
+.cta-btn:active{transform:translateY(0)}
+.cta-sub{font-size:13px;color:#888;margin-top:10px}
+
+.price-row{display:flex;align-items:center;gap:16px;margin-bottom:24px}
+.price-old{font-size:22px;color:#666;text-decoration:line-through}
+.price-new{font-size:48px;font-weight:900;color:#F0D078}
+.price-per{font-size:14px;color:#888}
+
+/* SOCIAL PROOF BAR */
+.proof-bar{background:rgba(200,164,78,0.06);border-top:1px solid rgba(200,164,78,0.1);border-bottom:1px solid rgba(200,164,78,0.1);padding:20px 0;text-align:center}
+.proof-bar .container{display:flex;justify-content:center;gap:48px;flex-wrap:wrap}
+.proof-item{font-size:14px;color:#aaa}
+.proof-item strong{color:#F0D078;font-size:18px;display:block;margin-bottom:2px}
+
+/* SECTION */
+.section{padding:80px 0}
+.section-dark{background:#080808}
+.section-title{font-size:36px;font-weight:800;color:#fff;text-align:center;margin-bottom:12px}
+.section-title .gold{color:#F0D078}
+.section-sub{text-align:center;font-size:18px;color:#888;margin-bottom:48px;max-width:700px;margin-left:auto;margin-right:auto}
+
+/* PROBLEM */
+.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px}
+.problem-card{background:rgba(231,76,60,0.06);border:1px solid rgba(231,76,60,0.15);border-radius:12px;padding:24px}
+.problem-card .icon{font-size:28px;margin-bottom:12px}
+.problem-card h3{color:#E74C3C;font-size:16px;font-weight:700;margin-bottom:8px}
+.problem-card p{font-size:14px;color:#999;line-height:1.6}
+
+.solution-card{background:rgba(200,164,78,0.06);border:1px solid rgba(200,164,78,0.15);border-radius:12px;padding:24px}
+.solution-card .icon{font-size:28px;margin-bottom:12px}
+.solution-card h3{color:#F0D078;font-size:16px;font-weight:700;margin-bottom:8px}
+.solution-card p{font-size:14px;color:#ccc;line-height:1.6}
+
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+.feat-card{background:#111;border:1px solid #1a1a1a;border-radius:14px;padding:28px 24px;transition:border-color 0.3s,transform 0.3s}
+.feat-card:hover{border-color:rgba(200,164,78,0.3);transform:translateY(-4px)}
+.feat-num{font-size:13px;font-weight:800;color:#C8A44E;letter-spacing:3px;margin-bottom:12px}
+.feat-card h3{font-size:20px;font-weight:800;color:#fff;margin-bottom:8px}
+.feat-card p{font-size:14px;color:#999;line-height:1.6}
+.feat-tag{display:inline-block;background:rgba(200,164,78,0.1);color:#F0D078;font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;margin-top:12px}
+
+/* DEMO */
+.demo-box{background:#111;border:1px solid #1a1a1a;border-radius:16px;padding:40px;text-align:center;margin-bottom:40px}
+.demo-box h3{font-size:22px;font-weight:700;color:#fff;margin-bottom:8px}
+.demo-box p{color:#888;margin-bottom:24px}
+.demo-example{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.demo-prompt{background:#0A0A0A;border:1px solid #222;border-radius:10px;padding:16px 20px;font-size:14px;color:#4FC3F7;font-family:'Inter',monospace;max-width:320px;text-align:left}
+.demo-prompt span{color:#666;font-size:12px;display:block;margin-bottom:6px}
+
+/* ASSETS */
+.assets-list{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px}
+.asset-group{background:#111;border:1px solid #1a1a1a;border-radius:10px;padding:20px}
+.asset-group h4{color:#F0D078;font-size:14px;font-weight:700;margin-bottom:8px}
+.asset-group p{font-size:13px;color:#999;line-height:1.8}
+
+/* INSTALL */
+.install-steps{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-bottom:40px}
+.step{background:#111;border:1px solid #1a1a1a;border-radius:14px;padding:28px 24px;text-align:center;flex:1;min-width:200px;max-width:280px}
+.step-num{width:48px;height:48px;border-radius:50%;background:rgba(200,164,78,0.12);border:2px solid #C8A44E;color:#F0D078;font-size:20px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.step h3{font-size:16px;font-weight:700;color:#fff;margin-bottom:6px}
+.step p{font-size:13px;color:#999}
+
+/* ABOUT */
+.about-inner{display:flex;gap:48px;align-items:center}
+.about-img{flex:0 0 260px}
+.about-img img{width:260px;border-radius:16px;border:2px solid rgba(200,164,78,0.2)}
+.about-text{flex:1}
+.about-text h3{font-size:28px;font-weight:800;color:#fff;margin-bottom:6px}
+.about-text .handle{color:#C8A44E;font-size:16px;margin-bottom:20px}
+.about-text ul{list-style:none;padding:0}
+.about-text li{padding:8px 0;font-size:15px;color:#ccc;border-bottom:1px solid #1a1a1a}
+.about-text li::before{content:'◆';color:#C8A44E;margin-right:10px;font-size:10px}
+
+/* PRICING */
+.pricing-box{max-width:500px;margin:0 auto;background:#111;border:2px solid #C8A44E;border-radius:20px;padding:48px 40px;text-align:center;position:relative;overflow:hidden}
+.pricing-box::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#C8A44E,#F0D078,#C8A44E)}
+.pricing-badge{display:inline-block;background:#E74C3C;color:#fff;font-size:13px;font-weight:800;padding:6px 16px;border-radius:20px;margin-bottom:20px}
+.pricing-title{font-size:24px;font-weight:800;color:#fff;margin-bottom:24px}
+.pricing-list{text-align:left;margin-bottom:32px}
+.pricing-list li{padding:10px 0;font-size:15px;color:#ccc;border-bottom:1px solid #1a1a1a;list-style:none}
+.pricing-list li::before{content:'✓';color:#2ECC71;margin-right:10px;font-weight:700}
+
+/* GUARANTEE */
+.guarantee{background:rgba(46,204,113,0.06);border:1px solid rgba(46,204,113,0.2);border-radius:14px;padding:32px;text-align:center;max-width:600px;margin:40px auto 0}
+.guarantee h3{color:#2ECC71;font-size:20px;font-weight:800;margin-bottom:8px}
+.guarantee p{font-size:15px;color:#aaa}
+
+/* FAQ */
+.faq-item{background:#111;border:1px solid #1a1a1a;border-radius:12px;margin-bottom:12px;overflow:hidden}
+.faq-q{padding:20px 24px;font-size:16px;font-weight:600;color:#fff;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-q::after{content:'+';font-size:24px;color:#C8A44E;transition:transform 0.3s}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{padding:0 24px 20px;font-size:14px;color:#999;line-height:1.7;display:none}
+.faq-item.open .faq-a{display:block}
+
+/* FINAL CTA */
+.final-cta{background:linear-gradient(180deg,#0A0A0A 0%,#1a1205 100%);padding:80px 0;text-align:center}
+.final-cta h2{font-size:40px;font-weight:900;color:#fff;margin-bottom:8px}
+.final-cta h2 .gold{color:#F0D078}
+.final-cta p{font-size:18px;color:#888;margin-bottom:32px}
+
+/* FOOTER */
+.footer{background:#050505;padding:32px 0;text-align:center;font-size:13px;color:#555;border-top:1px solid #111}
+
+/* MOBILE */
+@media(max-width:768px){
+.hero-inner{flex-direction:column-reverse;text-align:center}
+.hero-img{flex:none}
+.hero-img img{width:240px}
+.hero-title{font-size:32px}
+.hero-sub{font-size:16px}
+.problem-grid{grid-template-columns:1fr}
+.features-grid{grid-template-columns:1fr}
+.about-inner{flex-direction:column;text-align:center}
+.about-img{flex:none}
+.about-img img{width:200px}
+.assets-list{grid-template-columns:1fr}
+.install-steps{flex-direction:column;align-items:center}
+.price-new{font-size:36px}
+.pricing-box{padding:32px 24px}
+.proof-bar .container{flex-direction:column;gap:16px}
+}
+</style>
+<script type="text/javascript">
+function importHotmart(){
+  var imported = document.createElement('script');
+  imported.src = 'https://static.hotmart.com/checkout/widget.min.js';
+  document.head.appendChild(imported);
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = 'https://static.hotmart.com/css/hotmart-fb.min.css';
+  document.head.appendChild(link);
+}
+importHotmart();
+</script>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+<div class="container">
+<div class="hero-inner">
+    <div class="hero-text">
+        <div class="hero-badge">Ferramenta Profissional de Trading</div>
+        <h1 class="hero-title">
+            Dados do <span class="gold">TradingView</span><br>
+            em Tempo Real no<br>
+            Claude <span class="ai">AI</span>
+        </h1>
+        <p class="hero-sub">
+            Com meus <strong>indicadores de filtro de analises</strong>, voce pergunta em linguagem natural e recebe preco, indicadores e recomendacao — tudo ao vivo, sem abrir nenhuma aba.
+        </p>
+        <div class="price-row">
+            <span class="price-old">R$ 197</span>
+            <span class="price-new">R$ 97</span>
+            <span class="price-per">pagamento unico</span>
+        </div>
+        <a onclick="return false;" href="https://pay.hotmart.com/M106450067D?checkoutMode=2" class="hotmart-fb cta-btn">QUERO COMECAR AGORA</a>
+        <p class="cta-sub">Garantia de 7 dias &bull; Download imediato &bull; Instala em 2 minutos</p>
+    </div>
+    <div class="hero-img">
+        <img src="png/caricatura.png" alt="Rick - RicharTrader">
+    </div>
+</div>
+</div>
+</section>
+
+<!-- PROOF BAR -->
+<div class="proof-bar">
+<div class="container">
+    <div class="proof-item"><strong>5</strong>Ferramentas Profissionais</div>
+    <div class="proof-item"><strong>80+</strong>Ativos Pre-Configurados</div>
+    <div class="proof-item"><strong>2 min</strong>Para Instalar</div>
+    <div class="proof-item"><strong>7 dias</strong>Garantia Total</div>
+</div>
+</div>
+
+<!-- PROBLEMA -->
+<section class="section">
+<div class="container">
+    <h2 class="section-title">Voce ainda analisa ouro <span class="gold">assim?</span></h2>
+    <p class="section-sub">Se voce se identifica com algum desses problemas, essa ferramenta foi feita pra voce.</p>
+    <div class="problem-grid">
+        <div class="problem-card">
+            <div class="icon">⏱</div>
+            <h3>Perde tempo demais</h3>
+            <p>Abre o TradingView, confere RSI, olha o DXY, verifica a sessao, calcula o risco... e quando termina, o setup ja passou.</p>
+        </div>
+        <div class="problem-card">
+            <div class="icon">📊</div>
+            <h3>Muitas abas abertas</h3>
+            <p>TradingView numa aba, planilha em outra, anotacoes em outra. Informacao espalhada, decisao lenta.</p>
+        </div>
+        <div class="problem-card">
+            <div class="icon">😤</div>
+            <h3>Analise inconsistente</h3>
+            <p>Sem checklist padronizado, cada trade e diferente. As vezes esquece de verificar a sessao ou o alinhamento HTF.</p>
+        </div>
+        <div class="problem-card">
+            <div class="icon">🎯</div>
+            <h3>Achismo na entrada</h3>
+            <p>Entra no trade "porque parece bom" sem confirmar tendencia, estrutura e momentum. Resultado: stops desnecessarios.</p>
+        </div>
+    </div>
+
+    <div class="solution-card" style="max-width:700px;margin:0 auto;text-align:center">
+        <div class="icon">💡</div>
+        <h3>E se voce pudesse perguntar e receber tudo em segundos?</h3>
+        <p>O MCP TradingView Gold conecta o Claude AI direto nos dados ao vivo do TradingView. Voce pergunta em linguagem natural — ele responde com indicadores, analise e recomendacao. Instantaneamente.</p>
+    </div>
+</div>
+</section>
+
+<!-- FEATURES -->
+<section class="section section-dark">
+<div class="container">
+    <h2 class="section-title">5 Ferramentas <span class="gold">Profissionais</span></h2>
+    <p class="section-sub">Cada ferramenta resolve um problema real do seu dia a dia como trader.</p>
+    <div class="features-grid">
+        <div class="feat-card">
+            <div class="feat-num">TOOL 01</div>
+            <h3>Gold Snapshot</h3>
+            <p>Preco, RSI, ADX, MACD, EMAs e Bollinger Bands em qualquer timeframe. Do minuto ao mensal.</p>
+            <span class="feat-tag">Qualquer timeframe</span>
+        </div>
+        <div class="feat-card">
+            <div class="feat-num">TOOL 02</div>
+            <h3>Market Context</h3>
+            <p>Analise pre-mercado automatica: ouro vs DXY com correlacoes inteligentes e deteccao de sessao.</p>
+            <span class="feat-tag">Correlacoes auto</span>
+        </div>
+        <div class="feat-card">
+            <div class="feat-num">TOOL 03</div>
+            <h3>Technical Analysis</h3>
+            <p>Analise tecnica completa pra qualquer ativo — forex, crypto, indices, acoes brasileiras e americanas.</p>
+            <span class="feat-tag">80+ ativos</span>
+        </div>
+        <div class="feat-card">
+            <div class="feat-num">TOOL 04</div>
+            <h3>Multi-Timeframe</h3>
+            <p>Quatro timeframes de uma vez com deteccao automatica de alinhamento HTF. Bull, bear ou misto.</p>
+            <span class="feat-tag">Alinhamento HTF</span>
+        </div>
+        <div class="feat-card" style="border-color:rgba(200,164,78,0.3)">
+            <div class="feat-num">TOOL 05 — A MAIS PODEROSA</div>
+            <h3>Check Entry Filters</h3>
+            <p>5 filtros de entrada automatizados: tendencia, estrutura, momentum, sessao e risco. PASS ou FAIL instantaneo.</p>
+            <span class="feat-tag">Acabou o achismo</span>
+        </div>
+        <div class="feat-card">
+            <div class="feat-num">BONUS</div>
+            <h3>Qualquer Ativo</h3>
+            <p>Nao e so ouro. Analise EURUSD, BTCUSD, TSLA, PETR4, NAS100 — qualquer simbolo do TradingView.</p>
+            <span class="feat-tag">Forex + Crypto + Acoes</span>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- DEMO -->
+<section class="section">
+<div class="container">
+    <h2 class="section-title">Veja Como <span class="gold">Funciona</span></h2>
+    <p class="section-sub">Pergunte em linguagem natural. Receba dados profissionais.</p>
+    <div class="demo-box">
+        <h3>Voce pergunta assim:</h3>
+        <p>Simples como conversar com alguem</p>
+        <div class="demo-example">
+            <div class="demo-prompt">
+                <span>Voce:</span>
+                "como esta o ouro?"
+            </div>
+            <div class="demo-prompt">
+                <span>Voce:</span>
+                "roda os filtros pra BUY XAUUSD H1"
+            </div>
+            <div class="demo-prompt">
+                <span>Voce:</span>
+                "multi-timeframe do BTCUSDT"
+            </div>
+        </div>
+    </div>
+    <div class="demo-box">
+        <h3>E recebe isso em segundos:</h3>
+        <p>Preco ao vivo + indicadores + recomendacao + filtros PASS/FAIL</p>
+        <div class="demo-example">
+            <div class="demo-prompt" style="max-width:420px">
+                <span>Claude AI:</span>
+                XAUUSD @ $2,655.30<br>
+                RSI(14): 58.4 — Neutro<br>
+                ADX(14): 28.7 — Tendencia moderada<br>
+                MACD: Bullish crossover<br>
+                EMA20 > EMA50 > EMA200<br>
+                Recomendacao TradingView: <span style="color:#2ECC71">BUY</span>
+            </div>
+            <div class="demo-prompt" style="max-width:420px">
+                <span>Entry Filters:</span>
+                Tendencia HTF: <span style="color:#2ECC71">PASS</span><br>
+                Estrutura: <span style="color:#2ECC71">PASS</span><br>
+                Momentum: <span style="color:#2ECC71">PASS</span><br>
+                Sessao: <span style="color:#2ECC71">PASS</span> (London)<br>
+                Risco: <span style="color:#2ECC71">PASS</span><br>
+                Resultado: <span style="color:#2ECC71;font-weight:700">5/5 — ENTRADA LIBERADA</span>
+            </div>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- ATIVOS -->
+<section class="section section-dark">
+<div class="container">
+    <h2 class="section-title"><span class="gold">80+</span> Ativos Pre-Configurados</h2>
+    <p class="section-sub">E voce pode analisar qualquer simbolo do TradingView, mesmo fora da lista.</p>
+    <div class="assets-list">
+        <div class="asset-group">
+            <h4>Metais Preciosos</h4>
+            <p>XAUUSD, XAGUSD, XPTUSD</p>
+        </div>
+        <div class="asset-group">
+            <h4>Forex (20+ pares)</h4>
+            <p>EURUSD, GBPUSD, USDJPY, GBPJPY, EURJPY, AUDUSD, USDCAD, NZDUSD e mais</p>
+        </div>
+        <div class="asset-group">
+            <h4>Crypto (10+ moedas)</h4>
+            <p>BTCUSD, ETHUSDT, SOLUSDT, XRPUSDT, BNBUSDT, ADAUSDT e mais</p>
+        </div>
+        <div class="asset-group">
+            <h4>Indices Globais</h4>
+            <p>SPX500, NAS100, US30, DE40, UK100</p>
+        </div>
+        <div class="asset-group">
+            <h4>Acoes Americanas (20+)</h4>
+            <p>AAPL, TSLA, NVDA, META, GOOGL, AMZN, MSFT, AMD e mais</p>
+        </div>
+        <div class="asset-group">
+            <h4>Acoes Brasileiras</h4>
+            <p>PETR4, VALE3, ITUB4, BBDC4, WEGE3 e mais</p>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- INSTALACAO -->
+<section class="section">
+<div class="container">
+    <h2 class="section-title">Instala em <span class="gold">2 Minutos</span></h2>
+    <p class="section-sub">Instalador automatico incluso. Nao precisa ser programador.</p>
+    <div class="install-steps">
+        <div class="step">
+            <div class="step-num">1</div>
+            <h3>Baixe o ZIP</h3>
+            <p>Download imediato apos a compra na Hotmart</p>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <h3>Rode o instalador</h3>
+            <p>Dois cliques no instalar.bat — ele faz tudo sozinho</p>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <h3>Pergunte ao Claude</h3>
+            <p>"como esta o ouro?" — e receba dados ao vivo</p>
+        </div>
+    </div>
+    <div style="text-align:center">
+        <p style="color:#888;font-size:14px">Pre-requisitos: Claude Pro + Claude Code (gratuito) + Python 3.10+ + Windows 10/11</p>
+    </div>
+</div>
+</section>
+
+<!-- QUEM SOU EU -->
+<section class="section section-dark">
+<div class="container">
+    <h2 class="section-title">Quem <span class="gold">Criou</span> Isso</h2>
+    <div class="about-inner" style="margin-top:40px">
+        <div class="about-img">
+            <img src="png/caricatura.png" alt="Rick - RicharTrader">
+        </div>
+        <div class="about-text">
+            <h3>Rick</h3>
+            <div class="handle">@RicharTrader</div>
+            <ul>
+                <li>Trader profissional de XAUUSD</li>
+                <li>Desenvolvedor de Expert Advisors para MT5</li>
+                <li>Criador do metodo Elite Trader</li>
+                <li>Construtor de ferramentas de trading com IA</li>
+                <li>Essa ferramenta e a mesma que eu uso no meu dia a dia</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- PRICING -->
+<section class="section">
+<div class="container">
+    <h2 class="section-title">Invista no Seu <span class="gold">Trading</span></h2>
+    <p class="section-sub">Tudo que voce precisa pra analisar o mercado com inteligencia artificial.</p>
+
+    <div class="pricing-box">
+        <div class="pricing-badge">OFERTA DE LANCAMENTO</div>
+        <div class="pricing-title">MCP TradingView Gold</div>
+        <ul class="pricing-list">
+            <li>5 ferramentas profissionais de analise</li>
+            <li>80+ ativos pre-configurados</li>
+            <li>Instalador automatico (.bat)</li>
+            <li>Guia de instalacao visual (HTML)</li>
+            <li>Licenca de uso pessoal</li>
+            <li>30 dias de suporte tecnico</li>
+            <li>Atualizacoes gratuitas por 12 meses</li>
+        </ul>
+        <div class="price-row" style="justify-content:center">
+            <span class="price-old">R$ 197</span>
+            <span class="price-new">R$ 97</span>
+        </div>
+        <p class="price-per" style="margin-bottom:24px">Pagamento unico &bull; Sem mensalidade</p>
+        <a onclick="return false;" href="https://pay.hotmart.com/M106450067D?checkoutMode=2" class="hotmart-fb cta-btn" style="width:100%;display:block;text-align:center">QUERO COMECAR AGORA</a>
+        <p class="cta-sub">Download imediato apos o pagamento</p>
+    </div>
+
+    <div class="guarantee">
+        <h3>Garantia de 7 Dias</h3>
+        <p>Se por qualquer motivo voce nao ficar satisfeito, devolvemos 100% do seu dinheiro. Sem perguntas, sem burocracia. O risco e todo nosso.</p>
+    </div>
+</div>
+</section>
+
+<!-- FAQ -->
+<section class="section section-dark">
+<div class="container">
+    <h2 class="section-title">Perguntas <span class="gold">Frequentes</span></h2>
+    <div style="max-width:700px;margin:40px auto 0">
+        <div class="faq-item">
+            <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Preciso saber programar?<span></span></div>
+            <div class="faq-a">Nao. O instalador automatico faz tudo. Voce so precisa ter Python instalado (o instalador verifica pra voce) e seguir o guia visual.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Preciso de conta premium no TradingView?<span></span></div>
+            <div class="faq-a">Nao. A ferramenta acessa os dados publicos do TradingView. Voce nao precisa de conta, nem de API key.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Funciona no Mac ou Linux?<span></span></div>
+            <div class="faq-a">Atualmente funciona apenas no Windows 10/11. O instalador .bat e exclusivo para Windows. O server Python em si e multiplataforma, mas o instalador automatico nao.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Preciso do Claude Pro?<span></span></div>
+            <div class="faq-a">Sim. Voce precisa de uma assinatura Claude Pro e do Claude Code instalado (gratuito em claude.ai/download). O Claude Code e onde voce conversa e recebe os dados.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Os dados sao em tempo real?<span></span></div>
+            <div class="faq-a">Sim. Os dados vem direto do TradingView no momento da consulta. Preco, indicadores e recomendacoes sao atualizados a cada pergunta.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Posso analisar outros ativos alem de ouro?<span></span></div>
+            <div class="faq-a">Sim! Apesar do nome "Gold", a ferramenta analisa qualquer ativo do TradingView: forex, crypto, acoes americanas e brasileiras, indices e commodities. Sao 80+ ativos pre-configurados e voce pode adicionar qualquer simbolo.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">Como funciona o suporte?<span></span></div>
+            <div class="faq-a">Voce tem 30 dias de suporte tecnico por email para instalacao e configuracao. Alem disso, o guia visual incluso resolve 95% das duvidas.</div>
+        </div>
+    </div>
+</div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+<div class="container">
+    <h2>Pare de perder setups.<br><span class="gold">Opere com inteligencia.</span></h2>
+    <p>Claude AI + TradingView ao vivo = suas analises em segundos.</p>
+    <a onclick="return false;" href="https://pay.hotmart.com/M106450067D?checkoutMode=2" class="hotmart-fb cta-btn">QUERO COMECAR AGORA — R$ 97</a>
+    <p class="cta-sub" style="margin-top:12px">Garantia de 7 dias &bull; Pagamento unico &bull; Download imediato</p>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+<div class="container">
+    <p>RicharTrader &bull; Todos os direitos reservados &bull; 2025</p>
+    <p style="margin-top:8px;font-size:12px;color:#333">Este produto nao garante lucros. Trading envolve riscos. Resultados passados nao garantem resultados futuros.</p>
+</div>
+</footer>
+
+</body>
+</html>
