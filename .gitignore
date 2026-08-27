@@ -1,2 +1,5 @@
 # build artifacts (fonts + generated HTML for the campaign renders)
 .build/
+/audio/
+*TEMP_MPY*
+node_modules/

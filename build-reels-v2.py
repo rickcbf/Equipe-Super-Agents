@@ -48,7 +48,7 @@ def make_cta_overlay(duration):
     except:
         font = ImageFont.load_default()
 
-    text = "COMPRE AGORA - R$ 97"
+    text = "COMPRE AGORA - R$ 49"
     bbox = draw.textbbox((0, 0), text, font=font)
     tw = bbox[2] - bbox[0]
     th = bbox[3] - bbox[1]
