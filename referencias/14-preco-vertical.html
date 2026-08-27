@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1080px;height:1920px;background:#0A0A0A;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;overflow:hidden;position:relative}
+.bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(200,164,78,0.1) 0%,transparent 50%)}
+.content{z-index:1;text-align:center;padding:0 60px;width:100%}
+.checklist{list-style:none;padding:0;text-align:left;max-width:600px;margin:0 auto 48px}
+.checklist li{font-size:22px;color:#ccc;padding:14px 0;display:flex;align-items:center;gap:16px;border-bottom:1px solid #1a1a1a}
+.checklist li:last-child{border:none}
+.check{color:#2ECC71;font-size:24px;font-weight:700}
+.price-block{margin-bottom:48px}
+.old-price{font-size:36px;color:#666;text-decoration:line-through}
+.new-price-label{font-size:24px;color:#888;margin:8px 0}
+.new-price{font-size:108px;font-weight:900;color:#C8A44E;line-height:1}
+.guarantee{display:inline-block;font-size:20px;font-weight:700;color:#2ECC71;border:2px solid rgba(46,204,113,0.3);padding:12px 32px;border-radius:8px;background:rgba(46,204,113,0.06);margin-top:32px}
+.cta-btn{display:inline-block;margin-top:36px;font-size:28px;font-weight:900;color:#0A0A0A;background:#C8A44E;padding:22px 72px;border-radius:14px;text-transform:uppercase;letter-spacing:4px}
+.glow{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#C8A44E,transparent)}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="content">
+    <ul class="checklist">
+        <li><span class="check">&#10003;</span> Server MCP completo</li>
+        <li><span class="check">&#10003;</span> 5 ferramentas profissionais</li>
+        <li><span class="check">&#10003;</span> Instalador automatico</li>
+        <li><span class="check">&#10003;</span> Guia visual de instalacao</li>
+        <li><span class="check">&#10003;</span> 30 dias de suporte</li>
+        <li><span class="check">&#10003;</span> Atualizacoes por 12 meses</li>
+    </ul>
+    <div class="price-block">
+        <div class="old-price">De R$ 197</div>
+        <div class="new-price-label">Por apenas</div>
+        <div class="new-price">R$ 97</div>
+    </div>
+    <div class="guarantee">GARANTIA DE 7 DIAS</div>
+    <br>
+    <div class="cta-btn">QUERO AGORA</div>
+</div>
+<div class="glow"></div>
+</body>
+</html>

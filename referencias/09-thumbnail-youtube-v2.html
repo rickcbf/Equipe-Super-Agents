@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1280px;height:720px;background:#0A0A0A;font-family:'Inter',sans-serif;overflow:hidden;position:relative}
+
+.bg-gradient{position:absolute;inset:0;background:linear-gradient(135deg,#0A0A0A 0%,#1a1205 40%,#2a1a08 70%,#0A0A0A 100%)}
+.bg-glow{position:absolute;top:-100px;right:-50px;width:600px;height:600px;background:radial-gradient(circle,rgba(200,164,78,0.15) 0%,transparent 70%);border-radius:50%}
+.bg-glow2{position:absolute;bottom:-150px;left:100px;width:400px;height:400px;background:radial-gradient(circle,rgba(200,164,78,0.08) 0%,transparent 70%);border-radius:50%}
+
+.border-top{position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,#C8A44E,#F0D078,#C8A44E)}
+.border-bottom{position:absolute;bottom:0;left:0;right:0;height:5px;background:linear-gradient(90deg,#C8A44E,#F0D078,#C8A44E)}
+
+.content{position:relative;z-index:2;display:flex;width:100%;height:100%;align-items:center}
+
+.left{flex:0 0 480px;height:100%;position:relative;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.left img{width:460px;height:auto;object-fit:contain;margin-bottom:-10px;filter:drop-shadow(0 0 30px rgba(200,164,78,0.3))}
+
+.right{flex:1;padding:40px 60px 40px 20px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+
+.badge{display:inline-block;background:linear-gradient(135deg,#C8A44E,#F0D078);color:#0A0A0A;font-size:16px;font-weight:900;padding:6px 18px;border-radius:4px;letter-spacing:3px;margin-bottom:20px;text-transform:uppercase}
+
+.title{font-size:72px;font-weight:900;color:#FFFFFF;line-height:1.05;margin-bottom:12px;text-shadow:0 2px 20px rgba(0,0,0,0.5)}
+.title .gold{color:#F0D078;display:block}
+.title .ai{color:#4FC3F7;font-size:64px}
+
+.subtitle{font-size:26px;color:#ccc;font-weight:400;margin-bottom:28px;line-height:1.4}
+.subtitle strong{color:#F0D078;font-weight:700}
+
+.features{display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap}
+.feat{background:rgba(200,164,78,0.12);border:1px solid rgba(200,164,78,0.3);color:#F0D078;font-size:14px;font-weight:700;padding:6px 14px;border-radius:6px;white-space:nowrap}
+
+.price-badge{position:absolute;top:28px;right:28px;z-index:10}
+.price-badge .old{font-size:18px;color:#999;text-decoration:line-through;margin-bottom:2px;text-align:center}
+.price-badge .new{background:#E74C3C;color:#fff;font-size:36px;font-weight:900;padding:10px 24px;border-radius:10px;box-shadow:0 4px 20px rgba(231,76,60,0.4)}
+
+.logo{position:absolute;bottom:20px;right:28px;font-size:15px;font-weight:700;color:rgba(200,164,78,0.5);letter-spacing:4px;z-index:10}
+
+.arrow{position:absolute;bottom:80px;right:40px;z-index:10}
+.arrow svg{width:80px;height:80px}
+</style>
+</head>
+<body>
+<div class="bg-gradient"></div>
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+<div class="border-top"></div>
+<div class="border-bottom"></div>
+
+<div class="price-badge">
+    <div class="old">R$ 197</div>
+    <div class="new">R$ 97</div>
+</div>
+
+<div class="content">
+    <div class="left">
+        <img src="png/caricatura.png" alt="Rick">
+    </div>
+    <div class="right">
+        <div class="badge">Ferramenta Pro</div>
+        <div class="title">
+            OURO AO VIVO
+            <span class="gold">NO CLAUDE <span class="ai">AI</span></span>
+        </div>
+        <div class="subtitle">Dados do <strong>TradingView</strong> em tempo real<br>direto no seu Claude</div>
+        <div class="features">
+            <span class="feat">RSI + MACD + ADX</span>
+            <span class="feat">Multi-Timeframe</span>
+            <span class="feat">Entry Filters</span>
+            <span class="feat">XAUUSD</span>
+        </div>
+    </div>
+</div>
+
+<div class="logo">RICHARTRADER</div>
+</body>
+</html>

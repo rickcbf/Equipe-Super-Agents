@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1920px;height:1080px;background:#0A0A0A;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;overflow:hidden;position:relative}
+.bg{position:absolute;inset:0;background:radial-gradient(ellipse at 60% 40%,rgba(200,164,78,0.05) 0%,transparent 60%)}
+.card{display:flex;align-items:center;gap:80px;z-index:1;padding:0 120px}
+.num-circle{width:180px;height:180px;border-radius:50%;border:3px solid rgba(200,164,78,0.4);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:80px;font-weight:700;color:#C8A44E;background:rgba(200,164,78,0.06);flex-shrink:0}
+.info{flex:1}
+.info h2{font-size:56px;font-weight:900;color:#fff;margin-bottom:16px}
+.info h2 span{color:#C8A44E}
+.info p{font-size:24px;color:#999;line-height:1.6}
+.timeframes{display:flex;gap:20px;margin-top:32px}
+.tf{text-align:center;padding:20px 28px;border-radius:12px;background:#141414;border:1px solid #222;flex:1}
+.tf-name{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:#fff;margin-bottom:8px}
+.tf-arrow{font-size:28px}
+.tf-arrow.bull{color:#2ECC71}
+.tf-arrow.bear{color:#E74C3C}
+.alignment{margin-top:28px;text-align:center;font-size:22px;font-weight:800;color:#2ECC71;padding:14px 32px;border:2px solid rgba(46,204,113,0.3);border-radius:10px;background:rgba(46,204,113,0.06);display:inline-block}
+.line{position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#C8A44E,transparent)}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="card">
+    <div class="num-circle">4</div>
+    <div class="info">
+        <h2>MULTI-<span>TIMEFRAME</span></h2>
+        <p>Quatro timeframes de uma vez com deteccao<br>automatica de alinhamento HTF.</p>
+        <div class="timeframes">
+            <div class="tf"><div class="tf-name">M15</div><div class="tf-arrow bull">&#9650; BULL</div></div>
+            <div class="tf"><div class="tf-name">H1</div><div class="tf-arrow bull">&#9650; BULL</div></div>
+            <div class="tf"><div class="tf-name">H4</div><div class="tf-arrow bull">&#9650; BULL</div></div>
+            <div class="tf"><div class="tf-name">D1</div><div class="tf-arrow bull">&#9650; BULL</div></div>
+        </div>
+        <div style="margin-top:28px"><span class="alignment">STRONG BULLISH ALIGNMENT</span></div>
+    </div>
+</div>
+<div class="line"></div>
+</body>
+</html>

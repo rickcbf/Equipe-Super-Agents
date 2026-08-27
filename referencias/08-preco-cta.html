@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1920px;height:1080px;background:#0A0A0A;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;overflow:hidden;position:relative}
+.bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,rgba(200,164,78,0.1) 0%,transparent 50%)}
+.glow{position:absolute;inset:0;border:2px solid rgba(200,164,78,0.15);border-radius:0}
+.content{z-index:1;display:flex;gap:100px;align-items:center;padding:0 120px}
+.left{flex:1}
+.right{flex:1;text-align:center}
+.checklist{list-style:none;padding:0}
+.checklist li{font-size:22px;color:#ccc;padding:12px 0;display:flex;align-items:center;gap:16px;border-bottom:1px solid #1a1a1a}
+.checklist li:last-child{border:none}
+.check{color:#2ECC71;font-size:24px;font-weight:700}
+.price-block{margin-bottom:40px}
+.old-price{font-size:32px;color:#666;text-decoration:line-through}
+.new-price{font-size:96px;font-weight:900;color:#C8A44E;line-height:1}
+.new-price-label{font-size:24px;color:#888;margin-bottom:8px}
+.guarantee{display:inline-block;font-size:18px;font-weight:700;color:#2ECC71;border:2px solid rgba(46,204,113,0.3);padding:10px 28px;border-radius:8px;background:rgba(46,204,113,0.06);margin-top:24px}
+.cta-btn{display:inline-block;margin-top:32px;font-size:28px;font-weight:900;color:#0A0A0A;background:#C8A44E;padding:20px 64px;border-radius:12px;text-transform:uppercase;letter-spacing:4px}
+.line{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#C8A44E,transparent)}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="glow"></div>
+<div class="content">
+    <div class="left">
+        <ul class="checklist">
+            <li><span class="check">&#10003;</span> Server MCP completo</li>
+            <li><span class="check">&#10003;</span> 5 ferramentas profissionais</li>
+            <li><span class="check">&#10003;</span> Instalador automatico (.bat)</li>
+            <li><span class="check">&#10003;</span> Guia visual de instalacao</li>
+            <li><span class="check">&#10003;</span> 30 dias de suporte</li>
+            <li><span class="check">&#10003;</span> Atualizacoes por 12 meses</li>
+        </ul>
+    </div>
+    <div class="right">
+        <div class="price-block">
+            <div class="old-price">De R$ 197</div>
+            <div class="new-price-label">Por apenas</div>
+            <div class="new-price">R$ 97</div>
+        </div>
+        <div class="guarantee">GARANTIA DE 7 DIAS</div>
+        <br>
+        <div class="cta-btn">QUERO AGORA</div>
+    </div>
+</div>
+<div class="line"></div>
+</body>
+</html>

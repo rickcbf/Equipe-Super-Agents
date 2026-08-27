@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1280px;height:400px;background:#0A0A0A;font-family:'Inter',sans-serif;overflow:hidden;position:relative}
+
+.bg{position:absolute;inset:0;background:linear-gradient(110deg,#0A0A0A 0%,#151005 35%,#1a1208 55%,#0A0A0A 100%)}
+.glow{position:absolute;top:-80px;right:100px;width:400px;height:400px;background:radial-gradient(circle,rgba(200,164,78,0.1) 0%,transparent 70%);border-radius:50%}
+
+.stripe-top{position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#C8A44E,#F0D078,#C8A44E,transparent)}
+.stripe-bot{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#C8A44E,#F0D078,#C8A44E,transparent)}
+
+.content{position:relative;z-index:2;display:flex;align-items:center;height:100%;padding:0 60px;gap:40px}
+
+.avatar{flex:0 0 260px;display:flex;align-items:flex-end;justify-content:center;height:100%;overflow:hidden}
+.avatar img{width:260px;height:auto;object-fit:contain;margin-bottom:-5px;filter:drop-shadow(0 0 20px rgba(200,164,78,0.2))}
+
+.info{flex:1;padding:20px 0}
+.badge{display:inline-block;background:rgba(200,164,78,0.12);border:1px solid rgba(200,164,78,0.3);color:#F0D078;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+.title{font-size:42px;font-weight:900;color:#fff;line-height:1.1;margin-bottom:8px}
+.title .gold{color:#F0D078}
+.title .ai{color:#4FC3F7}
+.subtitle{font-size:17px;color:#aaa;line-height:1.5;margin-bottom:18px}
+.subtitle strong{color:#F0D078}
+
+.features{display:flex;gap:10px;flex-wrap:wrap}
+.feat{background:rgba(200,164,78,0.08);border:1px solid rgba(200,164,78,0.2);color:#F0D078;font-size:12px;font-weight:700;padding:5px 12px;border-radius:6px;white-space:nowrap}
+
+.price-area{flex:0 0 200px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.price-old{font-size:16px;color:#666;text-decoration:line-through;margin-bottom:2px}
+.price-new{font-size:44px;font-weight:900;color:#F0D078;margin-bottom:8px}
+.price-label{font-size:12px;color:#888;margin-bottom:16px}
+.buy-btn{background:linear-gradient(135deg,#C8A44E,#F0D078);color:#0A0A0A;font-size:15px;font-weight:800;padding:12px 32px;border-radius:8px;text-decoration:none;display:inline-block}
+.guarantee{font-size:11px;color:#2ECC71;margin-top:10px;font-weight:600}
+
+.logo{position:absolute;bottom:16px;right:24px;font-size:12px;font-weight:700;color:rgba(200,164,78,0.35);letter-spacing:3px;z-index:3}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="glow"></div>
+<div class="stripe-top"></div>
+<div class="stripe-bot"></div>
+
+<div class="content">
+    <div class="avatar">
+        <img src="png/caricatura.png" alt="Rick - RicharTrader">
+    </div>
+    <div class="info">
+        <div class="badge">Ferramenta de Trading com IA</div>
+        <div class="title">
+            MCP TradingView <span class="gold">Gold</span>
+        </div>
+        <div class="subtitle">
+            Dados ao vivo do <strong>TradingView</strong> direto no Claude <span style="color:#4FC3F7">AI</span><br>
+            Com indicadores de filtro de analises automatizados
+        </div>
+        <div class="features">
+            <span class="feat">Gold Snapshot</span>
+            <span class="feat">Multi-Timeframe</span>
+            <span class="feat">Entry Filters</span>
+            <span class="feat">80+ Ativos</span>
+            <span class="feat">XAUUSD</span>
+        </div>
+    </div>
+    <div class="price-area">
+        <div class="price-old">R$ 197</div>
+        <div class="price-new">R$ 97</div>
+        <div class="price-label">Pagamento unico</div>
+        <div class="buy-btn">QUERO AGORA</div>
+        <div class="guarantee">Garantia de 7 dias</div>
+    </div>
+</div>
+
+<div class="logo">RICHARTRADER</div>
+</body>
+</html>
