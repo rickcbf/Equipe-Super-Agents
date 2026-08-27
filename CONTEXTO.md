@@ -38,6 +38,8 @@ Equipe-Super-Agents/
 ├── index.html             ← LOJA/VITRINE RickEA Investments (servida em / na Vercel) — NÃO mover
 ├── ebook.html             ← página de vendas do ebook Teoria de Dow (/ebook) — NÃO mover
 ├── traders-elite.html     ← página de vendas do Código dos Traders de Elite (/traders-elite) — NÃO mover
+├── mcp-tradingview.html   ← página de vendas do MCP TradingView Gold (/mcp-tradingview) — NÃO mover
+├── png/ · referencias/    ← assets originais da campanha MCP (fonte; usados pela página) 
 ├── obrigado.html          ← página de obrigado do ebook Teoria de Dow (/obrigado) — NÃO mover
 ├── obrigado-elite.html    ← obrigado + UPSELL (Traders de Elite → Teoria de Dow) (/obrigado-elite) — NÃO mover
 ├── painel.html            ← hub de links (/painel) — NÃO mover
