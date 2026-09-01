@@ -17,6 +17,8 @@ Marca de trading **RickEA Investments** / Instagram **@ri.chartrader**. Ebook
 - **Site (Vercel):** https://rickea.vercel.app/
 - **Checkout ebook Teoria de Dow (Hotmart):** https://pay.hotmart.com/M107215100L · cupom **RICK50** → R$10,00
 - **Checkout ebook Código dos Traders de Elite (Hotmart):** https://pay.hotmart.com/T106424524D · R$9,99 (de R$37) · capa `assets/capa-traders-elite.png`
+- **Checkout MCP TradingView Gold (Hotmart):** https://pay.hotmart.com/M106450067D · R$49 (de R$97) · página `/mcp-tradingview`
+- **Checkout RickEA Mentoria — Mentalidade e Sucesso (Hotmart):** https://pay.hotmart.com/G106467310N · R$49,99 · página `/mentoria` · capa `assets/capa-mentoria.png`
 - **Skill que automatiza:** `rickea-instagram` (ver seção Skill)
 
 ### 2) RickEA X-Trend — Indicador
@@ -39,6 +41,7 @@ Equipe-Super-Agents/
 ├── ebook.html             ← página de vendas do ebook Teoria de Dow (/ebook) — NÃO mover
 ├── traders-elite.html     ← página de vendas do Código dos Traders de Elite (/traders-elite) — NÃO mover
 ├── mcp-tradingview.html   ← página de vendas do MCP TradingView Gold (/mcp-tradingview) — NÃO mover
+├── mentoria.html          ← página de vendas da RickEA Mentoria (/mentoria) — NÃO mover
 ├── png/ · referencias/    ← assets originais da campanha MCP (fonte; usados pela página) 
 ├── obrigado.html          ← página de obrigado do ebook Teoria de Dow (/obrigado) — NÃO mover
 ├── obrigado-elite.html    ← obrigado + UPSELL (Traders de Elite → Teoria de Dow) (/obrigado-elite) — NÃO mover

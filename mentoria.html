@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RickEA Mentoria — Mentalidade e Sucesso</title>
+<meta name="description" content="RickEA Mentoria: Mentalidade e Sucesso no Mercado de Investimento. Análises, gestão de risco, estratégia e a mentalidade do trader consistente. Forex & mercado financeiro. Acesso por R$49,99." />
+<meta property="og:title" content="RickEA Mentoria — Mentalidade e Sucesso no Mercado de Investimento" />
+<meta property="og:description" content="Não prometemos lucro fácil — prometemos conhecimento, método e evolução. Acesso por R$49,99." />
+<meta property="og:image" content="/assets/capa-mentoria.png" />
+<meta property="og:type" content="website" />
+<link rel="icon" type="image/png" sizes="256x256" href="/assets/favicon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#070E1C; --bg2:#0B1730; --bg3:#0E1E3B;
+    --panel:rgba(255,255,255,.04); --panel2:rgba(255,255,255,.06);
+    --stroke:rgba(199,205,214,.14); --stroke2:rgba(199,205,214,.22);
+    --blue:#2B6BF3; --blue-lite:#5B8DFF; --blue-deep:#16296B;
+    --platinum:#C7CDD6; --muted:#8A94A6; --gold:#C9A227; --gold-lite:#E7C766;
+    --text:#EEF2F8; --green:#22C48A; --red:#F0567A;
+    --sans:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',monospace;
+    --shadow:0 26px 64px -22px rgba(0,0,0,.75);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:
+      radial-gradient(1100px 680px at 82% -8%, rgba(43,107,243,.20), transparent 60%),
+      radial-gradient(820px 560px at 6% 12%, rgba(201,162,39,.05), transparent 55%),
+      linear-gradient(180deg,var(--bg),var(--bg) 42%,#05101F);
+    color:var(--text); font-family:var(--sans); line-height:1.65; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+  section{padding:62px 0}
+  .eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold-lite)}
+  h1,h2,h3{font-weight:800;line-height:1.14;letter-spacing:-.01em}
+  .g{background:linear-gradient(120deg,#fff,var(--blue-lite) 65%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .muted{color:var(--muted)}
+
+  /* topbar */
+  header{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);
+    background:linear-gradient(180deg,rgba(7,14,28,.92),rgba(7,14,28,.6));border-bottom:1px solid var(--stroke)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .brand .mark{width:36px;height:36px;border-radius:9px;object-fit:contain;border:1px solid var(--stroke2);background:#000}
+  .brand b{font-family:var(--mono);font-size:.82rem;letter-spacing:.22em;color:var(--platinum)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;border:none;
+    font-family:var(--sans);font-weight:700;font-size:1rem;border-radius:12px;padding:15px 26px;
+    background:linear-gradient(135deg,var(--blue-lite),var(--blue) 45%,var(--blue-deep));color:#fff;
+    box-shadow:0 14px 34px -12px rgba(43,107,243,.8);transition:transform .18s,box-shadow .18s;white-space:nowrap}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 20px 46px -12px rgba(43,107,243,1)}
+  .btn.sm{padding:11px 20px;font-size:.9rem}
+  .btn.big{width:100%;font-size:1.15rem;padding:19px 28px}
+  .nav .btn{display:none}
+  @media(min-width:640px){.nav .btn{display:inline-flex}}
+
+  /* hero */
+  .hero{padding:60px 0 40px;display:grid;grid-template-columns:1.06fr .94fr;gap:46px;align-items:center}
+  .frame{border:1px solid var(--stroke2);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);background:#000;position:relative}
+  .frame img{display:block;width:100%}
+  .frame::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 60px rgba(43,107,243,.16);pointer-events:none}
+  .hero h1{font-size:clamp(2.1rem,5vw,3.2rem);margin:14px 0 8px}
+  .hero h1 .sub2{display:block;font-weight:600;font-size:clamp(1rem,2.2vw,1.3rem);color:var(--platinum);margin-top:12px;line-height:1.35}
+  .hero p.lead{color:var(--muted);font-size:1.1rem;max-width:520px;margin-top:14px}
+  .hero-cta{margin:26px 0 16px}
+  .pays{display:flex;align-items:center;gap:9px;flex-wrap:wrap;color:var(--muted);font-size:.8rem}
+  .paytag{font-family:var(--mono);font-weight:700;font-size:.62rem;letter-spacing:.06em;padding:4px 9px;
+    border-radius:6px;border:1px solid var(--stroke);background:var(--panel);color:var(--platinum)}
+
+  /* trust strip */
+  .trust{border-top:1px solid var(--stroke);border-bottom:1px solid var(--stroke);background:rgba(43,107,243,.05)}
+  .trust .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:22px 22px}
+  .trust .i{display:flex;align-items:center;gap:11px;justify-content:center;font-size:.9rem;color:var(--muted)}
+  .trust .i b{color:var(--text);font-weight:600}
+  .trust .ic{color:var(--blue-lite);font-size:1.2rem}
+
+  .head{text-align:center;max-width:680px;margin:0 auto 40px}
+  .head h2{font-size:clamp(1.7rem,3.4vw,2.4rem);margin:10px 0}
+  .head p{color:var(--muted)}
+
+  /* promise banner */
+  .promise{border:1px solid var(--stroke2);border-radius:20px;padding:34px 30px;
+    background:linear-gradient(180deg,rgba(43,107,243,.10),transparent);text-align:center;box-shadow:var(--shadow)}
+  .promise p{font-size:clamp(1.2rem,2.6vw,1.6rem);font-weight:700;color:var(--text);line-height:1.4}
+  .promise p .g{font-weight:800}
+  .promise span{display:block;margin-top:12px;color:var(--muted);font-size:.98rem;font-weight:400}
+
+  /* pillars grid */
+  .learn{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .item{background:var(--panel);border:1px solid var(--stroke);border-radius:16px;padding:24px}
+  .item .ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;margin-bottom:14px;
+    border:1px solid var(--stroke2);background:rgba(43,107,243,.10);font-size:1.35rem}
+  .item h3{font-weight:700;font-size:1.05rem;margin-bottom:6px}
+  .item p{color:var(--muted);font-size:.92rem}
+
+  /* for whom */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .box{border:1px solid var(--stroke);border-radius:16px;padding:26px;background:var(--panel)}
+  .box h3{font-weight:700;font-size:1.1rem;margin-bottom:14px}
+  .box ul{list-style:none;display:grid;gap:10px}
+  .box li{display:flex;gap:10px;color:var(--muted);font-size:.95rem}
+  .box.yes li::before{content:"✓";color:var(--green);font-weight:800}
+  .box.no li::before{content:"✕";color:var(--red);font-weight:800}
+
+  /* offer */
+  .offer{border:1px solid var(--stroke2);border-radius:24px;padding:44px 34px;text-align:center;
+    background:linear-gradient(180deg,rgba(43,107,243,.10),transparent);box-shadow:var(--shadow);position:relative;overflow:hidden}
+  .offer .badge{display:inline-flex;gap:8px;align-items:center;font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;
+    color:var(--blue-lite);border:1px solid var(--stroke2);border-radius:20px;padding:6px 14px;margin-bottom:18px}
+  .offer h2{font-size:clamp(1.7rem,3.4vw,2.3rem);margin-bottom:18px}
+  .price{display:flex;align-items:baseline;gap:14px;justify-content:center;margin-bottom:6px}
+  .price .now{font-weight:800;font-size:3.4rem;color:var(--text)}
+  .offer .sub{color:var(--muted);margin-bottom:26px}
+  .offer .cta{max-width:420px;margin:0 auto}
+  .guarantee{display:flex;align-items:center;gap:14px;justify-content:center;margin-top:26px;color:var(--muted);font-size:.9rem;flex-wrap:wrap}
+  .seal{width:42px;height:42px;border-radius:50%;border:1px solid var(--stroke2);display:grid;place-items:center;color:var(--blue-lite);font-family:var(--mono);font-size:.62rem;font-weight:700}
+
+  /* faq */
+  .faq{max-width:780px;margin:0 auto}
+  .qa{border:1px solid var(--stroke);border-radius:14px;margin-bottom:12px;background:var(--panel);overflow:hidden}
+  .qa summary{cursor:pointer;padding:18px 22px;font-weight:600;font-size:1rem;
+    list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary::after{content:"+";font-size:1.5rem;color:var(--blue-lite);transition:.2s}
+  .qa[open] summary::after{transform:rotate(45deg)}
+  .qa .ans{padding:0 22px 20px;color:var(--muted);font-size:.94rem}
+
+  footer{border-top:1px solid var(--stroke);padding:40px 0;text-align:center;color:var(--muted);font-size:.82rem}
+  footer a{color:var(--platinum)}
+
+  .wpp{position:fixed;right:18px;bottom:18px;z-index:60;width:56px;height:56px;border-radius:50%;
+    background:linear-gradient(135deg,#25D366,#128C4A);display:grid;place-items:center;
+    box-shadow:0 12px 30px -8px rgba(37,211,102,.7)}
+  .wpp svg{width:29px;height:29px;fill:#fff}
+
+  @media(max-width:840px){
+    .hero{grid-template-columns:1fr;text-align:center}
+    .hero .frame{max-width:380px;margin:0 auto;order:-1}
+    .pays,.hero-cta{justify-content:center;display:flex}
+    .hero p.lead{margin:14px auto 0}
+    .trust .wrap{grid-template-columns:1fr 1fr}
+    .learn{grid-template-columns:1fr}
+    .split{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="/">
+      <img class="mark" src="/assets/favicon.png" alt="RickEA" />
+      <b>RICKEA · MENTORIA</b>
+    </a>
+    <a href="#comprar" class="btn sm">Comprar agora</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="wrap hero">
+  <div>
+    <div class="eyebrow">Mentoria Profissional · Forex &amp; Mercado Financeiro</div>
+    <h1>RickEA <span class="g">Mentoria</span>
+      <span class="sub2">Mentalidade e Sucesso no Mercado de Investimento</span>
+    </h1>
+    <p class="lead">Análise, gestão de risco e estratégia andam junto com a parte que quase ninguém treina: a <b>cabeça por trás das decisões</b>. Aqui você constrói a mentalidade do trader consistente.</p>
+    <div class="hero-cta"><a href="#comprar" class="btn">Quero começar por R$49,99 →</a></div>
+    <div class="pays">
+      <span>Pagamento seguro:</span>
+      <span class="paytag">PIX</span><span class="paytag">DÉBITO</span><span class="paytag">CRÉDITO 12×</span>
+    </div>
+  </div>
+  <div class="frame"><img src="/assets/capa-mentoria.png" alt="RickEA Mentoria — Mentalidade e Sucesso" /></div>
+</section>
+
+<!-- TRUST -->
+<div class="trust">
+  <div class="wrap">
+    <div class="i"><span class="ic">⚡</span> <b>Acesso imediato</b></div>
+    <div class="i"><span class="ic">🖥️</span> <b>100% online</b></div>
+    <div class="i"><span class="ic">🧭</span> <b>No seu ritmo</b></div>
+    <div class="i"><span class="ic">🛡️</span> <b>Garantia 7 dias</b></div>
+  </div>
+</div>
+
+<!-- PROMISE -->
+<section class="wrap">
+  <div class="promise">
+    <p>"Não prometemos <span class="g">lucro fácil</span> — prometemos conhecimento, método e evolução."</p>
+    <span>90% do resultado no trade é mental. É exatamente a parte que a maioria ignora — e que a Mentoria coloca no centro.</span>
+  </div>
+</section>
+
+<!-- PILARES -->
+<section class="wrap">
+  <div class="head">
+    <div class="eyebrow">O que você desenvolve</div>
+    <h2>Os pilares da <span class="g">consistência</span></h2>
+    <p>Método e mentalidade juntos — porque estratégia sem cabeça não sobrevive ao mercado real.</p>
+  </div>
+  <div class="learn">
+    <div class="item"><div class="ic">📊</div><h3>Análises de mercado</h3><p>Como ler o cenário com critério — estrutura, contexto e leitura de tendência sem depender de achismo.</p></div>
+    <div class="item"><div class="ic">🛡️</div><h3>Gestão de risco profissional</h3><p>Quanto arriscar, onde parar e como sobreviver às sequências ruins que quebram o amador.</p></div>
+    <div class="item"><div class="ic">📚</div><h3>Conteúdo educacional prático</h3><p>Direto ao ponto e aplicável — nada de teoria solta; foco no que muda a sua operação de verdade.</p></div>
+    <div class="item"><div class="ic">📈</div><h3>Consistência a longo prazo</h3><p>Pensar em processo e probabilidade, não em acerto isolado. Construir resultado que se repete.</p></div>
+    <div class="item"><div class="ic">🧠</div><h3>Mentalidade de trader</h3><p>Controle emocional, disciplina e domínio do medo e da ganância — a mente que sustenta o plano.</p></div>
+    <div class="item"><div class="ic">🎯</div><h3>Estratégias aplicáveis ao mercado</h3><p>Abordagens que você consegue executar na prática, com regras claras de entrada, saída e gestão.</p></div>
+  </div>
+</section>
+
+<!-- PARA QUEM -->
+<section class="wrap">
+  <div class="head">
+    <div class="eyebrow">É pra você?</div>
+    <h2>Feito para quem quer evoluir de verdade</h2>
+  </div>
+  <div class="split">
+    <div class="box yes">
+      <h3>É pra você se…</h3>
+      <ul>
+        <li>Quer operar com método, não com sorte</li>
+        <li>Já entende de análise, mas erra pela emoção</li>
+        <li>Perde a disciplina depois de uma sequência ruim</li>
+        <li>Busca consistência e evolução no longo prazo</li>
+      </ul>
+    </div>
+    <div class="box no">
+      <h3>Não é pra você se…</h3>
+      <ul>
+        <li>Procura enriquecer da noite pro dia</li>
+        <li>Quer resultado sem mudar comportamento</li>
+        <li>Acha que disciplina e psicologia são frescura</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- OFERTA -->
+<section class="wrap" id="comprar">
+  <div class="offer">
+    <div class="badge">★ ACESSO IMEDIATO</div>
+    <h2>Comece a construir a <span class="g">sua consistência</span> hoje</h2>
+    <div class="price">
+      <span class="now">R$49,99</span>
+    </div>
+    <p class="sub">Pagamento único · Pix, débito ou crédito em até 12× · acesso na área de membros da Hotmart</p>
+    <div class="cta">
+      <a class="btn big" href="https://pay.hotmart.com/G106467310N" target="_blank" rel="noopener">Comprar agora →</a>
+      <div class="pays" style="justify-content:center;margin-top:12px">
+        <span class="paytag">PIX</span><span class="paytag">DÉBITO</span><span class="paytag">CRÉDITO 12×</span><span class="paytag">HOTMART</span>
+      </div>
+    </div>
+    <div class="guarantee">
+      <div class="seal">7<br>DIAS</div>
+      <span><b style="color:var(--text)">Garantia incondicional de 7 dias.</b> Não fez sentido pra você? Devolvemos 100% do valor, sem perguntas.</span>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="wrap">
+  <div class="head"><div class="eyebrow">Dúvidas</div><h2>Perguntas frequentes</h2></div>
+  <div class="faq">
+    <details class="qa"><summary>Como recebo o acesso depois de comprar?</summary><div class="ans">Na hora. Assim que o pagamento é confirmado (Pix e cartão costumam ser instantâneos), o acesso chega no seu e-mail e na área de membros da Hotmart.</div></details>
+    <details class="qa"><summary>Preciso já saber operar?</summary><div class="ans">Não precisa ser avançado. A Mentoria trabalha desde a base — análise, gestão de risco e mentalidade — servindo tanto pra quem está começando quanto pra quem já opera mas se sabota.</div></details>
+    <details class="qa"><summary>É promessa de lucro?</summary><div class="ans">Não. Não prometemos lucro fácil nem resultado garantido — prometemos conhecimento, método e evolução. Mercado envolve risco e o resultado depende do seu estudo e disciplina.</div></details>
+    <details class="qa"><summary>Quais as formas de pagamento?</summary><div class="ans">Pix, cartão de débito e cartão de crédito (à vista ou parcelado em até 12×), tudo pelo checkout seguro da Hotmart.</div></details>
+    <details class="qa"><summary>E se eu não gostar?</summary><div class="ans">Você tem 7 dias de garantia incondicional. Basta pedir o reembolso pela Hotmart dentro do prazo e devolvemos tudo.</div></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>© <span id="year"></span> RickEA Investments · Conteúdo educacional. Investir envolve risco; resultados passados não garantem resultados futuros.</p>
+    <p style="margin-top:8px"><a href="/">← Voltar para a loja</a></p>
+  </div>
+</footer>
+
+<a class="wpp" id="wpp" href="#" aria-label="WhatsApp" target="_blank" rel="noopener">
+  <svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.7-.9-2.9-1.6-4-3.6-.3-.5.3-.5.8-1.5.1-.2 0-.4 0-.5 0-.1-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.3 5.2 4.6 2 .8 2.7.9 3.7.8.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1 0 12 2z"/></svg>
+</a>
+
+<script>
+  var WHATSAPP="17702562736";
+  document.getElementById("wpp").href="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent("Ola! Tenho interesse na RickEA Mentoria (Mentalidade e Sucesso).");
+  document.getElementById("year").textContent=new Date().getFullYear();
+</script>
+</body>
+</html>
