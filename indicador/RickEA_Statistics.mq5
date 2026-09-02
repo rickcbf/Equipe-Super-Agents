@@ -232,7 +232,7 @@ void DirRow(string id,int cLeft,int cRight,int y,string word,int candles,double 
   {
    Label(PFX+"d_"+id+"_w",cLeft, y, word, clr,14,FONTB,ANCHOR_LEFT_UPPER);
    string cnt = IntegerToString(candles) + (candles==1?" vela":" velas");
-   Label(PFX+"d_"+id+"_c",(cLeft+cRight)/2, y, cnt, clr,12,FONTB,ANCHOR_CENTER_UPPER);
+   Label(PFX+"d_"+id+"_c",(cLeft+cRight)/2, y, cnt, clr,12,FONTB,ANCHOR_UPPER);
    Label(PFX+"d_"+id+"_p",cRight, y, DoubleToString(pct,0)+"%", clr,14,FONTB,ANCHOR_RIGHT_UPPER);
   }
 
