@@ -3,11 +3,13 @@
 Indicadores da marca **RickEA** para a **cTrader (C# / cAlgo API)**.
 
 ## Arquivos
-- `RickEA_Statistics.cs` — **RickEA Statistics**: painel de **estatística e probabilidade** baseado num
-  range de N velas (ver seção abaixo). ⭐ novo
+- `RickEA_Statistics.cs` — **RickEA Statistics** para **cTrader** (C# / cAlgo). ⭐
+- `RickEA_Statistics.mq5` — **RickEA Statistics** para **MetaTrader 5** (MQL5) — mesma lógica e layout. ⭐
 - `RickEA_XTrend.cs` — o **indicador** de tendência (SuperTrend/ATR + EMA + níveis, painel, preço grande).
 - `RickEA_XTrend_Alert.cs` — o **cBot de alerta de virada** (avisa quando a tendência vira BUY↔SELL).
 - (original MT5: `RickEA_XTrend_Indicator.mq5` — mantido só como referência da lógica.)
+
+> Autoria dos indicadores: **RichardTrader**.
 
 ---
 
@@ -44,12 +46,23 @@ Painel de **probabilidade e estatística** que lê um **RANGE ajustável de N ve
 - **Posição (horizontal/vertical)** — onde o painel fica ancorado no gráfico (padrão: canto **superior
   direito**).
 
-### Instalar
+### Instalar na cTrader
 1. cTrader → **Automate** → **New Indicator** → apague o exemplo → cole o `RickEA_Statistics.cs` inteiro.
 2. **Build** (martelo) → abra um gráfico → **Indicators → f(x) → RickEA Statistics** → ajuste o **Range**.
 
+### Instalar na MetaTrader 5 (`RickEA_Statistics.mq5`)
+1. MT5 → **Ferramentas → MetaQuotes Language Editor (F4)**.
+2. **Arquivo → Novo → Indicador Personalizado** (ou abra o `RickEA_Statistics.mq5` direto) → cole o
+   código → **Compilar (F7)**. Fica em *Indicadores → RickEA_Statistics*.
+3. No gráfico: **Inserir → Indicadores → Personalizado → RickEA_Statistics** → ajuste o **Range**.
+
+**Parâmetros (MT5):** `Range (qtd. de velas)` · `Titulo do painel` · `Mostrar preco grande` ·
+`Tamanho da fonte do preco` · `Margem da direita/topo (px)`. Mesma lógica do cTrader (pip = 10 pontos
+em símbolos de 3/5 dígitos). O painel é desenhado com objetos (`OBJ_RECTANGLE_LABEL` + `OBJ_LABEL`)
+ancorados no canto superior direito e some ao remover o indicador.
+
 > **Prévia visual:** abra `indicador/preview-statistics.html` no navegador para ver o layout/cores do
-> painel (é só uma maquete estática pra validar o visual — os números vêm do gráfico na cTrader).
+> painel (maquete estática — os números reais vêm do gráfico).
 
 ---
 

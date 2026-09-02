@@ -4,6 +4,7 @@ using cAlgo.API.Internals;
 
 // =====================================================================
 //  RickEA Statistics  —  indicador de ESTATÍSTICA e PROBABILIDADE (cTrader / cAlgo)
+//  Autor: RichardTrader
 //  -------------------------------------------------------------------
 //  Painel visual que lê um RANGE de N velas fechadas (ajustável) e mostra,
 //  TUDO calculado DENTRO desse range:

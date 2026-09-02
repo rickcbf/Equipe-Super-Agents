@@ -25,11 +25,12 @@ Marca de trading **RickEA Investments** / Instagram **@ri.chartrader**. Ebook
 - **RickEA X-Trend:** indicador de tendência (SuperTrend/ATR + EMA + níveis/painel/preço grande).
   Original **MQL5** já portado para **cTrader C# / cAlgo** (`indicador/RickEA_XTrend.cs`).
 - **RickEA Statistics ⭐:** painel de **estatística e probabilidade** sobre um **range de N velas**
-  ajustável (`indicador/RickEA_Statistics.cs`). Painel muda de cor pela predominância (verde=alta /
+  ajustável. Duas versões gêmeas: **cTrader** (`indicador/RickEA_Statistics.cs`) e **MT5**
+  (`indicador/RickEA_Statistics.mq5`). Painel muda de cor pela predominância (verde=alta /
   vermelho=baixa), BUY/SELL com qtd. de velas + %, barra de probabilidade, range em pips, média de
-  pips, pips da última vela, pips BUY/SELL, maiores sequências e preço grande. Prévia visual em
-  `indicador/preview-statistics.html`.
-- **Status:** aguardando **Build na cTrader** para validar compilação e visual.
+  pips, pips da última vela, pips BUY/SELL, maiores sequências e preço grande. Autor: RichardTrader.
+  Prévia visual em `indicador/preview-statistics.html`.
+- **Status:** aguardando **Build/Compilação** (cTrader e MT5) para validar visual.
 
 ---
 
