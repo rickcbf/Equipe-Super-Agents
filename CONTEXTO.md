@@ -21,13 +21,15 @@ Marca de trading **RickEA Investments** / Instagram **@ri.chartrader**. Ebook
 - **Checkout RickEA Mentoria — Mentalidade e Sucesso (Hotmart):** https://pay.hotmart.com/G106467310N · R$49,99 · página `/mentoria` · capa `assets/capa-mentoria.png`
 - **Skill que automatiza:** `rickea-instagram` (ver seção Skill)
 
-### 2) RickEA X-Trend — Indicador
-Indicador de tendência. **Está pronto e perfeito na MetaTrader 5** (código em **MQL5** — `.mq5`).
-- **Objetivo atual:** portar para a **cTrader** (linguagem **C# / cTrader Automate API**, ex-cAlgo),
-  para usar o mesmo indicador lá também.
-- **Status:** aguardando o **código-fonte `.mq5`** para iniciar a conversão MQL5 → C#.
-- **Recomendação:** projeto separado — repositório próprio (ex.: `rickea-x-trend`) ou pasta
-  `indicador/` neste repo. Definir ao começar.
+### 2) RickEA — Indicadores cTrader (pasta `indicador/`)
+- **RickEA X-Trend:** indicador de tendência (SuperTrend/ATR + EMA + níveis/painel/preço grande).
+  Original **MQL5** já portado para **cTrader C# / cAlgo** (`indicador/RickEA_XTrend.cs`).
+- **RickEA Statistics ⭐:** painel de **estatística e probabilidade** sobre um **range de N velas**
+  ajustável (`indicador/RickEA_Statistics.cs`). Painel muda de cor pela predominância (verde=alta /
+  vermelho=baixa), BUY/SELL com qtd. de velas + %, barra de probabilidade, range em pips, média de
+  pips, pips da última vela, pips BUY/SELL, maiores sequências e preço grande. Prévia visual em
+  `indicador/preview-statistics.html`.
+- **Status:** aguardando **Build na cTrader** para validar compilação e visual.
 
 ---
 

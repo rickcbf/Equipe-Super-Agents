@@ -1,0 +1,66 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>RickEA Statistics — prévia</title>
+<style>
+  :root{ --green:#16C784; --red:#EA3943; --dim:#B0BEC5; --white:#F0F4F8; }
+  body{ margin:0; min-height:100vh; background:#0b0f16; color:#e6edf3;
+        font-family:"Segoe UI",system-ui,sans-serif; display:flex; align-items:flex-start;
+        justify-content:center; padding:40px 20px; }
+  .chart{ width:100%; max-width:760px; height:440px; border-radius:14px; position:relative;
+          background:
+            repeating-linear-gradient(90deg,#0e131c 0 1px,transparent 1px 64px),
+            repeating-linear-gradient(0deg,#0e131c 0 1px,transparent 1px 44px),
+            linear-gradient(180deg,#0d1220,#0a0e16);
+          border:1px solid #1b2230; overflow:hidden; }
+  .stack{ position:absolute; top:14px; right:14px; width:270px; }
+  .bigprice{ text-align:right; font-weight:800; font-size:34px; color:var(--white);
+             text-shadow:0 2px 8px rgba(0,0,0,.6); margin:0 4px 8px 0; letter-spacing:.5px; }
+  .panel{ border-radius:8px; padding:12px; border:1.5px solid var(--green);
+          background:rgba(10,46,32,.92); box-shadow:0 10px 30px rgba(0,0,0,.45); }
+  .head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .head .title{ font-weight:800; font-size:13px; color:var(--white); letter-spacing:.5px; }
+  .head .dir{ font-weight:800; font-size:12px; color:var(--green); }
+  .dirrow{ display:grid; grid-template-columns:1.4fr 1fr 1fr; align-items:center; padding:3px 0; }
+  .dirrow .w{ font-weight:800; }
+  .dirrow.big .w{ font-size:15px; } .dirrow.big .c{ font-size:14px; } .dirrow.big .p{ font-size:15px; }
+  .dirrow .c{ text-align:center; font-weight:700; } .dirrow .p{ text-align:right; font-weight:800; }
+  .buy{ color:var(--green); } .sell{ color:var(--red); }
+  .bar{ display:flex; height:26px; border-radius:6px; overflow:hidden; margin:8px 0; }
+  .bar .seg{ display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800;
+             font-size:12px; }
+  .bar .b{ background:var(--green); } .bar .s{ background:var(--red); }
+  .stat{ display:flex; justify-content:space-between; padding:3px 0; font-size:12px; }
+  .stat .k{ color:var(--dim); } .stat .v{ font-weight:800; color:var(--white); }
+  .note{ max-width:760px; margin:18px auto 0; color:#8a97a6; font-size:12.5px; line-height:1.6; }
+</style>
+<div class="chart">
+  <div class="stack">
+    <div class="bigprice">2384.57</div>
+    <div class="panel">
+      <div class="head">
+        <div class="title">RICKEA STATISTICS</div>
+        <div class="dir">▲ ALTA</div>
+      </div>
+      <!-- predominante (BUY) em cima -->
+      <div class="dirrow big"><span class="w buy">BUY</span><span class="c buy">13 velas</span><span class="p buy">65%</span></div>
+      <div class="dirrow big"><span class="w sell">SELL</span><span class="c sell">7 velas</span><span class="p sell">35%</span></div>
+      <div class="bar">
+        <div class="seg b" style="flex:65">65%</div>
+        <div class="seg s" style="flex:35">35%</div>
+      </div>
+      <div class="stat"><span class="k">Range (pips)</span><span class="v">184.0</span></div>
+      <div class="stat"><span class="k">Média pips/vela</span><span class="v">21.3</span></div>
+      <div class="stat"><span class="k">Última vela (pips)</span><span class="v" style="color:var(--green)">+18.4</span></div>
+      <div class="stat"><span class="k">Pips BUY</span><span class="v" style="color:var(--green)">+142.6</span></div>
+      <div class="stat"><span class="k">Pips SELL</span><span class="v" style="color:var(--red)">-76.9</span></div>
+      <div class="stat"><span class="k">Maior seq. BUY</span><span class="v" style="color:var(--green)">5</span></div>
+      <div class="stat"><span class="k">Maior seq. SELL</span><span class="v" style="color:var(--red)">3</span></div>
+      <div class="stat"><span class="k">Velas no range</span><span class="v">20</span></div>
+    </div>
+  </div>
+</div>
+<p class="note">
+  Maquete estática só para validar o visual do <b>RickEA Statistics</b>. Quando predomina BAIXA, o painel
+  fica <b style="color:var(--red)">vermelho</b> e o campo <b>SELL</b> sobe para o topo. Os números reais
+  vêm do gráfico na cTrader (arquivo <code>RickEA_Statistics.cs</code>).
+</p>

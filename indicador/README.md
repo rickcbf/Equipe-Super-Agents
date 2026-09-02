@@ -1,12 +1,59 @@
-# RickEA X-Trend — porte MT5 → cTrader
+# RickEA — Indicadores para cTrader
 
-Indicador de tendência (SuperTrend/ATR + EMA + painel visual), portado do MetaTrader 5 (MQL5)
-para a **cTrader (C# / cAlgo API)**.
+Indicadores da marca **RickEA** para a **cTrader (C# / cAlgo API)**.
 
 ## Arquivos
-- `RickEA_XTrend.cs` — o **indicador** para cTrader (visual: linha, EMA, níveis, painel, preço grande).
+- `RickEA_Statistics.cs` — **RickEA Statistics**: painel de **estatística e probabilidade** baseado num
+  range de N velas (ver seção abaixo). ⭐ novo
+- `RickEA_XTrend.cs` — o **indicador** de tendência (SuperTrend/ATR + EMA + níveis, painel, preço grande).
 - `RickEA_XTrend_Alert.cs` — o **cBot de alerta de virada** (avisa quando a tendência vira BUY↔SELL).
 - (original MT5: `RickEA_XTrend_Indicator.mq5` — mantido só como referência da lógica.)
+
+---
+
+## ⭐ RickEA Statistics (RickEA_Statistics.cs)
+
+Painel de **probabilidade e estatística** que lê um **RANGE ajustável de N velas fechadas** e mostra
+**tudo calculado dentro desse range**. A ideia é ler de relance a força do momento.
+
+### O que o painel mostra
+- **Cor predominante do momento:** o painel fica **VERDE** quando predominam velas de alta (BUY) e
+  **VERMELHO** quando predominam velas de baixa (SELL). O cabeçalho mostra **▲ ALTA / ▼ BAIXA**.
+- **Campos BUY e SELL — o que predomina fica EM CIMA** — cada um com a **quantidade de velas** e o
+  **percentual** ao lado.
+- **Barra de probabilidade** (largura do painel): dividida em **verde (BUY)** e **vermelho (SELL)**,
+  preenchida na proporção de cada lado = a probabilidade do momento a partir das velas do range.
+- **Preço do ativo GRANDE**, no canto superior direito, **acima** do painel (atualiza a cada tick).
+- **Range (pips):** tamanho do range = **maior máxima − menor mínima** das N velas, em pips.
+- **Média pips/vela:** amplitude média (máxima−mínima) por vela dentro do range.
+- **Última vela (pips):** pips da **última vela encerrada** (verde se subiu, vermelho se caiu).
+- **Pips BUY (verde)** e **Pips SELL (vermelho):** soma dos corpos das velas de alta e de baixa.
+- **Maior seq. BUY / SELL:** a **maior sequência seguida** de velas de alta e de baixa no range.
+- **Velas no range:** quantas velas realmente entraram no cálculo.
+
+### Definição de vela
+- **BUY** = fechamento **>** abertura · **SELL** = fechamento **<** abertura · fecha = abre → neutra
+  (doji, não conta para nenhum lado). Os **percentuais usam BUY+SELL** como base.
+- O range usa as **N últimas velas ENCERRADAS** (a vela que está se formando fica de fora), então os
+  números não "piscam" a cada tick — só o **preço grande** e a barra atualizam ao vivo.
+
+### Parâmetros
+- **Range (qtd. de velas)** — o "set" ajustável (padrão **20**). Tudo é calculado dentro dele.
+- **Título do painel** (padrão `RICKEA STATISTICS`).
+- **Mostrar preço grande** · **Tamanho da fonte do preço** (padrão 34).
+- **Posição (horizontal/vertical)** — onde o painel fica ancorado no gráfico (padrão: canto **superior
+  direito**).
+
+### Instalar
+1. cTrader → **Automate** → **New Indicator** → apague o exemplo → cole o `RickEA_Statistics.cs` inteiro.
+2. **Build** (martelo) → abra um gráfico → **Indicators → f(x) → RickEA Statistics** → ajuste o **Range**.
+
+> **Prévia visual:** abra `indicador/preview-statistics.html` no navegador para ver o layout/cores do
+> painel (é só uma maquete estática pra validar o visual — os números vêm do gráfico na cTrader).
+
+---
+
+## RickEA X-Trend (RickEA_XTrend.cs)
 
 ## cBot de alerta (RickEA_XTrend_Alert.cs)
 Roda a MESMA lógica SuperTrend, mas **só na barra fechada** (não repinta) e **não opera a conta** —
