@@ -93,6 +93,7 @@
       <button class="btn" id="print">🖨️ Salvar / Imprimir PDF</button>
     </div>
     <div class="acct" id="acct"></div>
+    <div id="statewrap"></div>
     <div class="grid" id="kpis"></div>
     <div class="card">
       <h3>Curva de capital (saldo)</h3>
@@ -218,105 +219,154 @@ function analyze(text){
     }
     return '';
   }
+  var contaRaw=labelVal(['account','conta']);
   var acct={
     name:  labelVal(['name','nome']),
-    login: (labelVal(['account','conta']).match(/\d+/)||[''])[0],
+    login: (contaRaw.match(/\d+/)||[''])[0],
     broker:labelVal(['company','empresa','broker','corretora']),
-    cur:   (labelVal(['currency','moeda']).match(/[A-Z]{3}/)||[''])[0]
+    cur:   (labelVal(['currency','moeda']).match(/[A-Z]{3}/)||[])[0]
+           || (contaRaw.match(/\b[A-Z]{3}\b/)||[])[0] || ''
   };
 
-  /* usa Deals (tem Saldo); senão Positions */
-  var sec=findSection(rows,SEC.deals), src='deals';
-  if(!sec){ sec=findSection(rows,SEC.positions); src='positions'; }
-  if(!sec) throw new Error('Não achei a tabela de Negócios/Posições. Exporte pelo MT5: aba Histórico → botão direito → Relatório → HTML.');
-
-  var map=mapHeader(sec.header);
-  if(map.profit==null){
-    // fallback: última coluna numérica é o lucro
-    map.profit=sec.header.length-1;
-  }
-
-  var trades=[];           // {time,symbol,type,profit,balance}
-  var startBal=NaN, curBal=NaN;
-
-  for(var i=0;i<sec.rows.length;i++){
-    var r=sec.rows[i];
-    var type=(map.type!=null?r[map.type]:'').toLowerCase();
-    var dir =(map.direction!=null?r[map.direction]:'').toLowerCase();
-    var profit=parseNum(r[map.profit]);
-    var bal=(map.balance!=null)?parseNum(r[map.balance]):NaN;
-
-    var isDeposit = has(type,['balance','saldo','deposit','depósito','deposito','credit','crédito','credito','correction']);
-    if(isDeposit){
-      if(!isFinite(startBal)) startBal=isFinite(bal)?bal:(isFinite(profit)?profit:NaN);
-      if(isFinite(bal)) curBal=bal;
-      continue;
+  /* ---------- localizador numérico robusto (rótulo -> 1º valor numérico) ---------- */
+  function findNum(labels){
+    for(var i=0;i<rows.length;i++){
+      var c=rowCells(rows[i]);
+      for(var j=0;j<c.length;j++){
+        var low=c[j].trim().toLowerCase();
+        for(var li=0;li<labels.length;li++){
+          var lab=labels[li];
+          if(low===lab || low===lab+':' || low.indexOf(lab+':')===0){
+            var cand=[]; var rest=c[j].slice(c[j].indexOf(':')+1).trim();
+            if(rest && rest!==c[j].trim()) cand.push(rest);
+            for(var k=j+1;k<c.length;k++) if(c[k].trim()!=='') cand.push(c[k].trim());
+            for(var q=0;q<cand.length;q++){ var v=parseNum(cand[q]); if(isFinite(v)) return {num:v,raw:cand[q]}; }
+          }
+        }
+      }
     }
-    var isTrade = has(type,['buy','sell','compra','venda']) || (map.type==null);
-    if(!isTrade) continue;
+    return {num:NaN,raw:''};
+  }
+  function sNum(l){ return findNum(l).num; }
+  function sRaw(l){ return findNum(l).raw; }
+  function pctIn(s){ var m=String(s).match(/([\d.,]+)\s*%/); return m?parseNum(m[1]):NaN; }
+  function countIn(s){ var m=String(s).replace(/ /g,' ').match(/-?\d+/); return m?parseInt(m[0],10):NaN; }
 
-    // com coluna Entrada/Saída, só a SAÍDA (out) fecha a operação
-    var isOut = map.direction!=null ? has(dir,['out','saída','saida']) : (isFinite(profit) && profit!==0);
-    if(map.direction!=null && !isOut) continue;   // ignora entradas (in)
+  /* ---------- bloco Resultados (fonte oficial do MT5) ---------- */
+  var sm={
+    net:     sNum(['lucro líquido total','lucro liquido total','total net profit']),
+    gp:      sNum(['lucro bruto','gross profit']),
+    gl:      sNum(['perda bruta','gross loss']),
+    pf:      sNum(['fator de lucro','profit factor']),
+    payoff:  sNum(['retorno esperado (payoff)','retorno esperado','expected payoff']),
+    recovery:sNum(['fator de recuperação','fator de recuperacao','recovery factor']),
+    sharpe:  sNum(['índice de sharpe','indice de sharpe','sharpe ratio']),
+    nTot:    countIn(sRaw(['total de negociações','total de negociacoes','total trades'])),
+    maxWin:  sNum(['maior lucro da negociação','maior lucro da negociacao','largest profit trade']),
+    maxLoss: sNum(['maior perda na negociação','maior perda na negociacao','largest loss trade']),
+    avgWin:  sNum(['média lucro da negociação','media lucro da negociacao','average profit trade']),
+    avgLoss: sNum(['média perda na negociação','media perda na negociacao','average loss trade'])
+  };
+  var ddRaw  = sRaw(['rebaixamento máximo do saldo','rebaixamento maximo do saldo','balance drawdown maximal','maximal drawdown']);
+  var winRaw = sRaw(['negociações com lucro (% of total)','negociacoes com lucro (% of total)','negociações com lucro','profit trades (% of total)']);
+  var lossRaw= sRaw(['negociações com perda (% of total)','negociacoes com perda (% of total)','negociações com perda','loss trades (% of total)']);
+  var cwRaw  = sRaw(['máximo ganhos consecutivos ($)','maximo ganhos consecutivos','maximum consecutive wins']);
+  var clRaw  = sRaw(['máximo perdas consecutivas ($)','maximo perdas consecutivas','maximum consecutive losses']);
+
+  var state={
+    balance:   sNum(['saldo']),
+    equity:    sNum(['capital líquido','capital liquido','equity']),
+    floating:  sNum(['flutuante p/l','flutuante p / l','floating p/l','lucro flutuante']),
+    freeMargin:sNum(['margem livre','free margin'])
+  };
+  var hasSummary = isFinite(sm.net);
+
+  /* ---------- lista de operações (Posições) p/ tabela + curva ---------- */
+  function isDataRow(c){ return c.length>=6 && /^\d{4}\.\d{2}\.\d{2}/.test(c[0]||''); }
+  function sectionData(syn){
+    var out=[], started=false;
+    for(var i=0;i<rows.length;i++){
+      var c=rowCells(rows[i]); var ne=nonEmpty(c);
+      if(!started){ if(ne.length>=1 && ne.length<=2 && has(ne[0],syn)) started=true; continue; }
+      if(ne.length>=1 && ne.length<=2 && has(ne[0],STOP)) break;   // próxima seção
+      if(isDataRow(c)) out.push(c);
+    }
+    return out;
+  }
+
+  var src='positions';
+  var prows=sectionData(SEC.positions);
+  var trades=[];
+  for(var i=0;i<prows.length;i++){
+    var c=prows[i];
+    var profit=parseNum(c[c.length-1]);          // Lucro = última célula (colspan=2)
     if(!isFinite(profit)) continue;
-
-    if(isFinite(bal)) curBal=bal;
-    trades.push({
-      time:  map.time!=null?r[map.time]:'',
-      symbol:map.symbol!=null?r[map.symbol]:'',
-      type:  map.type!=null?r[map.type]:'',
-      profit:profit,
-      balance:isFinite(bal)?bal:NaN
-    });
+    trades.push({time:c[0],symbol:c[2]||'',type:(c[3]||'').toLowerCase(),profit:profit,balance:NaN});
   }
-
-  if(!trades.length) throw new Error('Encontrei a tabela, mas nenhuma operação fechada com lucro/prejuízo.');
-
-  /* curva de capital */
-  var haveBal=trades.every(function(t){return isFinite(t.balance);});
-  var equity=[];
-  if(!isFinite(startBal)){
-    // deduz saldo inicial a partir do 1º saldo - 1º lucro
-    if(haveBal) startBal=trades[0].balance-trades[0].profit;
-    else startBal=0;
+  /* fallback: Negócios/Deals com coluna Saldo */
+  if(!trades.length){
+    var sec=findSection(rows,SEC.deals); src='deals';
+    if(sec){
+      var map=mapHeader(sec.header);
+      if(map.profit==null) map.profit=sec.header.length-1;
+      for(var d=0;d<sec.rows.length;d++){
+        var r=sec.rows[d];
+        var type=(map.type!=null?r[map.type]:'').toLowerCase();
+        if(has(type,['balance','saldo','deposit','depósito','deposito','credit','crédito','credito','correction'])) continue;
+        if(map.type!=null && !has(type,['buy','sell','compra','venda'])) continue;
+        var dir=(map.direction!=null?r[map.direction]:'').toLowerCase();
+        if(map.direction!=null && !has(dir,['out','saída','saida'])) continue;
+        var pr=parseNum(r[map.profit]); if(!isFinite(pr)) continue;
+        var bal=(map.balance!=null)?parseNum(r[map.balance]):NaN;
+        trades.push({time:map.time!=null?r[map.time]:'',symbol:map.symbol!=null?r[map.symbol]:'',
+          type:map.type!=null?r[map.type]:'',profit:pr,balance:isFinite(bal)?bal:NaN});
+      }
+    }
   }
-  equity.push(startBal);
-  var run=startBal;
-  for(var j=0;j<trades.length;j++){
-    if(haveBal){ run=trades[j].balance; }
-    else { run+=trades[j].profit; }
-    equity.push(run);
-  }
-  var endBal=equity[equity.length-1];
+  if(!trades.length && !hasSummary)
+    throw new Error('Não achei operações fechadas nem o bloco de Resultados. No MT5: aba Histórico → botão direito → Relatório → HTML (período "Todo o histórico").');
 
-  /* estatísticas */
-  var net=0,gp=0,gl=0,wins=0,losses=0,maxWin=0,maxLoss=0;
-  var cw=0,cl=0,maxCW=0,maxCL=0;
-  for(var k=0;k<trades.length;k++){
-    var p=trades[k].profit; net+=p;
-    if(p>0){gp+=p;wins++;maxWin=Math.max(maxWin,p);cw++;cl=0;maxCW=Math.max(maxCW,cw);}
-    else if(p<0){gl+=p;losses++;maxLoss=Math.min(maxLoss,p);cl++;cw=0;maxCL=Math.max(maxCL,cl);}
-    else {cw=0;cl=0;}
-  }
-  var n=trades.length;
-  var pf = gl!==0 ? gp/Math.abs(gl) : (gp>0?Infinity:0);
-  var winRate = n? wins/n*100 : 0;
-  var avgWin = wins? gp/wins : 0;
-  var avgLoss = losses? gl/losses : 0;
-  var payoff = n? net/n : 0;
-  var rr = avgLoss!==0 ? avgWin/Math.abs(avgLoss) : 0;
+  /* curva: usa Saldo do deal se existir; senão saldo inicial deduzido + lucro acumulado */
+  var haveBal=trades.length>0 && trades.every(function(t){return isFinite(t.balance);});
+  var base=(isFinite(state.balance)&&isFinite(sm.net))?state.balance-sm.net:0;
+  var equity=[haveBal?(trades[0].balance-trades[0].profit):base], run=equity[0];
+  for(var j=0;j<trades.length;j++){ run=haveBal?trades[j].balance:run+trades[j].profit; equity.push(run); }
 
-  /* drawdown máximo sobre a curva */
-  var peak=equity[0], maxDD=0, maxDDpct=0;
-  for(var e=0;e<equity.length;e++){
-    if(equity[e]>peak) peak=equity[e];
-    var dd=peak-equity[e];
-    if(dd>maxDD){ maxDD=dd; maxDDpct = peak!==0 ? dd/peak*100 : 0; }
+  /* estatísticas calculadas (fallback/complemento) */
+  var cNet=0,cGp=0,cGl=0,cW=0,cL=0,cMaxW=0,cMaxL=0,cw=0,clc=0,cMaxCW=0,cMaxCL=0;
+  for(var k=0;k<trades.length;k++){ var p=trades[k].profit; cNet+=p;
+    if(p>0){cGp+=p;cW++;cMaxW=Math.max(cMaxW,p);cw++;clc=0;cMaxCW=Math.max(cMaxCW,cw);}
+    else if(p<0){cGl+=p;cL++;cMaxL=Math.min(cMaxL,p);clc++;cw=0;cMaxCL=Math.max(cMaxCL,clc);}
   }
-  var ret = startBal!==0 ? (endBal-startBal)/startBal*100 : 0;
+  var pick=function(a,b){ return isFinite(a)?a:b; };
+  var net=pick(sm.net,cNet), gp=pick(sm.gp,cGp), gl=pick(sm.gl,cGl);
+  var n=isFinite(sm.nTot)?sm.nTot:trades.length;
+  var wins  =isFinite(countIn(winRaw))?countIn(winRaw):cW;
+  var losses=isFinite(countIn(lossRaw))?countIn(lossRaw):cL;
+  var winRate=isFinite(pctIn(winRaw))?pctIn(winRaw):(n?wins/n*100:0);
+  var pf=isFinite(sm.pf)?sm.pf:(gl!==0?gp/Math.abs(gl):(gp>0?Infinity:0));
+  var payoff=isFinite(sm.payoff)?sm.payoff:(n?net/n:0);
+  var avgWin=pick(sm.avgWin,cW?cGp/cW:0), avgLoss=pick(sm.avgLoss,cL?cGl/cL:0);
+  var maxWin=pick(sm.maxWin,cMaxW), maxLoss=pick(sm.maxLoss,cMaxL);
+  var maxCW=isFinite(countIn(cwRaw))?countIn(cwRaw):cMaxCW;
+  var maxCL=isFinite(countIn(clRaw))?countIn(clRaw):cMaxCL;
+  var rr=avgLoss!==0?avgWin/Math.abs(avgLoss):0;
 
-  return {acct:acct,src:src,trades:trades,equity:equity,
-    startBal:startBal,endBal:endBal,net:net,gp:gp,gl:gl,pf:pf,
+  /* drawdown: do bloco Resultados; senão calculado da curva */
+  var maxDD=parseNum(ddRaw), maxDDpct=pctIn(ddRaw);
+  if(!isFinite(maxDD)){
+    var peak=equity[0]; maxDD=0; maxDDpct=0;
+    for(var e=0;e<equity.length;e++){ if(equity[e]>peak)peak=equity[e];
+      var dd=peak-equity[e]; if(dd>maxDD){maxDD=dd; maxDDpct=peak!==0?dd/peak*100:0;} }
+  }
+  var startBal=equity[0], endBal=equity[equity.length-1];
+  var capBase=(isFinite(state.balance))?(state.balance-net):startBal;
+  var ret=(capBase!==0 && isFinite(capBase))?net/Math.abs(capBase)*100
+          :(startBal!==0?(endBal-startBal)/startBal*100:0);
+
+  return {acct:acct,src:src,hasSummary:hasSummary,state:state,
+    trades:trades,equity:equity,haveBal:haveBal,startBal:startBal,endBal:endBal,
+    net:net,gp:gp,gl:gl,pf:pf,recovery:sm.recovery,sharpe:sm.sharpe,
     n:n,wins:wins,losses:losses,winRate:winRate,
     avgWin:avgWin,avgLoss:avgLoss,maxWin:maxWin,maxLoss:maxLoss,
     maxCW:maxCW,maxCL:maxCL,payoff:payoff,rr:rr,
@@ -366,10 +416,27 @@ function render(a){
   ac.push('<div><b>Operações:</b> '+a.n+'</div>');
   document.getElementById('acct').innerHTML=ac.join('');
 
+  // estado da conta (saldo, capital, flutuante)
+  var sw=document.getElementById('statewrap'), s=a.state;
+  if(isFinite(s.balance)||isFinite(s.floating)||isFinite(s.equity)){
+    var tiles=[];
+    if(isFinite(s.balance))   tiles.push(kpi('Saldo da conta', money(s.balance),'neu'));
+    if(isFinite(s.equity))    tiles.push(kpi('Capital líquido', money(s.equity), cls(s.equity-(isFinite(s.balance)?s.balance:s.equity))));
+    if(isFinite(s.floating))  tiles.push(kpi('Flutuante P/L (aberto)', money(s.floating), cls(s.floating)));
+    if(isFinite(s.freeMargin))tiles.push(kpi('Margem livre', money(s.freeMargin),'neu'));
+    var warn = (isFinite(s.floating)&&s.floating<0 && isFinite(a.net) && s.floating < -Math.abs(a.net))
+      ? '<div style="margin-top:10px;padding:11px 13px;border:1px solid #5a2a2a;background:#241416;border-radius:10px;color:#ffb0b0;font-size:13px">'
+        +'⚠️ <b>Atenção:</b> o resultado <b>fechado</b> está positivo ('+money(a.net)+'), mas há <b>'+money(s.floating)
+        +'</b> de prejuízo <b>flutuante</b> em posições ABERTAS. Esse lucro só se realiza quando essas posições forem fechadas.</div>'
+      : '';
+    sw.innerHTML='<div class="card"><h3>Estado da conta (no momento da exportação)</h3>'
+      +'<div class="grid" style="margin:0">'+tiles.join('')+'</div>'+warn+'</div>';
+  } else sw.innerHTML='';
+
   // KPIs principais
   document.getElementById('kpis').innerHTML=[
-    kpi('Lucro líquido', money(a.net), cls(a.net)),
-    kpi('Retorno', fmt(a.ret,1)+'%', cls(a.ret)),
+    kpi('Lucro líquido (fechado)', money(a.net), cls(a.net)),
+    kpi('Retorno s/ capital', fmt(a.ret,2)+'%', cls(a.ret)),
     kpi('Fator de lucro', a.pf===Infinity?'∞':fmt(a.pf,2), a.pf>=1?'pos':'neg'),
     kpi('Acerto', fmt(a.winRate,1)+'%', a.winRate>=50?'pos':'neu')
   ].join('');
@@ -378,11 +445,11 @@ function render(a){
   document.getElementById('equity').innerHTML=equitySVG(a.equity);
 
   // KPIs secundários
-  document.getElementById('kpis2').innerHTML=[
-    kpi('Saldo inicial', money(a.startBal),'neu'),
-    kpi('Saldo final', money(a.endBal), cls(a.endBal-a.startBal)),
-    kpi('Drawdown máx.', money(-a.maxDD)+' ('+fmt(a.maxDDpct,1)+'%)', a.maxDD>0?'neg':'neu'),
+  var k2=[
+    kpi('Drawdown máx.', money(-a.maxDD)+(isFinite(a.maxDDpct)?' ('+fmt(a.maxDDpct,2)+'%)':''), a.maxDD>0?'neg':'neu'),
     kpi('Payoff esperado', money(a.payoff), cls(a.payoff)),
+    kpi('Fator recuperação', isFinite(a.recovery)?fmt(a.recovery,2):'—','neu'),
+    kpi('Índice Sharpe', isFinite(a.sharpe)?fmt(a.sharpe,2):'—','neu'),
     kpi('Ganho médio', money(a.avgWin),'pos'),
     kpi('Perda média', money(a.avgLoss),'neg'),
     kpi('R:R realizado', fmt(a.rr,2), a.rr>=1?'pos':'neu'),
@@ -391,18 +458,20 @@ function render(a){
     kpi('Maior perda', money(a.maxLoss),'neg'),
     kpi('Seq. ganhos', String(a.maxCW),'pos'),
     kpi('Seq. perdas', String(a.maxCL),'neg')
-  ].join('');
+  ];
+  document.getElementById('kpis2').innerHTML=k2.join('');
 
-  // tabela de trades
-  var th='<thead><tr><th class="l">#</th><th class="l">Horário</th><th class="l">Ativo</th><th class="l">Tipo</th><th>Resultado</th><th>Saldo</th></tr></thead>';
+  // tabela de operações
+  var th='<thead><tr><th class="l">#</th><th class="l">Horário (abertura)</th><th class="l">Ativo</th><th class="l">Tipo</th><th>Resultado</th><th>Acumulado</th></tr></thead>';
   var tb='<tbody>';
   for(var i=0;i<a.trades.length;i++){ var t=a.trades[i];
     tb+='<tr><td class="l">'+(i+1)+'</td><td class="l">'+(t.time||'')+'</td><td class="l">'+(t.symbol||'')
       +'</td><td class="l">'+(t.type||'')+'</td><td class="'+cls(t.profit)+'">'+money(t.profit)
-      +'</td><td>'+(isFinite(t.balance)?money(t.balance):'—')+'</td></tr>';
+      +'</td><td>'+(a.equity[i+1]!=null?money(a.equity[i+1]):'—')+'</td></tr>';
   }
   tb+='</tbody>';
   document.getElementById('trades').innerHTML=th+tb;
+  if(!a.trades.length) document.getElementById('trades').innerHTML=th+'<tbody><tr><td colspan="6" class="l" style="color:#8fa1b7">Sem operações fechadas nesta exportação (só o resumo).</td></tr></tbody>';
 
   document.getElementById('gendate').textContent=new Date().toLocaleString('pt-BR');
   document.getElementById('drop').style.display='none';
