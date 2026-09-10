@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RickEA — Gerador de Relatório MT5</title>
+<style>
+  :root{
+    --bg:#0c0f14; --panel:#131923; --panel2:#0f141d; --line:#1f2836;
+    --ink:#eaf0f7; --mut:#8fa1b7;
+    --gold:#e8b64d; --green:#22c37e; --red:#ff5d5d; --blue:#4da3ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.5 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  a{color:var(--gold)}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px}
+  header.top{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+  .logo{width:44px;height:44px;border-radius:10px;flex:0 0 auto;
+    background:linear-gradient(135deg,#e8b64d,#b5842a);color:#171200;
+    display:grid;place-items:center;font-weight:900;font-size:22px}
+  .brand h1{margin:0;font-size:18px;letter-spacing:.3px}
+  .brand p{margin:0;color:var(--mut);font-size:12px}
+
+  .drop{border:2px dashed #2a3a52;border-radius:16px;
+    background:var(--panel);padding:34px;text-align:center;transition:.15s}
+  .drop.drag{border-color:var(--gold);background:#161d29}
+  .drop h2{margin:.2em 0;font-size:16px}
+  .drop p{color:var(--mut);margin:.3em 0}
+  .btn{display:inline-block;margin-top:10px;background:linear-gradient(135deg,#e8b64d,#c8922f);
+    color:#1a1400;font-weight:800;border:0;border-radius:10px;padding:11px 18px;cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:600}
+  .err{color:var(--red);margin-top:12px;font-weight:600}
+  input[type=file]{display:none}
+
+  #report{display:none;margin-top:8px}
+  .acct{display:flex;flex-wrap:wrap;gap:8px 26px;background:var(--panel);
+    border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:14px 0}
+  .acct div{font-size:13px}.acct b{color:var(--mut);font-weight:600}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}
+  @media(max-width:820px){.grid{grid-template-columns:repeat(2,1fr)}}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .kpi .lab{color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+  .kpi .val{font-size:24px;font-weight:800;margin-top:4px}
+  .pos{color:var(--green)}.neg{color:var(--red)}.neu{color:var(--ink)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin:14px 0}
+  .card h3{margin:0 0 10px;font-size:14px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+  th:first-child,td:first-child,th.l,td.l{text-align:left}
+  thead th{color:var(--mut);font-weight:600;position:sticky;top:0;background:var(--panel)}
+  .scroll{max-height:360px;overflow:auto;border-radius:10px}
+  .foot{color:var(--mut);font-size:12px;margin-top:18px;text-align:center}
+  .toolbar{display:flex;gap:10px;justify-content:flex-end;margin:10px 0}
+  svg{display:block;width:100%;height:auto}
+
+  @media print{
+    body{background:#fff;color:#111}
+    .wrap{max-width:none}
+    .noprint{display:none!important}
+    .kpi,.card,.acct{background:#fff;border-color:#ddd}
+    thead th{background:#fff}
+    .drop{display:none}
+    .pos{color:#0a7a4a}.neg{color:#c62828}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="logo">R</div>
+    <div class="brand">
+      <h1>RickEA — Relatório de Performance</h1>
+      <p>Gerador grátis de relatório do MetaTrader 5 · roda no seu navegador · nada é enviado</p>
+    </div>
+  </header>
+
+  <div class="drop noprint" id="drop">
+    <h2>Arraste aqui o <code>ReportHistory-*.html</code> do MT5</h2>
+    <p>ou</p>
+    <button class="btn" id="pick">Escolher arquivo…</button>
+    <input type="file" id="file" accept=".html,.htm,.xls,.xlsx,text/html">
+    <p style="margin-top:14px;font-size:12px">
+      Tudo é processado no seu navegador — nenhum dado sai do seu PC.
+    </p>
+    <div class="err" id="err"></div>
+  </div>
+
+  <div id="report">
+    <div class="toolbar noprint">
+      <button class="btn ghost" id="another">Carregar outro</button>
+      <button class="btn" id="print">🖨️ Salvar / Imprimir PDF</button>
+    </div>
+    <div class="acct" id="acct"></div>
+    <div id="statewrap"></div>
+    <div class="grid" id="kpis"></div>
+    <div class="card">
+      <h3>Curva de capital (saldo)</h3>
+      <div id="equity"></div>
+    </div>
+    <div class="grid" id="kpis2"></div>
+    <div class="card">
+      <h3>Operações fechadas</h3>
+      <div class="scroll"><table id="trades"></table></div>
+    </div>
+    <div class="foot">
+      Gerado por RickEA Investments · @ri.chartrader · <span id="gendate"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ---------- utils ---------- */
+function parseNum(s){
+  if(s==null) return NaN;
+  s=String(s).replace(/ /g,' ').trim();
+  if(s===''||s==='-') return NaN;
+  s=s.replace(/\s/g,'');
+  if(s.indexOf('.')===-1 && s.indexOf(',')>-1) s=s.replace(/,/g,'.'); // vírgula decimal
+  else s=s.replace(/,/g,'');                                          // vírgula milhar
+  var v=parseFloat(s);
+  return v;
+}
+function fmt(n,dec){ dec=(dec==null)?2:dec;
+  if(!isFinite(n)) return '—';
+  return n.toLocaleString('pt-BR',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+}
+function cls(n){ return n>0?'pos':(n<0?'neg':'neu'); }
+function has(txt,arr){ txt=(txt||'').toLowerCase(); for(var i=0;i<arr.length;i++) if(txt.indexOf(arr[i])>-1) return true; return false; }
+
+/* sinônimos PT / EN */
+var SYN={
+  time:['time','horário','horario','hora','data'],
+  symbol:['symbol','símbolo','simbolo','ativo'],
+  type:['type','tipo'],
+  direction:['direction','direção','direcao','entrada/saída','entrada / saída','entrada/saida'],
+  volume:['volume'],
+  price:['price','preço','preco'],
+  profit:['profit','lucro','resultado'],
+  balance:['balance','saldo'],
+  commission:['commission','comissão','comissao'],
+  swap:['swap'],
+  comment:['comment','comentário','comentario']
+};
+var SEC={
+  deals:['deals','negócios','negocios'],
+  positions:['positions','posições','posicoes'],
+  orders:['orders','ordens']
+};
+var STOP=['results','resultados','orders','ordens','positions','posições','posicoes','deals','negócios','negocios'];
+
+function rowCells(tr){
+  return Array.prototype.map.call(tr.querySelectorAll('td,th'),
+    function(td){return td.textContent.replace(/ /g,' ').trim();});
+}
+function nonEmpty(a){ return a.filter(function(x){return x!=='';}); }
+
+/* mapeia cabeçalho -> índices por sinônimo */
+function mapHeader(cells){
+  var m={};
+  for(var key in SYN){
+    for(var i=0;i<cells.length;i++){
+      if(has(cells[i],SYN[key])){ m[key]=i; break; }
+    }
+  }
+  return m;
+}
+
+/* acha uma seção (deals/positions) e devolve {header, rows} */
+function findSection(rows, syn){
+  for(var i=0;i<rows.length;i++){
+    var c=nonEmpty(rowCells(rows[i]));
+    if(c.length>=1 && c.length<=2 && has(c[0],syn)){
+      // procura a linha de cabeçalho (>=4 células)
+      for(var h=i+1;h<rows.length;h++){
+        var hc=rowCells(rows[h]);
+        if(nonEmpty(hc).length>=4){
+          var data=[];
+          for(var d=h+1;d<rows.length;d++){
+            var dc=rowCells(rows[d]);
+            var ne=nonEmpty(dc);
+            if(ne.length===0) continue;
+            if(ne.length<=2 && has(ne[0],STOP)) break;      // próxima seção / resultados
+            if(nonEmpty(dc).length<3) { if(data.length) break; else continue; }
+            data.push(dc);
+          }
+          return {header:hc, rows:data};
+        }
+      }
+    }
+  }
+  return null;
+}
+
+/* ---------- núcleo: extrai métricas ---------- */
+function analyze(text){
+  var doc=new DOMParser().parseFromString(text,'text/html');
+  var rows=Array.prototype.slice.call(doc.querySelectorAll('tr'));
+  if(!rows.length) throw new Error('Não encontrei tabelas nesse arquivo. É mesmo o ReportHistory do MT5?');
+
+  function labelVal(labels){
+    for(var i=0;i<rows.length;i++){
+      var c=rowCells(rows[i]);
+      for(var j=0;j<c.length;j++){
+        var raw=c[j].trim(), low=raw.toLowerCase();
+        for(var li=0;li<labels.length;li++){
+          var lab=labels[li];
+          if(low===lab || low===lab+':'){                    // rótulo e valor em células separadas
+            for(var k=j+1;k<c.length;k++){ if(c[k].trim()!=='') return c[k].trim(); }
+          }
+          if(low.indexOf(lab+':')===0){                       // "Rótulo: valor" na mesma célula
+            var v=raw.slice(raw.indexOf(':')+1).trim(); if(v) return v;
+          }
+        }
+      }
+    }
+    return '';
+  }
+  var contaRaw=labelVal(['account','conta']);
+  var acct={
+    name:  labelVal(['name','nome']),
+    login: (contaRaw.match(/\d+/)||[''])[0],
+    broker:labelVal(['company','empresa','broker','corretora']),
+    cur:   (labelVal(['currency','moeda']).match(/[A-Z]{3}/)||[])[0]
+           || (contaRaw.match(/\b[A-Z]{3}\b/)||[])[0] || ''
+  };
+
+  /* ---------- localizador numérico robusto (rótulo -> 1º valor numérico) ---------- */
+  function findNum(labels){
+    for(var i=0;i<rows.length;i++){
+      var c=rowCells(rows[i]);
+      for(var j=0;j<c.length;j++){
+        var low=c[j].trim().toLowerCase();
+        for(var li=0;li<labels.length;li++){
+          var lab=labels[li];
+          if(low===lab || low===lab+':' || low.indexOf(lab+':')===0){
+            var cand=[]; var rest=c[j].slice(c[j].indexOf(':')+1).trim();
+            if(rest && rest!==c[j].trim()) cand.push(rest);
+            for(var k=j+1;k<c.length;k++) if(c[k].trim()!=='') cand.push(c[k].trim());
+            for(var q=0;q<cand.length;q++){ var v=parseNum(cand[q]); if(isFinite(v)) return {num:v,raw:cand[q]}; }
+          }
+        }
+      }
+    }
+    return {num:NaN,raw:''};
+  }
+  function sNum(l){ return findNum(l).num; }
+  function sRaw(l){ return findNum(l).raw; }
+  function pctIn(s){ var m=String(s).match(/([\d.,]+)\s*%/); return m?parseNum(m[1]):NaN; }
+  function countIn(s){ var m=String(s).replace(/ /g,' ').match(/-?\d+/); return m?parseInt(m[0],10):NaN; }
+
+  /* ---------- bloco Resultados (fonte oficial do MT5) ---------- */
+  var sm={
+    net:     sNum(['lucro líquido total','lucro liquido total','total net profit']),
+    gp:      sNum(['lucro bruto','gross profit']),
+    gl:      sNum(['perda bruta','gross loss']),
+    pf:      sNum(['fator de lucro','profit factor']),
+    payoff:  sNum(['retorno esperado (payoff)','retorno esperado','expected payoff']),
+    recovery:sNum(['fator de recuperação','fator de recuperacao','recovery factor']),
+    sharpe:  sNum(['índice de sharpe','indice de sharpe','sharpe ratio']),
+    nTot:    countIn(sRaw(['total de negociações','total de negociacoes','total trades'])),
+    maxWin:  sNum(['maior lucro da negociação','maior lucro da negociacao','largest profit trade']),
+    maxLoss: sNum(['maior perda na negociação','maior perda na negociacao','largest loss trade']),
+    avgWin:  sNum(['média lucro da negociação','media lucro da negociacao','average profit trade']),
+    avgLoss: sNum(['média perda na negociação','media perda na negociacao','average loss trade'])
+  };
+  var ddRaw  = sRaw(['rebaixamento máximo do saldo','rebaixamento maximo do saldo','balance drawdown maximal','maximal drawdown']);
+  var winRaw = sRaw(['negociações com lucro (% of total)','negociacoes com lucro (% of total)','negociações com lucro','profit trades (% of total)']);
+  var lossRaw= sRaw(['negociações com perda (% of total)','negociacoes com perda (% of total)','negociações com perda','loss trades (% of total)']);
+  var cwRaw  = sRaw(['máximo ganhos consecutivos ($)','maximo ganhos consecutivos','maximum consecutive wins']);
+  var clRaw  = sRaw(['máximo perdas consecutivas ($)','maximo perdas consecutivas','maximum consecutive losses']);
+
+  var state={
+    balance:   sNum(['saldo']),
+    equity:    sNum(['capital líquido','capital liquido','equity']),
+    floating:  sNum(['flutuante p/l','flutuante p / l','floating p/l','lucro flutuante']),
+    freeMargin:sNum(['margem livre','free margin'])
+  };
+  var hasSummary = isFinite(sm.net);
+
+  /* ---------- lista de operações (Posições) p/ tabela + curva ---------- */
+  function isDataRow(c){ return c.length>=6 && /^\d{4}\.\d{2}\.\d{2}/.test(c[0]||''); }
+  function sectionData(syn){
+    var out=[], started=false;
+    for(var i=0;i<rows.length;i++){
+      var c=rowCells(rows[i]); var ne=nonEmpty(c);
+      if(!started){ if(ne.length>=1 && ne.length<=2 && has(ne[0],syn)) started=true; continue; }
+      if(ne.length>=1 && ne.length<=2 && has(ne[0],STOP)) break;   // próxima seção
+      if(isDataRow(c)) out.push(c);
+    }
+    return out;
+  }
+
+  var src='positions';
+  var prows=sectionData(SEC.positions);
+  var trades=[];
+  for(var i=0;i<prows.length;i++){
+    var c=prows[i];
+    var profit=parseNum(c[c.length-1]);          // Lucro = última célula (colspan=2)
+    if(!isFinite(profit)) continue;
+    trades.push({time:c[0],symbol:c[2]||'',type:(c[3]||'').toLowerCase(),profit:profit,balance:NaN});
+  }
+  /* fallback: Negócios/Deals com coluna Saldo */
+  if(!trades.length){
+    var sec=findSection(rows,SEC.deals); src='deals';
+    if(sec){
+      var map=mapHeader(sec.header);
+      if(map.profit==null) map.profit=sec.header.length-1;
+      for(var d=0;d<sec.rows.length;d++){
+        var r=sec.rows[d];
+        var type=(map.type!=null?r[map.type]:'').toLowerCase();
+        if(has(type,['balance','saldo','deposit','depósito','deposito','credit','crédito','credito','correction'])) continue;
+        if(map.type!=null && !has(type,['buy','sell','compra','venda'])) continue;
+        var dir=(map.direction!=null?r[map.direction]:'').toLowerCase();
+        if(map.direction!=null && !has(dir,['out','saída','saida'])) continue;
+        var pr=parseNum(r[map.profit]); if(!isFinite(pr)) continue;
+        var bal=(map.balance!=null)?parseNum(r[map.balance]):NaN;
+        trades.push({time:map.time!=null?r[map.time]:'',symbol:map.symbol!=null?r[map.symbol]:'',
+          type:map.type!=null?r[map.type]:'',profit:pr,balance:isFinite(bal)?bal:NaN});
+      }
+    }
+  }
+  if(!trades.length && !hasSummary)
+    throw new Error('Não achei operações fechadas nem o bloco de Resultados. No MT5: aba Histórico → botão direito → Relatório → HTML (período "Todo o histórico").');
+
+  /* curva: usa Saldo do deal se existir; senão saldo inicial deduzido + lucro acumulado */
+  var haveBal=trades.length>0 && trades.every(function(t){return isFinite(t.balance);});
+  var base=(isFinite(state.balance)&&isFinite(sm.net))?state.balance-sm.net:0;
+  var equity=[haveBal?(trades[0].balance-trades[0].profit):base], run=equity[0];
+  for(var j=0;j<trades.length;j++){ run=haveBal?trades[j].balance:run+trades[j].profit; equity.push(run); }
+
+  /* estatísticas calculadas (fallback/complemento) */
+  var cNet=0,cGp=0,cGl=0,cW=0,cL=0,cMaxW=0,cMaxL=0,cw=0,clc=0,cMaxCW=0,cMaxCL=0;
+  for(var k=0;k<trades.length;k++){ var p=trades[k].profit; cNet+=p;
+    if(p>0){cGp+=p;cW++;cMaxW=Math.max(cMaxW,p);cw++;clc=0;cMaxCW=Math.max(cMaxCW,cw);}
+    else if(p<0){cGl+=p;cL++;cMaxL=Math.min(cMaxL,p);clc++;cw=0;cMaxCL=Math.max(cMaxCL,clc);}
+  }
+  var pick=function(a,b){ return isFinite(a)?a:b; };
+  var net=pick(sm.net,cNet), gp=pick(sm.gp,cGp), gl=pick(sm.gl,cGl);
+  var n=isFinite(sm.nTot)?sm.nTot:trades.length;
+  var wins  =isFinite(countIn(winRaw))?countIn(winRaw):cW;
+  var losses=isFinite(countIn(lossRaw))?countIn(lossRaw):cL;
+  var winRate=isFinite(pctIn(winRaw))?pctIn(winRaw):(n?wins/n*100:0);
+  var pf=isFinite(sm.pf)?sm.pf:(gl!==0?gp/Math.abs(gl):(gp>0?Infinity:0));
+  var payoff=isFinite(sm.payoff)?sm.payoff:(n?net/n:0);
+  var avgWin=pick(sm.avgWin,cW?cGp/cW:0), avgLoss=pick(sm.avgLoss,cL?cGl/cL:0);
+  var maxWin=pick(sm.maxWin,cMaxW), maxLoss=pick(sm.maxLoss,cMaxL);
+  var maxCW=isFinite(countIn(cwRaw))?countIn(cwRaw):cMaxCW;
+  var maxCL=isFinite(countIn(clRaw))?countIn(clRaw):cMaxCL;
+  var rr=avgLoss!==0?avgWin/Math.abs(avgLoss):0;
+
+  /* drawdown: do bloco Resultados; senão calculado da curva */
+  var maxDD=parseNum(ddRaw), maxDDpct=pctIn(ddRaw);
+  if(!isFinite(maxDD)){
+    var peak=equity[0]; maxDD=0; maxDDpct=0;
+    for(var e=0;e<equity.length;e++){ if(equity[e]>peak)peak=equity[e];
+      var dd=peak-equity[e]; if(dd>maxDD){maxDD=dd; maxDDpct=peak!==0?dd/peak*100:0;} }
+  }
+  var startBal=equity[0], endBal=equity[equity.length-1];
+  var capBase=(isFinite(state.balance))?(state.balance-net):startBal;
+  var ret=(capBase!==0 && isFinite(capBase))?net/Math.abs(capBase)*100
+          :(startBal!==0?(endBal-startBal)/startBal*100:0);
+
+  return {acct:acct,src:src,hasSummary:hasSummary,state:state,
+    trades:trades,equity:equity,haveBal:haveBal,startBal:startBal,endBal:endBal,
+    net:net,gp:gp,gl:gl,pf:pf,recovery:sm.recovery,sharpe:sm.sharpe,
+    n:n,wins:wins,losses:losses,winRate:winRate,
+    avgWin:avgWin,avgLoss:avgLoss,maxWin:maxWin,maxLoss:maxLoss,
+    maxCW:maxCW,maxCL:maxCL,payoff:payoff,rr:rr,
+    maxDD:maxDD,maxDDpct:maxDDpct,ret:ret};
+}
+
+/* ---------- render ---------- */
+function equitySVG(eq){
+  var W=1040,H=280,pad=34;
+  var min=Math.min.apply(null,eq), max=Math.max.apply(null,eq);
+  if(min===max){min-=1;max+=1;}
+  var n=eq.length;
+  function X(i){ return pad + (W-2*pad)*(n<=1?0:i/(n-1)); }
+  function Y(v){ return pad + (H-2*pad)*(1-(v-min)/(max-min)); }
+  var d='',area='';
+  for(var i=0;i<n;i++){ var x=X(i),y=Y(eq[i]); d+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)+' '; }
+  area='M'+X(0).toFixed(1)+' '+Y(min).toFixed(1)+' '+d.replace(/^M/,'L')+'L'+X(n-1).toFixed(1)+' '+Y(min).toFixed(1)+' Z';
+  var up = eq[n-1]>=eq[0];
+  var col = up?'#22c37e':'#ff5d5d';
+  // linha de saldo inicial
+  var y0=Y(eq[0]);
+  var grid='';
+  for(var g=0;g<=4;g++){ var gy=pad+(H-2*pad)*g/4; var gv=max-(max-min)*g/4;
+    grid+='<line x1="'+pad+'" y1="'+gy.toFixed(1)+'" x2="'+(W-pad)+'" y2="'+gy.toFixed(1)+'" stroke="#1f2836"/>';
+    grid+='<text x="'+(W-pad+4)+'" y="'+(gy+4).toFixed(1)+'" fill="#8fa1b7" font-size="11">'+fmt(gv,0)+'</text>';
+  }
+  return '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" role="img">'
+    +grid
+    +'<line x1="'+pad+'" y1="'+y0.toFixed(1)+'" x2="'+(W-pad)+'" y2="'+y0.toFixed(1)+'" stroke="#e8b64d" stroke-dasharray="4 4" opacity=".6"/>'
+    +'<path d="'+area+'" fill="'+col+'" opacity=".10"/>'
+    +'<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2.2"/>'
+    +'</svg>';
+}
+
+function kpi(lab,val,klass){ return '<div class="kpi"><div class="lab">'+lab+'</div><div class="val '+(klass||'neu')+'">'+val+'</div></div>'; }
+
+function render(a){
+  var cur=a.acct.cur||'';
+  var money=function(v){ return (v<0?'-':'')+ (cur?cur+' ':'') + fmt(Math.abs(v)); };
+
+  // cabeçalho da conta
+  var ac=[];
+  if(a.acct.name)  ac.push('<div><b>Nome:</b> '+a.acct.name+'</div>');
+  if(a.acct.login) ac.push('<div><b>Conta:</b> '+a.acct.login+'</div>');
+  if(a.acct.broker)ac.push('<div><b>Corretora:</b> '+a.acct.broker+'</div>');
+  if(cur)          ac.push('<div><b>Moeda:</b> '+cur+'</div>');
+  ac.push('<div><b>Operações:</b> '+a.n+'</div>');
+  document.getElementById('acct').innerHTML=ac.join('');
+
+  // estado da conta (saldo, capital, flutuante)
+  var sw=document.getElementById('statewrap'), s=a.state;
+  if(isFinite(s.balance)||isFinite(s.floating)||isFinite(s.equity)){
+    var tiles=[];
+    if(isFinite(s.balance))   tiles.push(kpi('Saldo da conta', money(s.balance),'neu'));
+    if(isFinite(s.equity))    tiles.push(kpi('Capital líquido', money(s.equity), cls(s.equity-(isFinite(s.balance)?s.balance:s.equity))));
+    if(isFinite(s.floating))  tiles.push(kpi('Flutuante P/L (aberto)', money(s.floating), cls(s.floating)));
+    if(isFinite(s.freeMargin))tiles.push(kpi('Margem livre', money(s.freeMargin),'neu'));
+    var warn = (isFinite(s.floating)&&s.floating<0 && isFinite(a.net) && s.floating < -Math.abs(a.net))
+      ? '<div style="margin-top:10px;padding:11px 13px;border:1px solid #5a2a2a;background:#241416;border-radius:10px;color:#ffb0b0;font-size:13px">'
+        +'⚠️ <b>Atenção:</b> o resultado <b>fechado</b> está positivo ('+money(a.net)+'), mas há <b>'+money(s.floating)
+        +'</b> de prejuízo <b>flutuante</b> em posições ABERTAS. Esse lucro só se realiza quando essas posições forem fechadas.</div>'
+      : '';
+    sw.innerHTML='<div class="card"><h3>Estado da conta (no momento da exportação)</h3>'
+      +'<div class="grid" style="margin:0">'+tiles.join('')+'</div>'+warn+'</div>';
+  } else sw.innerHTML='';
+
+  // KPIs principais
+  document.getElementById('kpis').innerHTML=[
+    kpi('Lucro líquido (fechado)', money(a.net), cls(a.net)),
+    kpi('Retorno s/ capital', fmt(a.ret,2)+'%', cls(a.ret)),
+    kpi('Fator de lucro', a.pf===Infinity?'∞':fmt(a.pf,2), a.pf>=1?'pos':'neg'),
+    kpi('Acerto', fmt(a.winRate,1)+'%', a.winRate>=50?'pos':'neu')
+  ].join('');
+
+  // equity
+  document.getElementById('equity').innerHTML=equitySVG(a.equity);
+
+  // KPIs secundários
+  var k2=[
+    kpi('Drawdown máx.', money(-a.maxDD)+(isFinite(a.maxDDpct)?' ('+fmt(a.maxDDpct,2)+'%)':''), a.maxDD>0?'neg':'neu'),
+    kpi('Payoff esperado', money(a.payoff), cls(a.payoff)),
+    kpi('Fator recuperação', isFinite(a.recovery)?fmt(a.recovery,2):'—','neu'),
+    kpi('Índice Sharpe', isFinite(a.sharpe)?fmt(a.sharpe,2):'—','neu'),
+    kpi('Ganho médio', money(a.avgWin),'pos'),
+    kpi('Perda média', money(a.avgLoss),'neg'),
+    kpi('R:R realizado', fmt(a.rr,2), a.rr>=1?'pos':'neu'),
+    kpi('Ganhos / Perdas', a.wins+' / '+a.losses,'neu'),
+    kpi('Maior ganho', money(a.maxWin),'pos'),
+    kpi('Maior perda', money(a.maxLoss),'neg'),
+    kpi('Seq. ganhos', String(a.maxCW),'pos'),
+    kpi('Seq. perdas', String(a.maxCL),'neg')
+  ];
+  document.getElementById('kpis2').innerHTML=k2.join('');
+
+  // tabela de operações
+  var th='<thead><tr><th class="l">#</th><th class="l">Horário (abertura)</th><th class="l">Ativo</th><th class="l">Tipo</th><th>Resultado</th><th>Acumulado</th></tr></thead>';
+  var tb='<tbody>';
+  for(var i=0;i<a.trades.length;i++){ var t=a.trades[i];
+    tb+='<tr><td class="l">'+(i+1)+'</td><td class="l">'+(t.time||'')+'</td><td class="l">'+(t.symbol||'')
+      +'</td><td class="l">'+(t.type||'')+'</td><td class="'+cls(t.profit)+'">'+money(t.profit)
+      +'</td><td>'+(a.equity[i+1]!=null?money(a.equity[i+1]):'—')+'</td></tr>';
+  }
+  tb+='</tbody>';
+  document.getElementById('trades').innerHTML=th+tb;
+  if(!a.trades.length) document.getElementById('trades').innerHTML=th+'<tbody><tr><td colspan="6" class="l" style="color:#8fa1b7">Sem operações fechadas nesta exportação (só o resumo).</td></tr></tbody>';
+
+  document.getElementById('gendate').textContent=new Date().toLocaleString('pt-BR');
+  document.getElementById('drop').style.display='none';
+  document.getElementById('report').style.display='block';
+  window.scrollTo(0,0);
+}
+
+/* ---------- entrada de arquivo ---------- */
+function handleFile(file){
+  var err=document.getElementById('err'); err.textContent='';
+  var reader=new FileReader();
+  reader.onload=function(){
+    try{ render(analyze(String(reader.result))); }
+    catch(e){ err.textContent='Erro: '+e.message; }
+  };
+  reader.onerror=function(){ err.textContent='Não consegui ler o arquivo.'; };
+  reader.readAsText(file,'utf-8');
+}
+
+var drop=document.getElementById('drop');
+document.getElementById('pick').onclick=function(){ document.getElementById('file').click(); };
+document.getElementById('file').onchange=function(e){ if(e.target.files[0]) handleFile(e.target.files[0]); };
+['dragenter','dragover'].forEach(function(ev){ drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('drag');});});
+['dragleave','drop'].forEach(function(ev){ drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('drag');});});
+drop.addEventListener('drop',function(e){ if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+document.getElementById('print').onclick=function(){ window.print(); };
+document.getElementById('another').onclick=function(){
+  document.getElementById('report').style.display='none';
+  document.getElementById('drop').style.display='block';
+  document.getElementById('file').value='';
+};
+</script>
+</body>
+</html>

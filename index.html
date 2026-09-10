@@ -321,6 +321,7 @@
     <div class="cat" data-filter="indicador"><div class="ci">📈</div><b>Indicadores</b></div>
     <div class="cat" data-filter="agente"><div class="ci">🧠</div><b>Agentes de IA</b></div>
     <div class="cat" data-filter="mentoria"><div class="ci">🎯</div><b>Mentorias</b></div>
+    <div class="cat" data-filter="ferramenta"><div class="ci">🧾</div><b>Ferramentas</b></div>
   </div>
 </section>
 
@@ -514,6 +515,13 @@
       desc:"Mentalidade, gestão de risco, análise e estratégia. A cabeça do trader consistente no Forex e mercado financeiro.",
       price:"R$49,99", old:"", inst:"Forex · Mentalidade · Online",
       img:"/assets/capa-mentoria.png", detail:"/mentoria", checkout:"https://pay.hotmart.com/G106467310N"
+    },
+    {
+      cat:"ferramenta", kicker:"Ferramenta · Grátis", badge:"hot", badgeText:"Grátis",
+      name:"Relatório de Performance MT5",
+      desc:"Transforme o histórico do MetaTrader 5 num relatório visual — fator de lucro, drawdown, curva de capital, estado da conta — e salve em PDF. Roda no seu navegador; nada é enviado.",
+      price:"Grátis", old:"", inst:"MetaTrader 5 · roda no navegador",
+      img:"", free:"/relatorio"
     }
   ];
 
@@ -530,15 +538,17 @@
       ? ''
       : (p.img
           ? '<img src="'+p.img+'" alt="'+p.name+'" loading="lazy"'+imgStyle+' />'
-          : '<div class="ph">'+({ebook:"📘",robo:"🤖",indicador:"📈",agente:"🧠",mentoria:"🎯"}[p.cat]||"✦")+'</div>');
+          : '<div class="ph">'+({ebook:"📘",robo:"🤖",indicador:"📈",agente:"🧠",mentoria:"🎯",ferramenta:"🧾"}[p.cat]||"✦")+'</div>');
     var badge = p.badgeText ? '<div class="badge '+p.badge+'">'+p.badgeText+'</div>' : '';
     var priceOld = p.old ? '<span class="old">'+p.old+'</span>' : '';
     var priceBlock = '<div class="price"><span class="now">'+p.price+'</span>'+priceOld+'</div>'
                    + (p.inst ? '<div class="price"><span class="inst">'+p.inst+'</span></div>' : '');
-    var action = p.checkout
-      ? '<a href="'+p.checkout+'" target="_blank" rel="noopener" class="btn btn-primary">Comprar agora</a>'
-      : '<a href="'+wppLink+'" target="_blank" rel="noopener" class="btn btn-primary">Tenho interesse</a>';
-    var pays = p.checkout
+    var action = p.free
+      ? '<a href="'+p.free+'" target="_blank" rel="noopener" class="btn btn-primary">Abrir grátis</a>'
+      : (p.checkout
+          ? '<a href="'+p.checkout+'" target="_blank" rel="noopener" class="btn btn-primary">Comprar agora</a>'
+          : '<a href="'+wppLink+'" target="_blank" rel="noopener" class="btn btn-primary">Tenho interesse</a>');
+    var pays = (p.checkout && !p.free)
       ? '<div class="minipays"><span class="paytag">PIX</span><span class="paytag">DÉBITO</span><span class="paytag">CRÉDITO 12×</span></div>'
       : '';
     var detail = p.detail ? '<a href="'+p.detail+'" class="btn btn-ghost">Ver detalhes</a>' : '';
