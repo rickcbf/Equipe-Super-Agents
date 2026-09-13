@@ -1,41 +1,49 @@
-# RickEAFimathePro (MT5 / MQL5) — v2
+# RickEAFimathePro (MT5 / MQL5) — v3
 
-Expert Advisor da estratégia **Fimathe** reescrito conforme os ajustes pedidos.
+Expert Advisor da estratégia **Fimathe**.
 
 ## Instalar
-1. Copie `RickEAFimathePro.mq5` para
-   `...\MQL5\Experts\` do seu MetaTrader 5.
+1. Copie `RickEAFimathePro.mq5` para `...\MQL5\Experts\` do seu MetaTrader 5.
 2. Abra no **MetaEditor** → **Compile** (F7).
-3. No gráfico (ex.: XAUUSD) arraste o EA **RickEAFimathePro** → habilite
-   *Algo Trading* → OK.
+3. No gráfico arraste o EA **RickEAFimathePro** → habilite *Algo Trading* → OK.
 
-## O que mudou nesta versão
-- **C3 removido.** Não há mais níveis/ordens de C3 nem o split 75%/25% —
-  agora é **uma ordem por vez**.
-- **Canal de referência = vela de TOPO ou de FUNDO** (swing) **mais próxima do
-  preço**. Reavalia a cada nova vela enquanto aguarda o rompimento.
+## Lógica de entrada (dois cenários)
+
+**Canal de referência** = **N velas** (padrão **4**; ajuste em `InpChannelBars`,
+ou use o modo topo/fundo em `InpChannelMode`). `lg` = tamanho do canal (topo−fundo).
+
+### Cenário 1 — entrada na C1
+1. Preço rompe um lado do canal → projeta a **C1** a favor (C1 = borda + 1× `lg`)
+   e **salva** o canal.
+2. **Entrada no rompimento da C1**:
+   - Rompeu p/ **cima** → COMPRA no rompimento de `topo + lg`.
+   - Rompeu p/ **baixo** → VENDA no rompimento de `fundo − lg`.
+3. **Alvo = 2× o canal** a partir da entrada.
+4. **Stop** na borda **oposta** do canal ± spread (compra: fundo − spread;
+   venda: topo + spread).
+
+### Cenário 2 — entrada inversa (C1 negada)
+1. Rompeu um lado e marcou a C1, **mas não rompeu a C1** e voltou pro canal.
+2. Depois **rompe o canal de referência pro lado oposto** → **entrada no
+   rompimento do canal** (não numa nova C1):
+   - Ex.: rompeu o fundo, marcou C1 de venda, negou, voltou e rompeu o topo →
+     **COMPRA** no topo, **stop abaixo do canal**, **alvo 2×** pra cima.
+   - Para venda, as projeções são ao contrário.
+3. **Alvo = 2× o canal**. **Stop** na borda oposta ± spread.
+
+## Outras características
+- **Uma ordem por vez.**
 - **Ajuste manual:** arraste as linhas amarelas do canal; o EA lê a nova posição
-  e recalcula entrada/TP/stop automaticamente.
-- **Entrada pelo lado que romper primeiro:**
-  - Rompeu para **baixo** → **VENDA**, alvo (TP) = **1× o tamanho do canal**.
-  - Rompeu para **cima** → **COMPRA**, alvo (TP) = **1× o tamanho do canal**.
-- **Entrada inversa (rejeição):** se, após romper um lado, o preço **rejeitar e
-  voltar para dentro do canal**, a posição é fechada e o EA arma a entrada no
-  **rompimento do lado oposto**, com alvo = **1,5× o tamanho do canal**.
-- **Stop:** um **spread** abaixo do canal (compras) e **spread+** acima do canal
-  (vendas), para não ser pego pelo spread. Ajuste fino em `InpStopSpreadMult`.
-- **Visual em segmentos** (não linhas de tela cheia):
-  - Canal: **amarelo pontilhado discreto** (aparece quando formado).
-  - Entrada: **azul** (compra) / **laranja** (venda) — só quando rompe.
-  - TP: **verde**. Stop: **vermelho**. Só aparecem quando há rompimento.
-- **Painel (quadro)** no canto superior esquerdo com fase, canal, entrada/TP/stop,
-  P&L do dia e dois botões:
-  - **ZERAR ORDEM** — fecha a posição atual e reinicia o ciclo.
-  - **BOT: ON/OFF** — ativa/desativa o EA (desativado = passivo; só ZERAR fecha).
+  e recalcula C1/entrada/TP/stop.
+- **Visual em segmentos** (não linhas de tela cheia), aparecendo só quando fazem
+  sentido: canal **amarelo pontilhado**; C1 pendente na cor da entrada;
+  entrada **azul**(compra)/**laranja**(venda), TP **verde**, stop **vermelho**.
+- **Painel (quadro)** com fase, canal, C1±, entrada/TP/stop, P&L do dia e botões
+  **ZERAR ORDEM** e **BOT: ON/OFF** (desativado = passivo; só ZERAR fecha).
 
 ## Principais parâmetros
-- `InpSwingLookback` — força do swing (velas de cada lado) para achar topo/fundo.
-- `InpTPmultPrimary` (1.0) / `InpTPmultInverse` (1.5) — alvos em múltiplos do canal.
+- `InpChannelMode` / `InpChannelBars` (4) — como formar o canal.
+- `InpTPmult` (2.0) — alvo em múltiplos do canal, medido a partir da entrada.
 - `InpStopSpreadMult` (1.0) — folga do stop em múltiplos do spread.
 - `InpMaxConcurrent` (1) — uma ordem por vez.
 - Gestão de risco, filtro de notícias, modo de lote e alerta sonoro mantidos.

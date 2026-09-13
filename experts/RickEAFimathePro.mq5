@@ -1,24 +1,27 @@
 //+------------------------------------------------------------------+
 //|                                        RickEAFimathePro.mq5      |
-//|  Estrategia Fimathe PRO — Canal de referencia (topo/fundo)       |
+//|  Estrategia Fimathe PRO — Canal de referencia (N velas)          |
 //|                                                                  |
-//|  Regras:                                                          |
-//|   - Canal = vela de TOPO ou FUNDO mais proxima do preco.          |
-//|   - C1/entrada so marca no lado que ROMPER PRIMEIRO.              |
-//|       rompeu p/ BAIXO  -> VENDA, alvo = 1x o tamanho do canal.    |
-//|       rompeu p/ CIMA   -> COMPRA, alvo = 1x o tamanho do canal.   |
-//|   - Se rejeitar e voltar pro canal apos romper um lado, a         |
-//|     ENTRADA INVERSA ocorre no rompimento do lado oposto, com      |
-//|     alvo = 1,5x o tamanho do canal.                               |
-//|   - Stop: spread abaixo do canal (compras) / spread+ acima do     |
-//|     canal (vendas), para nao ser pego pelo spread.                |
-//|   - UMA ordem por vez.                                            |
-//|   - Canal pode ser movido manualmente (arraste) e recalcula.      |
-//|   - Painel com botoes ZERAR ORDEM e ATIVAR/DESATIVAR o bot.       |
+//|  Canal de referencia = N velas (padrao 4).                        |
+//|                                                                  |
+//|  CENARIO 1 (entrada na C1):                                        |
+//|    Rompeu um lado -> projeta o canal a favor (C1 = borda + 1x lg). |
+//|    ENTRADA no rompimento da C1. Alvo = 2x o canal a partir da      |
+//|    entrada. Stop na borda OPOSTA do canal +/- spread.             |
+//|    (vale p/ compra e venda, invertido)                            |
+//|                                                                  |
+//|  CENARIO 2 (entrada inversa):                                      |
+//|    Rompeu um lado, marcou a C1, mas NEGOU (nao rompeu a C1) e      |
+//|    voltou pro canal; depois rompeu o canal pro LADO OPOSTO ->      |
+//|    ENTRADA no rompimento do canal de referencia (nao numa nova     |
+//|    C1). Alvo = 2x o canal. Stop na borda oposta +/- spread.       |
+//|                                                                  |
+//|  UMA ordem por vez. Canal pode ser movido manualmente (arraste).  |
+//|  Painel com botoes ZERAR ORDEM e ATIVAR/DESATIVAR o bot.          |
 //+------------------------------------------------------------------+
 #property copyright   "RickEA"
-#property version     "2.00"
-#property description "RickEAFimathe PRO — canal topo/fundo, entrada de rompimento e inversa"
+#property version     "3.00"
+#property description "RickEAFimathe PRO — canal N velas, entrada C1 e inversa, alvo 2x"
 
 #include <Trade\Trade.mqh>
 
@@ -28,10 +31,15 @@
 enum ENUM_FASE
 {
    FASE_SEM_CANAL,          // Sem canal — vai formar
-   FASE_CANAL,              // Canal formado — aguardando 1o rompimento
+   FASE_CANAL,              // Canal formado — monitorando rompimento/C1
    FASE_EM_POSICAO,         // Ordem aberta
-   FASE_AGUARDA_INVERSO,    // Rejeitou — aguardando rompimento do lado inverso
    FASE_CANAL_LARGO         // Canal largo demais — nao opera
+};
+
+enum ENUM_CH_MODE
+{
+   CH_MODE_BARS  = 0,       // Canal por N velas (padrao)
+   CH_MODE_SWING = 1        // Canal pela vela de topo/fundo mais proxima
 };
 
 enum ENUM_LOT_MODE
@@ -43,37 +51,38 @@ enum ENUM_LOT_MODE
 //+------------------------------------------------------------------+
 //| Inputs                                                            |
 //+------------------------------------------------------------------+
-input group "══════ Canal de Referencia (topo/fundo) ══════"
-input int              InpSwingLookback = 3;            // Forca do swing (velas de cada lado)
-input int              InpSwingMaxScan  = 300;          // Alcance da busca por topo/fundo (velas)
+input group "══════ Canal de Referencia ══════"
+input ENUM_CH_MODE     InpChannelMode   = CH_MODE_BARS;    // Como formar o canal
+input int              InpChannelBars   = 4;               // Velas do canal (modo N velas)
+input int              InpSwingLookback = 3;               // Forca do swing (modo topo/fundo)
+input int              InpSwingMaxScan  = 300;             // Alcance da busca (modo topo/fundo)
 input group "══════ Entrada / Alvos ══════"
-input double           InpTPmultPrimary = 1.0;          // Alvo do 1o rompimento (x tamanho do canal)
-input double           InpTPmultInverse = 1.5;          // Alvo da entrada inversa (x tamanho do canal)
-input double           InpStopSpreadMult= 1.0;          // Folga do stop (x spread) alem do canal
+input double           InpTPmult        = 2.0;             // Alvo (x tamanho do canal, a partir da entrada)
+input double           InpStopSpreadMult= 1.0;             // Folga do stop (x spread) alem do canal
 input group "══════ Gestao de Risco ══════"
-input int              InpMaxConcurrent = 1;            // Max trades simultaneos (uma ordem por vez)
-input double           InpMaxDailyLoss  = 3.0;          // Perda diaria maxima (%)
-input int              InpMaxTradesDay  = 5;            // Max trades por dia
-input double           InpMetaUSD       = 50.0;         // Meta diaria USD (0=desativado)
-input double           InpStopUSD       = 30.0;         // Stop diario USD (0=desativado)
+input int              InpMaxConcurrent = 1;               // Max trades simultaneos (uma ordem por vez)
+input double           InpMaxDailyLoss  = 3.0;             // Perda diaria maxima (%)
+input int              InpMaxTradesDay  = 5;               // Max trades por dia
+input double           InpMetaUSD       = 50.0;            // Meta diaria USD (0=desativado)
+input double           InpStopUSD       = 30.0;            // Stop diario USD (0=desativado)
 input group "══════ Execucao ══════"
-input ENUM_LOT_MODE    InpLotMode       = LOT_MODE_FIXED; // Modo de lote
-input double           InpLotFixed      = 0.01;         // Lote fixo
-input double           InpLotPercent    = 1.0;          // Risco por trade (%)
-input ulong            InpMagic         = 20251018;     // Magic Number
-input int              InpSlippage      = 10;           // Slippage (pontos)
+input ENUM_LOT_MODE    InpLotMode       = LOT_MODE_FIXED;  // Modo de lote
+input double           InpLotFixed      = 0.01;            // Lote fixo
+input double           InpLotPercent    = 1.0;             // Risco por trade (%)
+input ulong            InpMagic         = 20251018;        // Magic Number
+input int              InpSlippage      = 10;              // Slippage (pontos)
 input group "══════ Filtros ══════"
-input bool             InpNewsFilter    = true;         // Filtrar noticias alto impacto
-input int              InpNewsBuffer    = 60;           // Buffer noticias (minutos)
-input bool             InpAlertSound    = true;         // Alerta sonoro nos sinais
+input bool             InpNewsFilter    = true;            // Filtrar noticias alto impacto
+input int              InpNewsBuffer    = 60;              // Buffer noticias (minutos)
+input bool             InpAlertSound    = true;            // Alerta sonoro nos sinais
 input group "══════ Visual ══════"
-input bool             InpStartActive   = true;         // Bot ativo ao iniciar
-input int              InpExtendBars    = 30;           // Quanto as linhas se estendem a direita (velas)
-input color            InpClrCanal      = clrYellow;    // Canal (amarelo, discreto)
-input color            InpClrTP         = clrLime;      // Take Profit (verde)
-input color            InpClrSL         = clrRed;       // Stop Loss (vermelho)
-input color            InpClrBuy        = clrDodgerBlue;// Entrada COMPRA (azul)
-input color            InpClrSell       = clrDarkOrange;// Entrada VENDA (laranja)
+input bool             InpStartActive   = true;            // Bot ativo ao iniciar
+input int              InpExtendBars    = 30;              // Extensao das linhas a direita (velas)
+input color            InpClrCanal      = clrYellow;       // Canal (amarelo, discreto)
+input color            InpClrTP         = clrLime;         // Take Profit (verde)
+input color            InpClrSL         = clrRed;          // Stop Loss (vermelho)
+input color            InpClrBuy        = clrDodgerBlue;   // Entrada COMPRA (azul)
+input color            InpClrSell       = clrDarkOrange;   // Entrada VENDA (laranja)
 
 //+------------------------------------------------------------------+
 //| Globals                                                           |
@@ -83,18 +92,19 @@ CTrade         g_trade;
 double         g_canal_high   = 0;
 double         g_canal_low    = 0;
 double         g_largura      = 0;
-datetime       g_ref_time     = 0;    // vela de referencia (inicio dos segmentos do canal)
+double         g_c1_up        = 0;    // projecao C1 acima = ch + lg
+double         g_c1_dn        = 0;    // projecao C1 abaixo = cl - lg
+datetime       g_ref_time     = 0;    // 1a vela do canal (inicio dos segmentos)
 
 ENUM_FASE      g_fase         = FASE_SEM_CANAL;
-int            g_primary_dir  = 0;    // lado que rompeu primeiro (+1 cima / -1 baixo)
-int            g_inverse_dir  = 0;    // lado que dispara a entrada inversa
-int            g_pos_dir      = 0;    // direcao da posicao atual (+1/-1)
-bool           g_is_inverse   = false;// posicao atual e a inversa (alvo 1,5x)
+int            g_primary_dir  = 0;    // lado do 1o rompimento do canal (+1/-1)
+bool           g_c1_negated   = false;// rompeu, nao foi na C1 e voltou pro canal
 bool           g_was_inside   = false;// preco esteve dentro do canal desde a formacao
-bool           g_extended     = false;// preco extendeu alem da borda (confirma rompimento)
-bool           g_manual       = false;// canal foi movido manualmente
+bool           g_manual       = false;// canal movido manualmente
 bool           g_bot_active   = true; // bot habilitado (botao do painel)
 
+int            g_pos_dir      = 0;    // direcao da posicao atual (+1/-1)
+string         g_entry_kind   = "";   // "C1" ou "INV"
 double         g_entrada      = 0;
 double         g_take         = 0;
 double         g_stop         = 0;
@@ -111,15 +121,17 @@ const string   OBJ_PREFIX     = "RickFim_";
 //| Prototipos                                                        |
 //+------------------------------------------------------------------+
 void   RunStateMachine();
+bool   BuildChannel();
+bool   BuildChannelBars();
 bool   BuildChannelSwing();
 bool   IsSwingHigh(int i,int L);
 bool   IsSwingLow(int i,int L);
+void   ComputeC1();
 void   SyncManualChannel();
-bool   EnterTrade(int dir,double tpmult,bool is_inverse);
-void   ArmInverse(int dir);
+bool   EnterTrade(int dir,double entry,double tp,double sl,string kind);
 void   ResetCycle();
 void   CloseAll(string motivo);
-double StopBuffer(bool is_sell);
+double StopBuffer();
 int    CountOurPositions();
 int    CountAllMagicPositions();
 double CalcLot(double sl_distance);
@@ -129,7 +141,6 @@ double GetDailyProfit();
 bool   NewsAllowed();
 double GetLgMax();
 ENUM_ORDER_TYPE_FILLING DetectFilling();
-void   GetDisplayLevels(int &dir,double &entry,double &tp,double &sl,bool &show);
 void   DrawAll();
 void   DrawSeg(string id,double price,color clr,ENUM_LINE_STYLE st,int w,datetime tStart,bool selectable);
 void   DelObj(string id);
@@ -148,11 +159,10 @@ int OnInit()
    g_trade.SetDeviationInPoints(InpSlippage);
    g_trade.SetTypeFilling(DetectFilling());
 
-   g_bot_active = InpStartActive;
-   g_day_start  = StringToTime(TimeToString(TimeCurrent(), TIME_DATE));
+   g_bot_active    = InpStartActive;
+   g_day_start     = StringToTime(TimeToString(TimeCurrent(), TIME_DATE));
    g_last_bar_time = iTime(_Symbol, PERIOD_CURRENT, 0);
 
-   // Detecta posicao pre-existente (protecao ao anexar com trade aberto)
    int count = CountOurPositions();
    g_prev_count = count;
    if(count > 0)
@@ -170,6 +180,7 @@ int OnInit()
          g_take    = PositionGetDouble(POSITION_TP);
          g_pos_dir = (pt == POSITION_TYPE_BUY) ? 1 : -1;
          g_fase    = FASE_EM_POSICAO;
+         g_entry_kind = "?";
          g_entry_time = iTime(_Symbol, PERIOD_CURRENT, 0);
          break;
       }
@@ -177,8 +188,9 @@ int OnInit()
    }
 
    EnsurePanel();
-   PrintFormat("[Fimathe PRO v2] Iniciado %s %s | Magic=%d | Bot=%s",
-               _Symbol, EnumToString(_Period), InpMagic, g_bot_active ? "ON" : "OFF");
+   PrintFormat("[Fimathe PRO v3] %s %s | Magic=%d | Bot=%s | Canal=%s(%d)",
+               _Symbol, EnumToString(_Period), InpMagic, g_bot_active ? "ON" : "OFF",
+               (InpChannelMode == CH_MODE_BARS ? "N velas" : "swing"), InpChannelBars);
    return INIT_SUCCEEDED;
 }
 
@@ -203,7 +215,7 @@ void OnTick()
       g_trades_today = 0;
    }
 
-   // Deteccao de fechamento pelo broker (TP/SL) enquanto EM_POSICAO
+   // Fechamento pelo broker (TP/SL) enquanto EM_POSICAO
    int cur = CountOurPositions();
    if(cur == 0 && g_prev_count > 0 && g_fase == FASE_EM_POSICAO)
    {
@@ -212,19 +224,19 @@ void OnTick()
    }
    g_prev_count = cur;
 
-   // Sincroniza canal movido manualmente (arraste)
+   // Ajuste manual do canal (arraste)
    SyncManualChannel();
 
-   // (Re)constroi canal quando ocioso e sem ajuste manual
+   // (Re)constroi canal enquanto ocioso, sem rompimento armado e sem ajuste manual
    bool newbar = false;
    datetime t = iTime(_Symbol, PERIOD_CURRENT, 0);
    if(t != g_last_bar_time) { newbar = true; g_last_bar_time = t; }
 
-   bool idle = (CountOurPositions() == 0 &&
+   bool idle = (CountOurPositions() == 0 && g_primary_dir == 0 &&
                 (g_fase == FASE_SEM_CANAL || g_fase == FASE_CANAL || g_fase == FASE_CANAL_LARGO));
    if(g_fase == FASE_SEM_CANAL || (newbar && idle && !g_manual))
    {
-      if(BuildChannelSwing())
+      if(BuildChannel())
       {
          g_was_inside = false;
          if(g_fase == FASE_SEM_CANAL || g_fase == FASE_CANAL_LARGO)
@@ -232,6 +244,7 @@ void OnTick()
       }
    }
 
+   ComputeC1();
    RunStateMachine();
    DrawAll();
    UpdatePanel();
@@ -246,85 +259,129 @@ void RunStateMachine()
 
    double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    if(bid <= 0) return;
-
-   // Bot desativado = totalmente passivo (so o botao ZERAR fecha).
-   if(!g_bot_active) return;
+   if(!g_bot_active) return;              // desativado = passivo (so ZERAR fecha)
 
    double ch = g_canal_high, cl = g_canal_low, lg = g_largura;
+   double buf = StopBuffer();
 
-   // Filtro de canal largo demais
+   // Canal largo demais
    if(lg > GetLgMax())
    {
       if(g_fase == FASE_CANAL) g_fase = FASE_CANAL_LARGO;
       return;
    }
-   if(g_fase == FASE_CANAL_LARGO && lg <= GetLgMax())
-      g_fase = FASE_CANAL;
+   if(g_fase == FASE_CANAL_LARGO && lg <= GetLgMax()) g_fase = FASE_CANAL;
+   if(g_fase != FASE_CANAL) return;
 
-   double ext_dist = MathMax(lg * 0.25, StopBuffer(false) * 2.0);
+   // Preco dentro do canal (habilita 1o rompimento)
+   if(bid >= cl && bid <= ch) g_was_inside = true;
 
-   switch(g_fase)
+   // ── 1o rompimento do canal: define o lado primario ──
+   if(g_primary_dir == 0)
    {
-      // ── Aguardando 1o rompimento ──────────────────────────────────
-      case FASE_CANAL:
+      if(!g_was_inside) return;
+      if(bid > ch)      g_primary_dir = 1;    // rompeu p/ cima
+      else if(bid < cl) g_primary_dir = -1;   // rompeu p/ baixo
+      if(g_primary_dir != 0)
+         PrintFormat("[Fimathe] 1o rompimento %s | C1up=%s C1dn=%s",
+                     (g_primary_dir > 0 ? "CIMA" : "BAIXO"),
+                     DoubleToString(g_c1_up, _Digits), DoubleToString(g_c1_dn, _Digits));
+      return;
+   }
+
+   // ── Negacao: voltou pro canal sem romper a C1 ──
+   if(g_primary_dir > 0 && bid < ch) g_c1_negated = true;
+   if(g_primary_dir < 0 && bid > cl) g_c1_negated = true;
+
+   // ── Gatilhos de entrada ──
+   if(g_primary_dir > 0)
+   {
+      // CENARIO 1: rompeu a C1 acima -> COMPRA na C1
+      if(bid >= g_c1_up)
       {
-         if(bid >= cl && bid <= ch) g_was_inside = true;   // esteve dentro
-         if(!g_bot_active || !g_was_inside) break;
-
-         if(bid > ch)                                       // rompeu p/ CIMA
-         {
-            g_primary_dir = 1;
-            EnterTrade(1, InpTPmultPrimary, false);
-         }
-         else if(bid < cl)                                  // rompeu p/ BAIXO
-         {
-            g_primary_dir = -1;
-            EnterTrade(-1, InpTPmultPrimary, false);
-         }
-         break;
+         double entry = g_c1_up;
+         double tp    = NormalizeDouble(entry + lg * InpTPmult, _Digits);
+         double sl    = NormalizeDouble(cl - buf, _Digits);
+         EnterTrade(1, entry, tp, sl, "C1");
       }
-
-      // ── Em posicao: detecta rejeicao (volta pro canal) ────────────
-      case FASE_EM_POSICAO:
+      // CENARIO 2: negou e rompeu o canal pra baixo -> VENDA na borda do canal
+      else if(g_c1_negated && bid < cl)
       {
-         if(g_pos_dir < 0)                                  // VENDA
-         {
-            if(bid <= cl - ext_dist) g_extended = true;
-            if(g_extended && bid > cl)                      // rejeitou p/ dentro
-            {
-               if(!g_is_inverse) { CloseAll("rejeicao — armando inverso"); ArmInverse(1); }
-               else              { CloseAll("rejeicao da inversa");        ResetCycle();  }
-            }
-         }
-         else if(g_pos_dir > 0)                             // COMPRA
-         {
-            if(bid >= ch + ext_dist) g_extended = true;
-            if(g_extended && bid < ch)
-            {
-               if(!g_is_inverse) { CloseAll("rejeicao — armando inverso"); ArmInverse(-1); }
-               else              { CloseAll("rejeicao da inversa");        ResetCycle();  }
-            }
-         }
-         break;
+         double entry = cl;
+         double tp    = NormalizeDouble(entry - lg * InpTPmult, _Digits);
+         double sl    = NormalizeDouble(ch + buf, _Digits);
+         EnterTrade(-1, entry, tp, sl, "INV");
       }
-
-      // ── Aguardando rompimento do lado inverso (alvo 1,5x) ─────────
-      case FASE_AGUARDA_INVERSO:
+   }
+   else // g_primary_dir < 0
+   {
+      // CENARIO 1: rompeu a C1 abaixo -> VENDA na C1
+      if(bid <= g_c1_dn)
       {
-         if(!g_bot_active) break;
-         if(g_inverse_dir > 0 && bid > ch)
-            EnterTrade(1, InpTPmultInverse, true);
-         else if(g_inverse_dir < 0 && bid < cl)
-            EnterTrade(-1, InpTPmultInverse, true);
-         break;
+         double entry = g_c1_dn;
+         double tp    = NormalizeDouble(entry - lg * InpTPmult, _Digits);
+         double sl    = NormalizeDouble(ch + buf, _Digits);
+         EnterTrade(-1, entry, tp, sl, "C1");
       }
-
-      default: break;
+      // CENARIO 2: negou e rompeu o canal pra cima -> COMPRA na borda do canal
+      else if(g_c1_negated && bid > ch)
+      {
+         double entry = ch;
+         double tp    = NormalizeDouble(entry + lg * InpTPmult, _Digits);
+         double sl    = NormalizeDouble(cl - buf, _Digits);
+         EnterTrade(1, entry, tp, sl, "INV");
+      }
    }
 }
 
 //+------------------------------------------------------------------+
-//| Constroi o canal a partir da vela de TOPO/FUNDO mais proxima      |
+//| Projecoes C1 a partir do canal atual                              |
+//+------------------------------------------------------------------+
+void ComputeC1()
+{
+   if(g_canal_high <= 0 || g_canal_low <= 0) { g_c1_up = 0; g_c1_dn = 0; return; }
+   g_c1_up = NormalizeDouble(g_canal_high + g_largura, _Digits);
+   g_c1_dn = NormalizeDouble(g_canal_low  - g_largura, _Digits);
+}
+
+//+------------------------------------------------------------------+
+//| Constroi o canal conforme o modo                                  |
+//+------------------------------------------------------------------+
+bool BuildChannel()
+{
+   if(InpChannelMode == CH_MODE_SWING) return BuildChannelSwing();
+   return BuildChannelBars();
+}
+
+//+------------------------------------------------------------------+
+//| Canal = ultimas N velas fechadas                                  |
+//+------------------------------------------------------------------+
+bool BuildChannelBars()
+{
+   int n = InpChannelBars;
+   if(n < 1) n = 1;
+   if(Bars(_Symbol, PERIOD_CURRENT) < n + 2) return false;
+
+   double hi = 0, lo = DBL_MAX;
+   for(int i = 1; i <= n; i++)
+   {
+      double h = iHigh(_Symbol, PERIOD_CURRENT, i);
+      double l = iLow (_Symbol, PERIOD_CURRENT, i);
+      if(h > hi) hi = h;
+      if(l < lo) lo = l;
+   }
+   if(hi - lo <= 0) return false;
+
+   g_canal_high = NormalizeDouble(hi, _Digits);
+   g_canal_low  = NormalizeDouble(lo, _Digits);
+   g_largura    = NormalizeDouble(hi - lo, _Digits);
+   g_ref_time   = iTime(_Symbol, PERIOD_CURRENT, n);   // 1a vela do canal
+   g_manual     = false;
+   return true;
+}
+
+//+------------------------------------------------------------------+
+//| Canal = vela de topo/fundo mais proxima do preco (opcional)       |
 //+------------------------------------------------------------------+
 bool BuildChannelSwing()
 {
@@ -334,7 +391,6 @@ bool BuildChannelSwing()
 
    int scan = MathMin(InpSwingMaxScan, bars - L - 1);
    int hiIdx = -1, loIdx = -1;
-
    for(int i = L + 1; i <= scan; i++)
    {
       if(hiIdx < 0 && IsSwingHigh(i, L)) hiIdx = i;
@@ -344,12 +400,11 @@ bool BuildChannelSwing()
 
    double preco = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    int chosen = -1;
-
    if(hiIdx > 0 && loIdx > 0)
    {
       double dH = MathAbs(preco - iHigh(_Symbol, PERIOD_CURRENT, hiIdx));
       double dL = MathAbs(preco - iLow (_Symbol, PERIOD_CURRENT, loIdx));
-      chosen = (dH <= dL) ? hiIdx : loIdx;          // a mais proxima do preco
+      chosen = (dH <= dL) ? hiIdx : loIdx;
    }
    else if(hiIdx > 0) chosen = hiIdx;
    else if(loIdx > 0) chosen = loIdx;
@@ -367,7 +422,6 @@ bool BuildChannelSwing()
    return true;
 }
 
-//+------------------------------------------------------------------+
 bool IsSwingHigh(int i,int L)
 {
    double h = iHigh(_Symbol, PERIOD_CURRENT, i);
@@ -414,8 +468,8 @@ void SyncManualChannel()
       g_canal_low  = NormalizeDouble(lo, _Digits);
       g_largura    = NormalizeDouble(hi - lo, _Digits);
       g_manual     = true;
-      if(g_fase == FASE_SEM_CANAL || g_fase == FASE_CANAL_LARGO)
-         g_fase = FASE_CANAL;
+      ComputeC1();
+      if(g_fase == FASE_SEM_CANAL || g_fase == FASE_CANAL_LARGO) g_fase = FASE_CANAL;
       PrintFormat("[Fimathe] Canal ajustado manualmente: H=%s L=%s Lg=%s",
                   DoubleToString(g_canal_high, _Digits),
                   DoubleToString(g_canal_low, _Digits),
@@ -424,54 +478,31 @@ void SyncManualChannel()
 }
 
 //+------------------------------------------------------------------+
-//| Folga do stop = spread (compra) / spread+ (venda)                 |
+//| Folga do stop = spread * mult                                     |
 //+------------------------------------------------------------------+
-double StopBuffer(bool is_sell)
+double StopBuffer()
 {
    double sp = (double)SymbolInfoInteger(_Symbol, SYMBOL_SPREAD) * _Point;
    if(sp <= 0)
       sp = SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID);
    if(sp <= 0)
-      sp = _Point * 10;                      // fallback minimo
-
-   double buf = sp * InpStopSpreadMult;
-   if(is_sell) buf += sp;                    // "spread+" nas vendas (saem no ask)
-   return buf;
+      sp = _Point * 10;                    // fallback minimo
+   return sp * InpStopSpreadMult;
 }
 
 //+------------------------------------------------------------------+
 //| Abre a ordem (uma por vez)                                        |
 //+------------------------------------------------------------------+
-bool EnterTrade(int dir,double tpmult,bool is_inverse)
+bool EnterTrade(int dir,double entry,double tp,double sl,string kind)
 {
    if(!g_bot_active) return false;
    if(CountOurPositions() > 0) return false;          // uma ordem por vez
 
-   double ch = g_canal_high, cl = g_canal_low, lg = g_largura;
-   double buf = StopBuffer(dir < 0);
-
-   double entry, tp, sl;
-   if(dir > 0)                                         // COMPRA
-   {
-      entry = ch;
-      tp    = NormalizeDouble(ch + lg * tpmult, _Digits);
-      sl    = NormalizeDouble(cl - buf, _Digits);      // spread abaixo do canal
-   }
-   else                                                // VENDA
-   {
-      entry = cl;
-      tp    = NormalizeDouble(cl - lg * tpmult, _Digits);
-      sl    = NormalizeDouble(ch + buf, _Digits);      // spread+ acima do canal
-   }
-
-   // Filtro de noticias
    if(InpNewsFilter && !NewsAllowed())
    {
       Print("[Fimathe] Bloqueado — noticia de alto impacto");
       return false;
    }
-
-   // Gestao de risco
    string block;
    if(!CanTrade(block))
    {
@@ -479,7 +510,7 @@ bool EnterTrade(int dir,double tpmult,bool is_inverse)
       return false;
    }
 
-   // Respeita distancia minima de stops do broker (a partir do preco atual)
+   // Respeita distancia minima de stops (a partir do preco atual)
    double price = (dir > 0) ? SymbolInfoDouble(_Symbol, SYMBOL_ASK)
                             : SymbolInfoDouble(_Symbol, SYMBOL_BID);
    double stops = (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL) * _Point;
@@ -504,50 +535,33 @@ bool EnterTrade(int dir,double tpmult,bool is_inverse)
       return false;
    }
 
-   string label = is_inverse ? "INVERSA" : "PRIMARIA";
-   string comment = "RickFim_" + label;
+   string comment = "RickFim_" + kind;
    bool ok = (dir > 0) ? g_trade.Buy (lot, _Symbol, 0, sl, tp, comment)
                        : g_trade.Sell(lot, _Symbol, 0, sl, tp, comment);
-
    if(!ok)
    {
       PrintFormat("[Fimathe] Falha ordem %s: err=%d retcode=%u",
-                  label, GetLastError(), g_trade.ResultRetcode());
+                  kind, GetLastError(), g_trade.ResultRetcode());
       return false;
    }
 
    g_pos_dir     = dir;
-   g_is_inverse  = is_inverse;
+   g_entry_kind  = kind;
    g_entrada     = entry;
    g_stop        = sl;
    g_take        = tp;
    g_fase        = FASE_EM_POSICAO;
-   g_extended    = false;
    g_entry_time  = iTime(_Symbol, PERIOD_CURRENT, 0);
    g_trades_today++;
 
-   PrintFormat("[Fimathe] %s %s lot=%.2f entry=%s TP=%s(%.1fx) SL=%s",
-               (dir > 0 ? "COMPRA" : "VENDA"), label, lot,
+   PrintFormat("[Fimathe] %s (%s) lot=%.2f entry=%s TP=%s SL=%s",
+               (dir > 0 ? "COMPRA" : "VENDA"), kind, lot,
                DoubleToString(entry, _Digits), DoubleToString(tp, _Digits),
-               tpmult, DoubleToString(sl, _Digits));
-
+               DoubleToString(sl, _Digits));
    if(InpAlertSound)
-      Alert(StringFormat("[Fimathe PRO] %s %s em %s",
-            (dir > 0 ? "COMPRA" : "VENDA"), label, _Symbol));
+      Alert(StringFormat("[Fimathe PRO] %s (%s) em %s",
+            (dir > 0 ? "COMPRA" : "VENDA"), kind, _Symbol));
    return true;
-}
-
-//+------------------------------------------------------------------+
-void ArmInverse(int dir)
-{
-   g_inverse_dir = dir;
-   g_pos_dir     = 0;
-   g_is_inverse  = false;
-   g_extended    = false;
-   g_fase        = FASE_AGUARDA_INVERSO;
-   g_entry_time  = iTime(_Symbol, PERIOD_CURRENT, 0);
-   PrintFormat("[Fimathe] Inverso armado -> %s (alvo %.1fx)",
-               (dir > 0 ? "COMPRA" : "VENDA"), InpTPmultInverse);
 }
 
 //+------------------------------------------------------------------+
@@ -555,19 +569,20 @@ void ResetCycle()
 {
    g_fase        = FASE_SEM_CANAL;
    g_primary_dir = 0;
-   g_inverse_dir = 0;
-   g_pos_dir     = 0;
-   g_is_inverse  = false;
+   g_c1_negated  = false;
    g_was_inside  = false;
-   g_extended    = false;
    g_manual      = false;
+   g_pos_dir     = 0;
+   g_entry_kind  = "";
    g_canal_high  = 0;
    g_canal_low   = 0;
    g_largura     = 0;
+   g_c1_up       = 0;
+   g_c1_dn       = 0;
    g_entrada     = 0;
    g_take        = 0;
    g_stop        = 0;
-   DelObj("CH"); DelObj("CL");
+   DelObj("CH"); DelObj("CL"); DelObj("C1");
    DelObj("LV_ENTRY"); DelObj("LV_TP"); DelObj("LV_SL");
 }
 
@@ -588,8 +603,6 @@ void CloseAll(string motivo)
    g_prev_count = CountOurPositions();
 }
 
-//+------------------------------------------------------------------+
-//| Contagem de posicoes                                              |
 //+------------------------------------------------------------------+
 int CountOurPositions()
 {
@@ -619,8 +632,6 @@ int CountAllMagicPositions()
 }
 
 //+------------------------------------------------------------------+
-//| Largura maxima de canal por classe de ativo                       |
-//+------------------------------------------------------------------+
 double GetLgMax()
 {
    string s = _Symbol;
@@ -635,8 +646,6 @@ double GetLgMax()
    return 600.0;
 }
 
-//+------------------------------------------------------------------+
-//| Calculo de lote                                                   |
 //+------------------------------------------------------------------+
 double CalcLot(double sl_distance)
 {
@@ -673,8 +682,6 @@ double RoundLot(double lot)
    return lot;
 }
 
-//+------------------------------------------------------------------+
-//| Gestao de risco                                                   |
 //+------------------------------------------------------------------+
 bool CanTrade(string &reason)
 {
@@ -736,8 +743,6 @@ double GetDailyProfit()
 }
 
 //+------------------------------------------------------------------+
-//| Filtro de noticias — calendario economico MQL5                    |
-//+------------------------------------------------------------------+
 bool NewsAllowed()
 {
    datetime from = TimeCurrent() - InpNewsBuffer * 60;
@@ -772,33 +777,11 @@ ENUM_ORDER_TYPE_FILLING DetectFilling()
 }
 
 //+------------------------------------------------------------------+
-//| Niveis de exibicao conforme a fase                                |
-//+------------------------------------------------------------------+
-void GetDisplayLevels(int &dir,double &entry,double &tp,double &sl,bool &show)
-{
-   show = false; dir = 0; entry = 0; tp = 0; sl = 0;
-   double ch = g_canal_high, cl = g_canal_low, lg = g_largura;
-
-   if(g_fase == FASE_EM_POSICAO && g_pos_dir != 0)
-   {
-      dir = g_pos_dir; entry = g_entrada; tp = g_take; sl = g_stop; show = true;
-   }
-   else if(g_fase == FASE_AGUARDA_INVERSO && g_inverse_dir != 0)
-   {
-      dir = g_inverse_dir;
-      double buf = StopBuffer(dir < 0);
-      if(dir > 0) { entry = ch; tp = NormalizeDouble(ch + lg * InpTPmultInverse, _Digits); sl = NormalizeDouble(cl - buf, _Digits); }
-      else        { entry = cl; tp = NormalizeDouble(cl - lg * InpTPmultInverse, _Digits); sl = NormalizeDouble(ch + buf, _Digits); }
-      show = true;
-   }
-}
-
-//+------------------------------------------------------------------+
 //| Desenho — segmentos (nao linhas de tela cheia)                    |
 //+------------------------------------------------------------------+
 void DrawAll()
 {
-   // Canal (amarelo discreto) — so quando formado
+   // Canal (amarelo discreto) — quando formado
    if(g_canal_high > 0 && g_canal_low > 0)
    {
       datetime tRef = (g_ref_time > 0) ? g_ref_time : g_last_bar_time - PeriodSeconds() * 3;
@@ -807,16 +790,24 @@ void DrawAll()
    }
    else { DelObj("CH"); DelObj("CL"); }
 
-   // Entrada / TP(C1) / Stop — so quando rompeu (posicao ou inverso armado)
-   int dir; double e, tp, sl; bool show;
-   GetDisplayLevels(dir, e, tp, sl, show);
-   if(show)
+   // C1 pendente (cenario 1) — quando ha rompimento armado e sem posicao
+   if(g_fase == FASE_CANAL && g_primary_dir != 0)
+   {
+      double c1  = (g_primary_dir > 0) ? g_c1_up : g_c1_dn;
+      color  cc1 = (g_primary_dir > 0) ? InpClrBuy : InpClrSell;
+      datetime tR = (g_ref_time > 0) ? g_ref_time : g_last_bar_time;
+      DrawSeg("C1", c1, cc1, STYLE_DASHDOT, 1, tR, false);
+   }
+   else DelObj("C1");
+
+   // Entrada / TP / Stop — quando EM_POSICAO
+   if(g_fase == FASE_EM_POSICAO && g_pos_dir != 0)
    {
       datetime tE = (g_entry_time > 0) ? g_entry_time : g_last_bar_time;
-      color cEntry = (dir > 0) ? InpClrBuy : InpClrSell;
-      DrawSeg("LV_ENTRY", e,  cEntry,    STYLE_DASH,  1, tE, false);
-      DrawSeg("LV_TP",    tp, InpClrTP,  STYLE_SOLID, 2, tE, false);
-      DrawSeg("LV_SL",    sl, InpClrSL,  STYLE_SOLID, 2, tE, false);
+      color cEntry = (g_pos_dir > 0) ? InpClrBuy : InpClrSell;
+      DrawSeg("LV_ENTRY", g_entrada, cEntry,   STYLE_DASH,  1, tE, false);
+      DrawSeg("LV_TP",    g_take,    InpClrTP, STYLE_SOLID, 2, tE, false);
+      DrawSeg("LV_SL",    g_stop,    InpClrSL, STYLE_SOLID, 2, tE, false);
    }
    else
    {
@@ -831,8 +822,8 @@ void DrawSeg(string id,double price,color clr,ENUM_LINE_STYLE st,int w,datetime 
 {
    string n = OBJ_PREFIX + id;
    datetime tEnd = g_last_bar_time + PeriodSeconds() * InpExtendBars;
-   if(tStart <= 0)       tStart = g_last_bar_time - PeriodSeconds() * 3;
-   if(tStart >= tEnd)    tStart = tEnd - PeriodSeconds() * 3;
+   if(tStart <= 0)    tStart = g_last_bar_time - PeriodSeconds() * 3;
+   if(tStart >= tEnd) tStart = tEnd - PeriodSeconds() * 3;
 
    if(ObjectFind(0, n) < 0)
    {
@@ -867,19 +858,20 @@ void DelObj(string id)
 //+------------------------------------------------------------------+
 void EnsurePanel()
 {
-   CreateRect (OBJ_PREFIX + "P_BG",   10, 18, 272, 176, C'25,25,25',  clrGoldenrod);
-   CreateRect (OBJ_PREFIX + "P_HEAD", 10, 18, 272, 22,  C'70,55,0',   clrGoldenrod);
+   CreateRect (OBJ_PREFIX + "P_BG",   10, 18, 288, 194, C'25,25,25',  clrGoldenrod);
+   CreateRect (OBJ_PREFIX + "P_HEAD", 10, 18, 288, 22,  C'70,55,0',   clrGoldenrod);
    CreateLabel(OBJ_PREFIX + "P_T",    18, 21, "RickEA Fimathe PRO", clrWhite, 10, true);
 
-   CreateLabel(OBJ_PREFIX + "P_L0", 18, 48,  "", clrWhite,      9, true);
-   CreateLabel(OBJ_PREFIX + "P_L1", 18, 66,  "", clrSilver,     9, false);
-   CreateLabel(OBJ_PREFIX + "P_L2", 18, 84,  "", InpClrBuy,     9, false);
-   CreateLabel(OBJ_PREFIX + "P_L3", 18, 102, "", InpClrTP,      9, false);
-   CreateLabel(OBJ_PREFIX + "P_L4", 18, 120, "", InpClrSL,      9, false);
-   CreateLabel(OBJ_PREFIX + "P_L5", 18, 138, "", clrSilver,     9, false);
+   CreateLabel(OBJ_PREFIX + "P_L0", 18, 48,  "", clrWhite,  9, true);
+   CreateLabel(OBJ_PREFIX + "P_L1", 18, 66,  "", clrSilver, 9, false);
+   CreateLabel(OBJ_PREFIX + "P_L2", 18, 84,  "", clrSilver, 9, false);
+   CreateLabel(OBJ_PREFIX + "P_L3", 18, 102, "", InpClrBuy, 9, false);
+   CreateLabel(OBJ_PREFIX + "P_L4", 18, 120, "", InpClrTP,  9, false);
+   CreateLabel(OBJ_PREFIX + "P_L5", 18, 138, "", InpClrSL,  9, false);
+   CreateLabel(OBJ_PREFIX + "P_L6", 18, 156, "", clrSilver, 9, false);
 
-   CreateButton(OBJ_PREFIX + "BTN_ZERAR",  18,  160, 122, 26, "ZERAR ORDEM", clrWhite, C'130,0,0');
-   CreateButton(OBJ_PREFIX + "BTN_TOGGLE", 148, 160, 124, 26, "BOT: ON",     clrWhite, C'0,100,0');
+   CreateButton(OBJ_PREFIX + "BTN_ZERAR",  18,  178, 130, 26, "ZERAR ORDEM", clrWhite, C'130,0,0');
+   CreateButton(OBJ_PREFIX + "BTN_TOGGLE", 156, 178, 130, 26, "BOT: ON",     clrWhite, C'0,100,0');
 }
 
 void UpdatePanel()
@@ -887,51 +879,55 @@ void UpdatePanel()
    string fase_str;
    switch(g_fase)
    {
-      case FASE_SEM_CANAL:        fase_str = "Formando canal...";        break;
-      case FASE_CANAL:            fase_str = "Canal — aguardando rompim."; break;
-      case FASE_EM_POSICAO:       fase_str = g_is_inverse ? "EM POSICAO (inversa 1.5x)"
-                                                          : "EM POSICAO (1x)";     break;
-      case FASE_AGUARDA_INVERSO:  fase_str = "Rejeitou — aguard. inverso"; break;
-      case FASE_CANAL_LARGO:      fase_str = "Canal largo — sem operar";   break;
-      default:                    fase_str = "---";                        break;
+      case FASE_SEM_CANAL:   fase_str = "Formando canal...";           break;
+      case FASE_CANAL:
+         if(g_primary_dir == 0)       fase_str = "Canal — aguardando rompimento";
+         else if(!g_c1_negated)       fase_str = StringFormat("Rompeu %s — aguardando C1",
+                                                    (g_primary_dir > 0 ? "CIMA" : "BAIXO"));
+         else                         fase_str = "Negou C1 — aguardando inversa";
+         break;
+      case FASE_EM_POSICAO:  fase_str = StringFormat("EM POSICAO (%s)", g_entry_kind); break;
+      case FASE_CANAL_LARGO: fase_str = "Canal largo — sem operar";    break;
+      default:               fase_str = "---";                         break;
    }
-
-   int dir; double e, tp, sl; bool show;
-   GetDisplayLevels(dir, e, tp, sl, show);
 
    double daily = GetDailyProfit();
    int    pos   = CountOurPositions();
 
    CreateLabel(OBJ_PREFIX + "P_L0", 18, 48, "Fase: " + fase_str, clrWhite, 9, true);
    CreateLabel(OBJ_PREFIX + "P_L1", 18, 66,
-               StringFormat("Canal  H=%s  L=%s  Lg=%s",
+               StringFormat("Canal H=%s L=%s Lg=%s",
                             DoubleToString(g_canal_high, _Digits),
                             DoubleToString(g_canal_low,  _Digits),
                             DoubleToString(g_largura,    _Digits)),
                clrSilver, 9, false);
+   CreateLabel(OBJ_PREFIX + "P_L2", 18, 84,
+               StringFormat("C1+ =%s   C1- =%s",
+                            DoubleToString(g_c1_up, _Digits),
+                            DoubleToString(g_c1_dn, _Digits)),
+               clrGoldenrod, 9, false);
 
-   if(show)
+   if(g_fase == FASE_EM_POSICAO && g_pos_dir != 0)
    {
-      color cEntry = (dir > 0) ? InpClrBuy : InpClrSell;
-      CreateLabel(OBJ_PREFIX + "P_L2", 18, 84,
-                  StringFormat("Entrada %s: %s", (dir > 0 ? "COMPRA" : "VENDA"),
-                               DoubleToString(e, _Digits)), cEntry, 9, false);
-      CreateLabel(OBJ_PREFIX + "P_L3", 18, 102, "TP (verde): " + DoubleToString(tp, _Digits), InpClrTP, 9, false);
-      CreateLabel(OBJ_PREFIX + "P_L4", 18, 120, "Stop (verm): " + DoubleToString(sl, _Digits), InpClrSL, 9, false);
+      color cEntry = (g_pos_dir > 0) ? InpClrBuy : InpClrSell;
+      CreateLabel(OBJ_PREFIX + "P_L3", 18, 102,
+                  StringFormat("Entrada %s: %s", (g_pos_dir > 0 ? "COMPRA" : "VENDA"),
+                               DoubleToString(g_entrada, _Digits)), cEntry, 9, false);
+      CreateLabel(OBJ_PREFIX + "P_L4", 18, 120, "TP (verde): "  + DoubleToString(g_take, _Digits), InpClrTP, 9, false);
+      CreateLabel(OBJ_PREFIX + "P_L5", 18, 138, "Stop (verm): " + DoubleToString(g_stop, _Digits), InpClrSL, 9, false);
    }
    else
    {
-      CreateLabel(OBJ_PREFIX + "P_L2", 18, 84,  "Entrada: —", clrDimGray, 9, false);
-      CreateLabel(OBJ_PREFIX + "P_L3", 18, 102, "TP: —",      clrDimGray, 9, false);
-      CreateLabel(OBJ_PREFIX + "P_L4", 18, 120, "Stop: —",    clrDimGray, 9, false);
+      CreateLabel(OBJ_PREFIX + "P_L3", 18, 102, "Entrada: —", clrDimGray, 9, false);
+      CreateLabel(OBJ_PREFIX + "P_L4", 18, 120, "TP: —",      clrDimGray, 9, false);
+      CreateLabel(OBJ_PREFIX + "P_L5", 18, 138, "Stop: —",    clrDimGray, 9, false);
    }
 
-   CreateLabel(OBJ_PREFIX + "P_L5", 18, 138,
+   CreateLabel(OBJ_PREFIX + "P_L6", 18, 156,
                StringFormat("Pos:%d  Trades:%d/%d  P&L dia:$%.2f",
                             pos, g_trades_today, InpMaxTradesDay, daily),
                (daily >= 0 ? clrLime : clrTomato), 9, false);
 
-   // Botao toggle reflete estado do bot
    string bn = OBJ_PREFIX + "BTN_TOGGLE";
    ObjectSetString (0, bn, OBJPROP_TEXT,    g_bot_active ? "BOT: ON" : "BOT: OFF");
    ObjectSetInteger(0, bn, OBJPROP_BGCOLOR, g_bot_active ? C'0,100,0' : C'90,90,90');
