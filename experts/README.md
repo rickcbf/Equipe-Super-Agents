@@ -22,7 +22,11 @@ ou use o modo topo/fundo em `InpChannelMode`). `lg` = tamanho do canal (topo−f
 4. **Stop** na borda **oposta** do canal ± spread (compra: fundo − spread;
    venda: topo + spread).
 
-### Cenário 2 — entrada inversa (C1 negada)
+### Cenário 2 — entrada inversa (C1 negada) — `InpUsarInversao`
+> Opcional. Com `InpUsarInversao = false` a inversa é **desligada**: a entrada
+> só acontece na **C1**, mesmo que a primeira C1 não seja rompida e o preço volte
+> pro canal (segue aguardando a C1 do lado primário).
+
 1. Rompeu um lado e marcou a C1, **mas não rompeu a C1** e voltou pro canal.
 2. Depois **rompe o canal de referência pro lado oposto** → **entrada no
    rompimento do canal** (não numa nova C1):
@@ -43,6 +47,7 @@ ou use o modo topo/fundo em `InpChannelMode`). `lg` = tamanho do canal (topo−f
 
 ## Principais parâmetros
 - `InpChannelMode` / `InpChannelBars` (4) — como formar o canal.
+- `InpUsarInversao` (true) — liga/desliga a entrada inversa (cenário 2).
 - `InpTPmult` (2.0) — alvo em múltiplos do canal, medido a partir da entrada.
 - `InpStopSpreadMult` (1.0) — folga do stop em múltiplos do spread.
 - `InpMaxConcurrent` (1) — uma ordem por vez.

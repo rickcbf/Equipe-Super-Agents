@@ -57,6 +57,7 @@ input int              InpChannelBars   = 4;               // Velas do canal (mo
 input int              InpSwingLookback = 3;               // Forca do swing (modo topo/fundo)
 input int              InpSwingMaxScan  = 300;             // Alcance da busca (modo topo/fundo)
 input group "══════ Entrada / Alvos ══════"
+input bool             InpUsarInversao  = true;            // Usar entrada inversa (cenario 2); false = so C1
 input double           InpTPmult        = 2.0;             // Alvo (x tamanho do canal, a partir da entrada)
 input double           InpStopSpreadMult= 1.0;             // Folga do stop (x spread) alem do canal
 input group "══════ Gestao de Risco ══════"
@@ -305,7 +306,7 @@ void RunStateMachine()
          EnterTrade(1, entry, tp, sl, "C1");
       }
       // CENARIO 2: negou e rompeu o canal pra baixo -> VENDA na borda do canal
-      else if(g_c1_negated && bid < cl)
+      else if(InpUsarInversao && g_c1_negated && bid < cl)
       {
          double entry = cl;
          double tp    = NormalizeDouble(entry - lg * InpTPmult, _Digits);
@@ -324,7 +325,7 @@ void RunStateMachine()
          EnterTrade(-1, entry, tp, sl, "C1");
       }
       // CENARIO 2: negou e rompeu o canal pra cima -> COMPRA na borda do canal
-      else if(g_c1_negated && bid > ch)
+      else if(InpUsarInversao && g_c1_negated && bid > ch)
       {
          double entry = ch;
          double tp    = NormalizeDouble(entry + lg * InpTPmult, _Digits);
@@ -884,7 +885,8 @@ void UpdatePanel()
          if(g_primary_dir == 0)       fase_str = "Canal — aguardando rompimento";
          else if(!g_c1_negated)       fase_str = StringFormat("Rompeu %s — aguardando C1",
                                                     (g_primary_dir > 0 ? "CIMA" : "BAIXO"));
-         else                         fase_str = "Negou C1 — aguardando inversa";
+         else if(InpUsarInversao)     fase_str = "Negou C1 — aguardando inversa";
+         else                         fase_str = "Negou C1 — aguardando C1 (inv. off)";
          break;
       case FASE_EM_POSICAO:  fase_str = StringFormat("EM POSICAO (%s)", g_entry_kind); break;
       case FASE_CANAL_LARGO: fase_str = "Canal largo — sem operar";    break;
