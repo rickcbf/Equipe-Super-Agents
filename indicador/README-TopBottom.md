@@ -16,11 +16,20 @@ Arquivo: `RickEA_TopBottom_Indicator.mq5`
 - **Frase de alerta no topo, centralizada**: `ALERT: SELL ZONE` quando o preço está entre as duas
   máximas e `ALERT: BUY ZONE` quando está entre as duas mínimas. Fora das zonas, some.
 
-## Instalação
-1. MetaTrader 5 → **Arquivo → Abrir Pasta de Dados** → `MQL5/Indicators/`.
-2. Copie `RickEA_TopBottom_Indicator.mq5` para lá.
-3. No **MetaEditor**, abra o arquivo e clique em **Compilar** (F7).
+## Instalação (jeito seguro)
+1. MT5 → **Arquivo → Abrir Pasta de Dados** → entre em `MQL5/Indicators/`.
+2. **Copie o arquivo `RickEA_TopBottom_Indicator.mq5` para essa pasta** (arquivo inteiro, não
+   copiar/colar o texto).
+3. No **MetaEditor**: **Arquivo → Abrir** → escolha o arquivo → **Compilar (F7)**.
 4. No gráfico: **Navegador → Indicadores → RickEA_TopBottom_Indicator** (arraste pro gráfico).
+
+> **Se for colar o código dentro do MetaEditor:** crie o arquivo pelo assistente e depois
+> **apague TUDO que o assistente gerou** (`Ctrl+A` → `Delete`) **antes** de colar. O assistente
+> do MetaEditor já cria um esqueleto com `OnInit()` / `OnCalculate()`; se o código for colado
+> por cima ou no meio desse esqueleto, as chaves/parênteses ficam desbalanceados e aparecem
+> dezenas de erros em cascata do tipo `unbalanced parentheses`, `unexpected end of program` e
+> `undeclared identifier 'CalcTrend' / 'Zone' / 'Level'` (as funções depois do ponto quebrado
+> somem para o compilador). O arquivo em si compila limpo.
 
 Pode rodar junto com o RickEA X-TREND no mesmo gráfico (os objetos usam prefixos diferentes:
 `TB_` aqui, `XT_` lá). Se usar os dois, desligue `InpBigPrice` em um deles para o preço grande

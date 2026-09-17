@@ -9,7 +9,8 @@
 //+------------------------------------------------------------------+
 #property copyright "RichardTrader"
 #property link      "RickEA TOP/BOTTOM"
-#property version   "1.00"
+#property version   "1.01"
+#property description "Zonas entre as 2 maximas e as 2 minimas dos dias anteriores"
 #property indicator_chart_window
 #property indicator_buffers 3
 #property indicator_plots   0
@@ -22,7 +23,7 @@ input int    InpOpacity      = 18;          // Opacidade do preenchimento (0-100
 input int    InpExtendBars   = 0;           // Prolongar N barras alem da vela atual
 input bool   InpShowLevels   = true;        // Desenhar as linhas das maximas/minimas
 input bool   InpShowLevelTag = true;        // Etiqueta com o preco de cada nivel
-input int    InpZoneFontSize = 14;          // Tamanho do texto "SELL ZONE"/"BUY ZONE"
+input int    InpZoneFontSize = 14;          // Tamanho do texto SELL ZONE / BUY ZONE
 //--- alerta no topo do grafico
 input bool   InpShowAlertTop = true;        // Frase de alerta no topo/centro
 input int    InpAlertFontSize= 18;          // Tamanho da frase de alerta
@@ -40,25 +41,35 @@ input bool   InpAlertPopup   = false;       // Alerta popup + som no terminal
 input bool   InpAlertEmail   = false;       // Enviar e-mail
 
 //--- buffers de calculo (SuperTrend so para a cor do preco grande)
-double BufDir[],BufUpper[],BufLower[];
+double BufDir[];
+double BufUpper[];
+double BufLower[];
 
-int      hAtr=INVALID_HANDLE;
-string   PFX="TB_";
-int      g_lastZone=0;        // 0=fora, 1=BUY ZONE, -1=SELL ZONE
+int    hAtr = INVALID_HANDLE;
+string PFX  = "TB_";
+int    g_lastZone = 0;   // 0=fora, 1=BUY ZONE, -1=SELL ZONE
+
+//--- prototipos
+void  CalcTrend(const int rt,const int prev,const double &hi[],const double &lo[],const double &cl[]);
+void  Zone(string id,double top,double bot,color clr,string text,datetime tStart,datetime tEnd);
+void  Level(string id,double price,color clr,datetime tStart,datetime tEnd,string tag);
+void  AlertLabel(int zone);
+void  BigPrice(int dir,double px);
+void  FireAlert(int zone,double px);
+color Fade(color clr,int pct);
 //+------------------------------------------------------------------+
 int OnInit()
   {
-   SetIndexBuffer(0,BufDir,  INDICATOR_CALCULATIONS);
+   SetIndexBuffer(0,BufDir,INDICATOR_CALCULATIONS);
    SetIndexBuffer(1,BufUpper,INDICATOR_CALCULATIONS);
    SetIndexBuffer(2,BufLower,INDICATOR_CALCULATIONS);
    ArraySetAsSeries(BufDir,false);
    ArraySetAsSeries(BufUpper,false);
    ArraySetAsSeries(BufLower,false);
-
    IndicatorSetString(INDICATOR_SHORTNAME,"TOP/BOTTOM");
-
    hAtr=iATR(_Symbol,_Period,InpAtrPeriod);
-   if(hAtr==INVALID_HANDLE) return(INIT_FAILED);
+   if(hAtr==INVALID_HANDLE)
+      return(INIT_FAILED);
    return(INIT_SUCCEEDED);
   }
 //+------------------------------------------------------------------+
@@ -68,103 +79,103 @@ void OnDeinit(const int reason)
    ChartRedraw();
   }
 //+------------------------------------------------------------------+
-int OnCalculate(const int rates_total,const int prev_calculated,
-                const datetime &time[],const double &open[],const double &high[],
-                const double &low[],const double &close[],const long &tick_volume[],
-                const long &volume[],const int &spread[])
+int OnCalculate(const int rates_total,const int prev_calculated,const datetime &time[],const double &open[],const double &high[],const double &low[],const double &close[],const long &tick_volume[],const long &volume[],const int &spread[])
   {
-   if(rates_total<InpAtrPeriod+2) return(0);
-
+   if(rates_total<InpAtrPeriod+2)
+      return(0);
    CalcTrend(rates_total,prev_calculated,high,low,close);
-
    //--- maximas/minimas do dia anterior (shift 1) e de dois dias atras (shift 2)
    MqlRates d1[];
    ArraySetAsSeries(d1,true);
-   if(CopyRates(_Symbol,PERIOD_D1,0,3,d1)<3) return(prev_calculated);
-
-   double hPrev=d1[1].high, hPrev2=d1[2].high;   // as DUAS maximas
-   double lPrev=d1[1].low,  lPrev2=d1[2].low;    // as DUAS minimas
-
-   double sellTop=MathMax(hPrev,hPrev2), sellBot=MathMin(hPrev,hPrev2);
-   double buyTop =MathMax(lPrev,lPrev2), buyBot =MathMin(lPrev,lPrev2);
-
-   datetime tStart=d1[2].time;                                   // inicio do dia-2
-   datetime tEnd  =time[rates_total-1]+PeriodSeconds()*InpExtendBars;
-   if(tEnd<=tStart) tEnd=tStart+PeriodSeconds();
-
+   if(CopyRates(_Symbol,PERIOD_D1,0,3,d1)<3)
+      return(prev_calculated);
+   double hPrev  = d1[1].high;   // maxima do dia anterior
+   double hPrev2 = d1[2].high;   // maxima de dois dias atras
+   double lPrev  = d1[1].low;    // minima do dia anterior
+   double lPrev2 = d1[2].low;    // minima de dois dias atras
+   double sellTop = MathMax(hPrev,hPrev2);
+   double sellBot = MathMin(hPrev,hPrev2);
+   double buyTop  = MathMax(lPrev,lPrev2);
+   double buyBot  = MathMin(lPrev,lPrev2);
+   datetime tStart = d1[2].time;   // inicio do dia-2
+   datetime tEnd   = time[rates_total-1]+PeriodSeconds()*InpExtendBars;
+   if(tEnd<=tStart)
+      tEnd=tStart+PeriodSeconds();
    //--- zonas
    Zone("SELL",sellTop,sellBot,InpSellClr,"SELL ZONE",tStart,tEnd);
-   Zone("BUY", buyTop, buyBot, InpBuyClr, "BUY ZONE", tStart,tEnd);
-
+   Zone("BUY",buyTop,buyBot,InpBuyClr,"BUY ZONE",tStart,tEnd);
    if(InpShowLevels)
      {
-      Level("H1",hPrev, InpSellClr,tStart,tEnd,"H D-1");
+      Level("H1",hPrev,InpSellClr,tStart,tEnd,"H D-1");
       Level("H2",hPrev2,InpSellClr,tStart,tEnd,"H D-2");
-      Level("L1",lPrev, InpBuyClr, tStart,tEnd,"L D-1");
-      Level("L2",lPrev2,InpBuyClr, tStart,tEnd,"L D-2");
+      Level("L1",lPrev,InpBuyClr,tStart,tEnd,"L D-1");
+      Level("L2",lPrev2,InpBuyClr,tStart,tEnd,"L D-2");
      }
-
    //--- preco atual e zona em que ele esta
    double px=SymbolInfoDouble(_Symbol,SYMBOL_BID);
-   if(px<=0) px=close[rates_total-1];
-
+   if(px<=0.0)
+      px=close[rates_total-1];
    int zone=0;
-   if(px<=sellTop && px>=sellBot)     zone=-1;   // entre as duas maximas
-   else if(px<=buyTop && px>=buyBot)  zone= 1;   // entre as duas minimas
-
-   if(InpShowAlertTop) AlertLabel(zone);
-   if(InpBigPrice)     BigPrice((int)BufDir[rates_total-1],px);
-
+   if(px<=sellTop && px>=sellBot)
+      zone=-1;                      // entre as duas maximas
+   else
+      if(px<=buyTop && px>=buyBot)
+         zone=1;                    // entre as duas minimas
+   if(InpShowAlertTop)
+      AlertLabel(zone);
+   if(InpBigPrice)
+      BigPrice((int)BufDir[rates_total-1],px);
    FireAlert(zone,px);
-
    ChartRedraw();
    return(rates_total);
   }
 //+------------------------------------------------------------------+
 //| SuperTrend/ATR - so para dar a cor da tendencia ao preco grande   |
 //+------------------------------------------------------------------+
-void CalcTrend(const int rt,const int prev,const double &high[],const double &low[],
-               const double &close[])
+void CalcTrend(const int rt,const int prev,const double &hi[],const double &lo[],const double &cl[])
   {
-   if(BarsCalculated(hAtr)<rt) return;
+   if(BarsCalculated(hAtr)<rt)
+      return;
    double atr[];
    ArraySetAsSeries(atr,false);
-   if(CopyBuffer(hAtr,0,0,rt,atr)<rt) return;
-
+   if(CopyBuffer(hAtr,0,0,rt,atr)<rt)
+      return;
    int start=(prev>1)?prev-1:InpAtrPeriod+1;
-   for(int i=start;i<rt;i++)
+   for(int i=start; i<rt; i++)
      {
-      double hl2=(high[i]+low[i])/2.0;
+      double hl2=(hi[i]+lo[i])/2.0;
       double up=hl2+InpAtrMult*atr[i];
       double dn=hl2-InpAtrMult*atr[i];
-      if(i==0 || BufDir[i-1]==0)
+      if(i==0 || BufDir[i-1]==0.0)
         {
-         BufUpper[i]=up; BufLower[i]=dn;
-         BufDir[i]=(close[i]>=hl2)?1:-1;
+         BufUpper[i]=up;
+         BufLower[i]=dn;
+         BufDir[i]=(cl[i]>=hl2)?1:-1;
         }
       else
         {
-         BufUpper[i]=(up<BufUpper[i-1] || close[i-1]>BufUpper[i-1])?up:BufUpper[i-1];
-         BufLower[i]=(dn>BufLower[i-1] || close[i-1]<BufLower[i-1])?dn:BufLower[i-1];
+         BufUpper[i]=(up<BufUpper[i-1] || cl[i-1]>BufUpper[i-1])?up:BufUpper[i-1];
+         BufLower[i]=(dn>BufLower[i-1] || cl[i-1]<BufLower[i-1])?dn:BufLower[i-1];
          double dir=BufDir[i-1];
-         if(dir==1  && close[i]<BufLower[i]) dir=-1;
-         if(dir==-1 && close[i]>BufUpper[i]) dir=1;
+         if(dir==1.0 && cl[i]<BufLower[i])
+            dir=-1.0;
+         if(dir==-1.0 && cl[i]>BufUpper[i])
+            dir=1.0;
          BufDir[i]=dir;
         }
      }
   }
-//+==================================================================+
-//|  Retangulo da zona + texto no meio                                |
-//+==================================================================+
-void Zone(string id,double top,double bot,color clr,string text,
-          datetime tStart,datetime tEnd)
+//+------------------------------------------------------------------+
+//| Retangulo da zona + texto no meio                                 |
+//+------------------------------------------------------------------+
+void Zone(string id,double top,double bot,color clr,string text,datetime tStart,datetime tEnd)
   {
    string r=PFX+"ZONE_"+id;
    if(ObjectFind(0,r)<0)
      {
       ObjectCreate(0,r,OBJ_RECTANGLE,0,tStart,top,tEnd,bot);
       ObjectSetInteger(0,r,OBJPROP_FILL,true);
-      ObjectSetInteger(0,r,OBJPROP_BACK,true);      // atras das velas
+      ObjectSetInteger(0,r,OBJPROP_BACK,true);
       ObjectSetInteger(0,r,OBJPROP_SELECTABLE,false);
       ObjectSetInteger(0,r,OBJPROP_HIDDEN,true);
      }
@@ -173,13 +184,12 @@ void Zone(string id,double top,double bot,color clr,string text,
       ObjectMove(0,r,0,tStart,top);
       ObjectMove(0,r,1,tEnd,bot);
      }
-   // MT5 nao tem canal alfa em objeto de grafico: a "pouca opacidade" vem de
+   // MT5 nao tem canal alfa em objeto de grafico: a pouca opacidade vem de
    // misturar a cor da zona com o fundo do grafico na proporcao InpOpacity.
    ObjectSetInteger(0,r,OBJPROP_COLOR,Fade(clr,InpOpacity));
-
    string t=PFX+"ZTXT_"+id;
    datetime tMid=(datetime)(tStart+(tEnd-tStart)/2);
-   double   pMid=(top+bot)/2.0;
+   double pMid=(top+bot)/2.0;
    if(ObjectFind(0,t)<0)
      {
       ObjectCreate(0,t,OBJ_TEXT,0,tMid,pMid);
@@ -189,7 +199,8 @@ void Zone(string id,double top,double bot,color clr,string text,
       ObjectSetInteger(0,t,OBJPROP_HIDDEN,true);
       ObjectSetString(0,t,OBJPROP_FONT,"Arial Black");
      }
-   else ObjectMove(0,t,0,tMid,pMid);
+   else
+      ObjectMove(0,t,0,tMid,pMid);
    ObjectSetString(0,t,OBJPROP_TEXT,text);
    ObjectSetInteger(0,t,OBJPROP_COLOR,clr);
    ObjectSetInteger(0,t,OBJPROP_FONTSIZE,InpZoneFontSize);
@@ -217,11 +228,11 @@ void Level(string id,double price,color clr,datetime tStart,datetime tEnd,string
       ObjectMove(0,n,1,tEnd,price);
      }
    ObjectSetInteger(0,n,OBJPROP_COLOR,clr);
-
    string t=PFX+"LVT_"+id;
    if(!InpShowLevelTag)
      {
-      if(ObjectFind(0,t)>=0) ObjectDelete(0,t);
+      if(ObjectFind(0,t)>=0)
+         ObjectDelete(0,t);
       return;
      }
    if(ObjectFind(0,t)<0)
@@ -233,7 +244,8 @@ void Level(string id,double price,color clr,datetime tStart,datetime tEnd,string
       ObjectSetString(0,t,OBJPROP_FONT,"Arial Bold");
       ObjectSetInteger(0,t,OBJPROP_FONTSIZE,8);
      }
-   else ObjectMove(0,t,0,tEnd,price);
+   else
+      ObjectMove(0,t,0,tEnd,price);
    ObjectSetString(0,t,OBJPROP_TEXT," "+tag+" "+DoubleToString(price,_Digits));
    ObjectSetInteger(0,t,OBJPROP_COLOR,clr);
   }
@@ -245,18 +257,18 @@ void AlertLabel(int zone)
    string n=PFX+"ALERT";
    if(zone==0)
      {
-      if(ObjectFind(0,n)>=0) ObjectDelete(0,n);
+      if(ObjectFind(0,n)>=0)
+         ObjectDelete(0,n);
       return;
      }
-   string text =(zone==-1)?"ALERT: SELL ZONE":"ALERT: BUY ZONE";
-   color  clr  =(zone==-1)?InpSellClr:InpBuyClr;
-   int    xMid =(int)ChartGetInteger(0,CHART_WIDTH_IN_PIXELS)/2;
-
+   string text=(zone==-1)?"ALERT: SELL ZONE":"ALERT: BUY ZONE";
+   color clr=(zone==-1)?InpSellClr:InpBuyClr;
+   int xMid=(int)(ChartGetInteger(0,CHART_WIDTH_IN_PIXELS)/2);
    if(ObjectFind(0,n)<0)
      {
       ObjectCreate(0,n,OBJ_LABEL,0,0,0);
       ObjectSetInteger(0,n,OBJPROP_CORNER,CORNER_LEFT_UPPER);
-      ObjectSetInteger(0,n,OBJPROP_ANCHOR,ANCHOR_UPPER);   // centralizado no X
+      ObjectSetInteger(0,n,OBJPROP_ANCHOR,ANCHOR_UPPER);
       ObjectSetInteger(0,n,OBJPROP_SELECTABLE,false);
       ObjectSetInteger(0,n,OBJPROP_HIDDEN,true);
       ObjectSetString(0,n,OBJPROP_FONT,"Arial Black");
@@ -272,8 +284,9 @@ void AlertLabel(int zone)
 //+------------------------------------------------------------------+
 void BigPrice(int dir,double px)
   {
-   color  clr=InpBigPriceClr;
-   if(InpBigPriceByTrend && dir!=0) clr=(dir==1)?clrLime:clrRed;
+   color clr=InpBigPriceClr;
+   if(InpBigPriceByTrend && dir!=0)
+      clr=(dir==1)?clrLime:clrRed;
    string n=PFX+"BIGPX";
    if(ObjectFind(0,n)<0)
      {
@@ -295,30 +308,38 @@ void BigPrice(int dir,double px)
 //+------------------------------------------------------------------+
 void FireAlert(int zone,double px)
   {
-   if(zone==g_lastZone) return;
+   if(zone==g_lastZone)
+      return;
    g_lastZone=zone;
-   if(zone==0) return;
-   if(!InpAlertPush && !InpAlertPopup && !InpAlertEmail) return;
-
+   if(zone==0)
+      return;
+   if(!InpAlertPush && !InpAlertPopup && !InpAlertEmail)
+      return;
    string tf=StringSubstr(EnumToString((ENUM_TIMEFRAMES)_Period),7);
    string what=(zone==-1)?"SELL ZONE":"BUY ZONE";
-   string msg=InpBrand+" "+_Symbol+" "+tf+": preco entrou na "+what+
-              " @ "+DoubleToString(px,_Digits);
-   if(InpAlertPush)  SendNotification(msg);
-   if(InpAlertPopup) Alert(msg);
-   if(InpAlertEmail) SendMail(InpBrand+" - "+what+" "+_Symbol,msg);
+   string msg=InpBrand+" "+_Symbol+" "+tf+": preco entrou na "+what+" @ "+DoubleToString(px,_Digits);
+   if(InpAlertPush)
+      SendNotification(msg);
+   if(InpAlertPopup)
+      Alert(msg);
+   if(InpAlertEmail)
+      SendMail(InpBrand+" - "+what+" "+_Symbol,msg);
   }
 //+------------------------------------------------------------------+
 //| Mistura a cor com o fundo do grafico (simula baixa opacidade)     |
 //+------------------------------------------------------------------+
 color Fade(color clr,int pct)
   {
-   int p=pct; if(p<0) p=0; if(p>100) p=100;
-   int c =(int)clr;
+   int p=pct;
+   if(p<0)
+      p=0;
+   if(p>100)
+      p=100;
+   int c=(int)clr;
    int bg=(int)ChartGetInteger(0,CHART_COLOR_BACKGROUND);
-   int r=((c      &0xFF)*p + (bg      &0xFF)*(100-p))/100;
-   int g=(((c>> 8)&0xFF)*p + ((bg>> 8)&0xFF)*(100-p))/100;
-   int b=(((c>>16)&0xFF)*p + ((bg>>16)&0xFF)*(100-p))/100;
+   int r=((c&0xFF)*p+(bg&0xFF)*(100-p))/100;
+   int g=(((c>>8)&0xFF)*p+((bg>>8)&0xFF)*(100-p))/100;
+   int b=(((c>>16)&0xFF)*p+((bg>>16)&0xFF)*(100-p))/100;
    return((color)((b<<16)|(g<<8)|r));
   }
 //+------------------------------------------------------------------+
