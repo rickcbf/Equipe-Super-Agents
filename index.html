@@ -496,6 +496,13 @@
       img:"", checkout:""
     },
     {
+      cat:"indicador", kicker:"Indicador · Grátis", badge:"hot", badgeText:"Grátis",
+      name:"RickEA TOP/BOTTOM — MT5",
+      desc:"Marca as duas máximas e as duas mínimas dos dias anteriores e pinta a SELL ZONE (vermelha) e a BUY ZONE (verde), com preço grande na cor da tendência e alerta no topo do gráfico quando o preço entra na zona.",
+      price:"Grátis", old:"", inst:"MetaTrader 5 · .ex5 pronto (sem compilar)",
+      img:"", download:"/downloads/RickEA_TOP-BOTTOM.ex5"
+    },
+    {
       cat:"robo", kicker:"Robô / EA", badge:"soon", badgeText:"Em breve",
       name:"Robô RickEA — Automação de Operações",
       desc:"Deixe a estratégia operar por você, com gestão de risco embutida. Lista de espera aberta.",
@@ -543,11 +550,13 @@
     var priceOld = p.old ? '<span class="old">'+p.old+'</span>' : '';
     var priceBlock = '<div class="price"><span class="now">'+p.price+'</span>'+priceOld+'</div>'
                    + (p.inst ? '<div class="price"><span class="inst">'+p.inst+'</span></div>' : '');
-    var action = p.free
+    var action = p.download
+      ? '<a href="'+p.download+'" download class="btn btn-primary">Baixar indicador</a>'
+      : (p.free
       ? '<a href="'+p.free+'" target="_blank" rel="noopener" class="btn btn-primary">Abrir grátis</a>'
       : (p.checkout
           ? '<a href="'+p.checkout+'" target="_blank" rel="noopener" class="btn btn-primary">Comprar agora</a>'
-          : '<a href="'+wppLink+'" target="_blank" rel="noopener" class="btn btn-primary">Tenho interesse</a>');
+          : '<a href="'+wppLink+'" target="_blank" rel="noopener" class="btn btn-primary">Tenho interesse</a>'));
     var pays = (p.checkout && !p.free)
       ? '<div class="minipays"><span class="paytag">PIX</span><span class="paytag">DÉBITO</span><span class="paytag">CRÉDITO 12×</span></div>'
       : '';

@@ -1,0 +1,6 @@
+# Codigo-fonte dos indicadores: NAO vai pro site.
+# Na loja vai so o binario compilado (.ex5) em /downloads.
+indicador/
+*.mq5
+*.mq4
+*.cs
