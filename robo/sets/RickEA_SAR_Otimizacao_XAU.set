@@ -1,0 +1,33 @@
+; RickEA SAR - set de OTIMIZACAO para XAUUSD
+; Carregue no Testador de Estrategia (aba Parametros de entrada -> Carregar)
+; e rode a otimizacao em M5, M15, M30, H1 e H4, um de cada vez.
+; Formato: valor||inicio||passo||fim||Y(otimiza) ou N(fixo)
+InpStopLoss=700||300||100||2000||Y
+InpTakeProfit=1200||500||250||3500||Y
+Risk=0.10||0.10||0.00||0.10||N
+InpBreakeven=400||0||200||1000||Y
+ADX_adx_period=14||14||0||14||N
+ADX_max=20||15||5||35||Y
+SAR_step=0.02||0.01||0.01||0.05||Y
+SAR_maximum=0.2||0.1||0.1||0.4||Y
+InpMagic=7898998||7898998||0||7898998||N
+InpSlippage=30||30||0||30||N
+EA_NAME=RickEA SAR
+Visual_Enable=false
+BigPrice_Show=false
+BigPrice_Size=30
+BigPrice_ByTrend=true
+BigPrice_Fixed=55295
+Panel_Show=false
+Panel_Opacity=18
+Panel_X=12
+Panel_Y=12
+Panel_Width=300
+Panel_TrendUp=65280
+Panel_TrendDown=255
+Logo_Show=false
+Logo_AutoSize=true
+Logo_Fill=85
+Logo_Dark=false
+Logo_File=RickEA_Logo_768.bmp
+Logo_FileSize=768

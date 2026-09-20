@@ -1,0 +1,31 @@
+; RickEA SAR - XAUUSD M15 (ponto de partida, valide no testador)
+; 1 "pip" no ouro = 0.01 USD, entao 700 = 7 dolares de stop.
+InpStopLoss=700
+InpTakeProfit=1200
+Risk=0.10
+InpBreakeven=400
+ADX_adx_period=14
+ADX_max=20
+SAR_step=0.02
+SAR_maximum=0.2
+InpMagic=7898998
+InpSlippage=30
+EA_NAME=RickEA SAR
+Visual_Enable=true
+BigPrice_Show=true
+BigPrice_Size=30
+BigPrice_ByTrend=true
+BigPrice_Fixed=55295
+Panel_Show=true
+Panel_Opacity=18
+Panel_X=12
+Panel_Y=12
+Panel_Width=300
+Panel_TrendUp=65280
+Panel_TrendDown=255
+Logo_Show=true
+Logo_AutoSize=true
+Logo_Fill=85
+Logo_Dark=false
+Logo_File=RickEA_Logo_768.bmp
+Logo_FileSize=768
