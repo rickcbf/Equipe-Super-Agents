@@ -16,7 +16,7 @@
 //+------------------------------------------------------------------+
 #property copyright "RichardTrader"
 #property link      "RickEA FIBO GRID"
-#property version   "1.00"
+#property version   "1.01"
 #property description "Grid nas retracoes de Fibonacci: pernada de alta = grid de venda, pernada de queda = grid de compra. Take na cesta (US$ ou pontos do preco medio) e stop fora da pernada."
 
 #include <Trade\Trade.mqh>
@@ -598,7 +598,8 @@ bool TradeAllowed()
       return(false);
    if(!AccountInfoInteger(ACCOUNT_TRADE_EXPERT))
       return(false);
-   if((ENUM_SYMBOL_TRADE_MODE)SymbolInfoInteger(_Symbol,SYMBOL_TRADE_MODE)==SYMBOL_TRADE_DISABLED)
+   ENUM_SYMBOL_TRADE_MODE tm=(ENUM_SYMBOL_TRADE_MODE)SymbolInfoInteger(_Symbol,SYMBOL_TRADE_MODE);
+   if(tm==SYMBOL_TRADE_MODE_DISABLED || tm==SYMBOL_TRADE_MODE_CLOSEONLY)
       return(false);
    return(true);
   }
