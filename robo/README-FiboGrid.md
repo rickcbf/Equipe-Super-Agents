@@ -68,6 +68,10 @@ espaçamento mudam completamente o risco.
 | `InpShowLevels` | true | linhas dos níveis 0 / 23.6 / 38.2 / 50 / 61.8 / 100% |
 | `InpExtendBars` | 0 | prolongar N barras além da vela atual |
 | `InpShowPanel` / `InpPanelFontSize` | true / 9 | painel de status no canto superior esquerdo |
+| `InpBigPrice` / `InpBigPriceSize` | true / 26 | **preço grande** no canto superior direito |
+| `InpBigPriceByTrend` / `InpBigPriceClr` | true / amarelo | cor pela tendência (verde alta / vermelho baixa) ou cor fixa |
+| `InpAtrPeriod` / `InpAtrMult` | 10 / 3.0 | SuperTrend/ATR que colore o preço grande |
+| `InpTrendBars` | 500 | barras usadas no cálculo dessa tendência |
 | `InpMagic` | 20260920 | magic number (separa as ordens do robô) |
 | `InpSlippage` | 20 | desvio máximo em pontos |
 | `InpAlertPush` / `InpAlertPopup` | false | aviso ao abrir ordem e ao encerrar o ciclo |
@@ -78,8 +82,11 @@ espaçamento mudam completamente o risco.
 - **Linhas dos níveis** 0, 23.6, 38.2, 50, 61.8 e 100% com etiqueta de preço.
 - **Linha da pernada** (origem → extremo), cheia, na cor do lado.
 - **Linha de STOP** tracejada laranja, no `InpFibStop`% para fora do extremo.
+- **Preço grande** no **canto superior direito**, na **cor da tendência** (SuperTrend/ATR 10 · 3.0 —
+  verde na alta, vermelho na baixa), igual ao RickEA TOP/BOTTOM e ao X-TREND. Com
+  `InpBigPriceByTrend = false` ele usa a cor fixa de `InpBigPriceClr`.
 - **Painel** com: pernada atual, níveis 0 / 38.2 / 100, retração agora, stop, nº de ordens, lotes,
-  preço médio, flutuante em US$ e o alvo.
+  preço médio, flutuante em US$ e o alvo (canto superior **esquerdo**, não briga com o preço).
 
 ## Detalhes de comportamento
 - **A pernada é travada quando a primeira ordem abre.** Enquanto o ciclo está aberto, os níveis não
@@ -94,5 +101,7 @@ espaçamento mudam completamente o risco.
   a cor de fundo do gráfico, na proporção de `InpOpacity` — fundo claro ou escuro é detectado
   automaticamente.
 - Pode rodar junto com o RickEA TOP/BOTTOM (`TB_`) e o X-TREND (`XT_`): os prefixos são diferentes.
+  Se usar mais de um no mesmo gráfico, **desligue o `InpBigPrice` em todos menos um** — senão os
+  preços grandes ficam um em cima do outro.
 - O flutuante da cesta usa **lucro + swap** das posições. Comissão que o broker cobra fora da
   posição não entra nessa conta, então em conta com comissão alta vale subir um pouco o alvo.

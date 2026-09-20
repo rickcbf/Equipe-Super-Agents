@@ -61,6 +61,14 @@ input int    InpExtendBars     = 0;        // Prolongar N barras alem da vela at
 input int    InpZoneFontSize   = 14;       // Tamanho do texto da zona
 input bool   InpShowPanel      = true;     // Painel de status no canto
 input int    InpPanelFontSize  = 9;        // Tamanho da fonte do painel
+//--- preco grande (igual ao RickEA TOP/BOTTOM / X-TREND)
+input bool   InpBigPrice       = true;     // Preco grande no canto sup. direito
+input int    InpBigPriceSize   = 26;       // Tamanho da fonte do preco grande
+input bool   InpBigPriceByTrend= true;     // Cor pela tendencia (verde alta/vermelho baixa)
+input color  InpBigPriceClr    = clrYellow;// Cor fixa (se ByTrend=false)
+input int    InpAtrPeriod      = 10;       // ATR Period (tendencia do preco grande)
+input double InpAtrMult        = 3.0;      // ATR Multiplier (tendencia do preco grande)
+input int    InpTrendBars      = 500;      // Barras usadas no calculo da tendencia
 //--- geral
 input long   InpMagic          = 20260920; // Magic number
 input int    InpSlippage       = 20;       // Desvio maximo (pontos)
@@ -88,6 +96,8 @@ datetime g_blockBase=0;         // origem da pernada bloqueada (stop/take)
 int      g_blockDir=0;          // direcao da pernada bloqueada
 datetime g_lastBar=0;
 double   g_pt=0.0;
+int      g_hAtr=INVALID_HANDLE;
+int      g_trendDir=0;          // +1 alta / -1 baixa (SuperTrend/ATR, so para a cor do preco)
 
 //--- prototipos
 bool   FindLeg(SLeg &leg);
@@ -111,6 +121,8 @@ void   Zone(string id,double top,double bot,color clr,string text,datetime tStar
 void   Level(string id,double price,color clr,int style,datetime tStart,datetime tEnd,string tag);
 void   LegLine(const SLeg &leg,color clr);
 void   Panel(const SLeg &leg,int cnt,double lots,double avg,double profit);
+int    TrendDir();
+void   BigPrice(int dir,double px);
 void   PanelLine(int idx,string text,color clr);
 void   Notify(string msg);
 color  Fade(color clr,int pct);
@@ -152,7 +164,18 @@ int OnInit()
       Print(InpBrand,": InpLegLookback curto demais para esse InpSwingDepth.");
       return(INIT_PARAMETERS_INCORRECT);
      }
+   if(InpAtrPeriod<1)
+     {
+      Print(InpBrand,": InpAtrPeriod tem que ser pelo menos 1.");
+      return(INIT_PARAMETERS_INCORRECT);
+     }
    g_pt=_Point;
+   g_hAtr=iATR(_Symbol,_Period,InpAtrPeriod);
+   if(g_hAtr==INVALID_HANDLE)
+     {
+      Print(InpBrand,": nao foi possivel criar o ATR da tendencia.");
+      return(INIT_FAILED);
+     }
    trade.SetExpertMagicNumber((ulong)InpMagic);
    trade.SetDeviationInPoints((ulong)InpSlippage);
    trade.SetTypeFillingBySymbol(_Symbol);
@@ -164,6 +187,8 @@ int OnInit()
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason)
   {
+   if(g_hAtr!=INVALID_HANDLE)
+      IndicatorRelease(g_hAtr);
    ObjectsDeleteAll(0,PFX);
    ChartRedraw();
   }
@@ -202,6 +227,12 @@ void OnTick()
       DeleteFibo();
    if(InpShowPanel)
       Panel(leg,cnt,lots,avg,profit);
+   if(InpBigPrice)
+     {
+      if(newBar || g_trendDir==0)
+         g_trendDir=TrendDir();
+      BigPrice(g_trendDir,bid);
+     }
    ChartRedraw();
    //--- gestao do ciclo aberto
    if(cnt>0)
@@ -778,6 +809,81 @@ void PanelLine(int idx,string text,color clr)
    ObjectSetInteger(0,n,OBJPROP_FONTSIZE,InpPanelFontSize);
    ObjectSetString(0,n,OBJPROP_TEXT,text);
    ObjectSetInteger(0,n,OBJPROP_COLOR,clr);
+  }
+//+------------------------------------------------------------------+
+//| SuperTrend/ATR - so para dar a cor da tendencia ao preco grande    |
+//+------------------------------------------------------------------+
+int TrendDir()
+  {
+   int bars=Bars(_Symbol,_Period);
+   if(bars<InpAtrPeriod+3)
+      return(0);
+   if(BarsCalculated(g_hAtr)<InpAtrPeriod+3)
+      return(0);
+   int count=MathMin(InpTrendBars,bars-1);
+   if(count<InpAtrPeriod+3)
+      return(0);
+   double atr[],hi[],lo[],cl[];
+   ArraySetAsSeries(atr,false);
+   ArraySetAsSeries(hi,false);
+   ArraySetAsSeries(lo,false);
+   ArraySetAsSeries(cl,false);
+   if(CopyBuffer(g_hAtr,0,0,count,atr)<count)
+      return(0);
+   if(CopyHigh(_Symbol,_Period,0,count,hi)<count)
+      return(0);
+   if(CopyLow(_Symbol,_Period,0,count,lo)<count)
+      return(0);
+   if(CopyClose(_Symbol,_Period,0,count,cl)<count)
+      return(0);
+   double upPrev=0.0,dnPrev=0.0,dir=0.0;
+   for(int i=0; i<count; i++)
+     {
+      double hl2=(hi[i]+lo[i])/2.0;
+      double up=hl2+InpAtrMult*atr[i];
+      double dn=hl2-InpAtrMult*atr[i];
+      if(i==0 || dir==0.0)
+        {
+         upPrev=up;
+         dnPrev=dn;
+         dir=(cl[i]>=hl2)?1.0:-1.0;
+         continue;
+        }
+      double upNew=(up<upPrev || cl[i-1]>upPrev)?up:upPrev;
+      double dnNew=(dn>dnPrev || cl[i-1]<dnPrev)?dn:dnPrev;
+      if(dir==1.0 && cl[i]<dnNew)
+         dir=-1.0;
+      else
+         if(dir==-1.0 && cl[i]>upNew)
+            dir=1.0;
+      upPrev=upNew;
+      dnPrev=dnNew;
+     }
+   return((int)dir);
+  }
+//+------------------------------------------------------------------+
+//| Preco grande no canto superior direito (igual ao TOP/BOTTOM)       |
+//+------------------------------------------------------------------+
+void BigPrice(int dir,double px)
+  {
+   color clr=InpBigPriceClr;
+   if(InpBigPriceByTrend && dir!=0)
+      clr=(dir==1)?clrLime:clrRed;
+   string n=PFX+"BIGPX";
+   if(ObjectFind(0,n)<0)
+     {
+      ObjectCreate(0,n,OBJ_LABEL,0,0,0);
+      ObjectSetInteger(0,n,OBJPROP_CORNER,CORNER_RIGHT_UPPER);
+      ObjectSetInteger(0,n,OBJPROP_ANCHOR,ANCHOR_RIGHT_UPPER);
+      ObjectSetInteger(0,n,OBJPROP_XDISTANCE,14);
+      ObjectSetInteger(0,n,OBJPROP_YDISTANCE,12);
+      ObjectSetInteger(0,n,OBJPROP_SELECTABLE,false);
+      ObjectSetInteger(0,n,OBJPROP_HIDDEN,true);
+      ObjectSetString(0,n,OBJPROP_FONT,"Arial Black");
+     }
+   ObjectSetString(0,n,OBJPROP_TEXT,DoubleToString(px,_Digits));
+   ObjectSetInteger(0,n,OBJPROP_COLOR,clr);
+   ObjectSetInteger(0,n,OBJPROP_FONTSIZE,InpBigPriceSize);
   }
 //+------------------------------------------------------------------+
 void Notify(string msg)
