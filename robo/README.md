@@ -63,6 +63,11 @@ Fecha a cesta inteira quando o flutuante bate o alvo:
 - `Cycle_TakeProfit` / `Cycle_StopLoss` (0 = sem stop global).
 - `Cycle_WaitNewSignal`: depois de fechar, espera a média virar antes de abrir
   o próximo ciclo naquele lado.
+- `Cycle_OverrideTP` (ligado por padrão): com o ciclo ativo, as ordens saem
+  **sem TP próprio**. É o que faz a meta ser da cesta e não de cada ordem — se
+  cada ordem levar o `TAKEPROFIT` individual, ela fecha sozinha antes de a
+  cesta somar. O robô também tira o TP de posições que já estavam abertas com
+  alvo próprio e avisa no log.
 
 ### Trailing (`if 0 value >> OFF`)
 `TRAILINGSTART` = lucro em pontos para ligar · `TRAILINGSTOP` = distância do

@@ -103,6 +103,7 @@ input ENUM_RICK_CYCLE Cycle_Unit       = RICK_CYCLE_MONEY;  // Unidade do alvo
 input double          Cycle_TakeProfit = 10.0;       // Take global (fecha a cesta no lucro)
 input double          Cycle_StopLoss   = 0.0;        // Stop global (0 = OFF)
 input bool            Cycle_WaitNewSignal = true;    // Depois de fechar, esperar a media virar
+input bool            Cycle_OverrideTP = true;      // Ciclo ligado ignora o TAKEPROFIT individual
 
 input group "=== VISUAL ==="
 input bool            Visual_Enable    = true;       // Ligar o visual
@@ -199,6 +200,10 @@ int OnInit()
       g_lastLot[i]   = 0.0;
      }
    SyncBaskets();
+
+   if(CycleOwnsTP() && TAKEPROFIT>0.0)
+      Print("RickEA MA: ciclo de take global ligado - o TAKEPROFIT individual (",
+            DoubleToString(TAKEPROFIT,0)," pontos) fica ignorado. Quem fecha a cesta e o Cycle_TakeProfit.");
 
    if((ENUM_ACCOUNT_MARGIN_MODE)AccountInfoInteger(ACCOUNT_MARGIN_MODE)!=ACCOUNT_MARGIN_MODE_RETAIL_HEDGING)
       Print("RickEA MA: conta netting - compras e vendas se fundem numa posicao so. ",
@@ -503,7 +508,9 @@ void OpenTrade(const int dir,const double lot)
       sl=(dir>0)?(px-d):(px+d);
       sl=NormalizeDouble(sl,g_digits);
      }
-   if(TAKEPROFIT>0.0)
+   // com o ciclo ligado o alvo e da cesta inteira: ordem nenhuma leva TP proprio,
+   // senao cada uma fecha sozinha e o take global nunca soma
+   if(TAKEPROFIT>0.0 && !CycleOwnsTP())
      {
       double d=MathMax(TAKEPROFIT*g_point,minDist);
       tp=(dir>0)?(px+d):(px-d);
@@ -549,6 +556,27 @@ bool MarginOk(const int dir,const double lot)
 //+------------------------------------------------------------------+
 //| Ciclo de take global                                             |
 //+------------------------------------------------------------------+
+bool CycleOwnsTP()
+  {
+   return(Cycle_Enable && Cycle_OverrideTP && Cycle_TakeProfit>0.0);
+  }
+
+// tira o TP individual de posicoes que ja estavam abertas com alvo proprio
+void StripIndividualTP()
+  {
+   if(!CycleOwnsTP()) return;
+
+   for(int i=PositionsTotal()-1;i>=0;i--)
+     {
+      if(!pos.SelectByIndex(i)) continue;
+      if(pos.Symbol()!=_Symbol || pos.Magic()!=MagicNumber) continue;
+      if(pos.TakeProfit()<=0.0) continue;
+
+      if(trade.PositionModify(pos.Ticket(),pos.StopLoss(),0.0))
+         PrintFormat("RickEA MA: TP individual removido de #%I64u - quem fecha e o take global.",pos.Ticket());
+     }
+  }
+
 double CycleTarget(const double value)
   {
    if(Cycle_Unit==RICK_CYCLE_PERCENT)
@@ -558,6 +586,8 @@ double CycleTarget(const double value)
 
 void ManageCycle()
   {
+   StripIndividualTP();
+
    if(Cycle_Scope==RICK_SCOPE_GLOBAL)
      {
       int count; double vol,prof,best,worst;
@@ -738,8 +768,12 @@ void DrawPanel()
    int rows=8;
    int panelH=headH+priceH+pad+rows*rowH+pad;
 
-   Box(PFX+"BG",  Panel_X,Panel_Y,Panel_Width,panelH,fill,accent,true);
-   Box(PFX+"HEAD",Panel_X,Panel_Y,Panel_Width,headH,head,accent,false);
+   // OBJ_RECTANGLE_LABEL com canto a direita mede a distancia ate a borda
+   // ESQUERDA da caixa e cresce pra direita - por isso soma a largura aqui,
+   // senao o quadro sai pra fora, por cima da escala de preco.
+   int boxX=Panel_X+Panel_Width;
+   Box(PFX+"BG",  boxX,Panel_Y,Panel_Width,panelH,fill,accent,true);
+   Box(PFX+"HEAD",boxX,Panel_Y,Panel_Width,headH,head,accent,false);
 
    int xl=Panel_X+Panel_Width-pad;     // borda interna esquerda (canto = direita)
    int xr=Panel_X+pad;                 // borda interna direita

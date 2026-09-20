@@ -36,6 +36,7 @@ Cycle_Unit=0
 Cycle_TakeProfit=5.0
 Cycle_StopLoss=0.0
 Cycle_WaitNewSignal=true
+Cycle_OverrideTP=true
 Visual_Enable=true
 BigPrice_Show=true
 BigPrice_Size=30
