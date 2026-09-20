@@ -29,6 +29,13 @@ Indicador de tendência. **Está pronto e perfeito na MetaTrader 5** (código em
 - **Recomendação:** projeto separado — repositório próprio (ex.: `rickea-x-trend`) ou pasta
   `indicador/` neste repo. Definir ao começar.
 
+### 3) RickEA FIBO GRID — robô (EA) MT5
+Robô de **grid nas retrações de Fibonacci** (MQL5). Acha a pernada, plota a FIBO com zona de
+opacidade baixa (vermelha na pernada de alta = grid de venda; verde na de queda = grid de compra),
+opera de 0% a 38.2%, stop 23% para fora da pernada e take na cesta (US$ ou pontos do preço médio).
+- **Código:** `robo/RickEA_FiboGrid_EA.mq5` · **manual:** `robo/README-FiboGrid.md`
+- **Status:** escrito, **falta compilar no MetaEditor (F7)** e validar no Testador de Estratégia.
+
 ---
 
 ## 🗂️ Estrutura deste repositório
@@ -56,6 +63,8 @@ Equipe-Super-Agents/
 │   ├── educativo/         ← carrossel "Como ler a tendência" (6 cards)
 │   ├── growth/            ← reels de crescimento + story
 │   └── semana-2/          ← volume, gestão de risco, rompimento
+├── indicador/             ← indicadores MT5/cTrader (X-TREND, TOP/BOTTOM)
+├── robo/                  ← robôs (EA) MT5 — RickEA FIBO GRID
 ├── docs/
 │   └── plano-crescimento.html  ← plano/dashboard de crescimento
 └── skill/
