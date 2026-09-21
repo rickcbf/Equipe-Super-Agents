@@ -37,6 +37,8 @@ input bool     InpCloseOnTarget  = true;        // Fechar todas posicoes ao atin
 input bool     InpDisableAutoTrade = true;      // Desabilitar AutoTrading ao atingir meta
 input bool     InpRemoveExpert   = false;       // Remover este EA do grafico ao parar
 input bool     InpResumeOnManualEnable = true;  // Novo ciclo se religar AutoTrading na mao
+input bool     InpCloseOtherChartsOnFail = true;// Se falhar: fechar outros graficos (mata os EAs)
+input int      InpCooldownSec    = 5;           // Carencia apos novo ciclo (seg) - anti-churn
 
 input string   _hdr2_            = "=== CONFIGURACOES ==="; // ========================
 input int      InpCheckInterval  = 1;           // Intervalo de checagem (segundos)
@@ -63,6 +65,8 @@ datetime g_cycleStartTime = 0;
 bool     g_closing       = false;
 bool     g_stopped       = false;   // ciclo encerrado, aguardando religar AutoTrading
 bool     g_autoDisabled  = false;   // true so se o AutoTrading foi realmente desligado
+ulong    g_cooldownUntil = 0;       // trava o gatilho logo apos abrir um ciclo
+ulong    g_lastWarn      = 0;       // ultimo alerta de "AutoTrading ainda ligado"
 string   g_status        = "Ativo";
 
 //+------------------------------------------------------------------+
@@ -77,6 +81,8 @@ int OnInit()
    g_closing        = false;
    g_stopped        = false;
    g_autoDisabled   = false;
+   g_cooldownUntil  = 0;
+   g_lastWarn       = 0;
    g_status         = "Ativo";
 
    if(InpShowPanel)
@@ -128,6 +134,18 @@ void CheckCycle()
       if(InpShowPanel)
          UpdatePanel(cyclePnL, pnl);
 
+      // nao conseguimos desligar: avisa a cada 30s ate o usuario agir
+      if(!g_autoDisabled && TerminalInfoInteger(TERMINAL_TRADE_ALLOWED))
+        {
+         if(GetTickCount64() - g_lastWarn > 30000)
+           {
+            g_lastWarn = GetTickCount64();
+            Alert("RickManager: ciclo encerrado mas o AutoTrading CONTINUA LIGADO! ",
+                  "Desligue manualmente (Ctrl+E) - os EAs ainda podem abrir ordens.");
+           }
+         return;
+        }
+
       // so retoma se o AutoTrading tinha sido desligado por nos e o usuario religou
       if(InpResumeOnManualEnable && g_autoDisabled &&
          TerminalInfoInteger(TERMINAL_TRADE_ALLOWED))
@@ -142,6 +160,11 @@ void CheckCycle()
 
    if(InpShowPanel)
       UpdatePanel(cyclePnL, pnl);
+
+   // carencia: evita disparar de novo antes de o saldo do fechamento anterior
+   // aparecer na conta (era isso que gerava o ciclo abre/fecha comendo spread)
+   if(GetTickCount64() < g_cooldownUntil)
+      return;
 
    bool hitProfit = (InpTargetProfit > 0 && cyclePnL >= InpTargetProfit);
    bool hitLoss   = (InpTargetLoss < 0 && cyclePnL <= InpTargetLoss);
@@ -178,11 +201,15 @@ void CheckCycle()
          if(InpShowPanel)
             UpdatePanel(cyclePnL, pnl);
 
-         if(InpRemoveExpert)
+         // so sai do grafico se o AutoTrading foi mesmo desligado;
+         // se falhou, o EA fica para continuar alertando
+         if(InpRemoveExpert && ok)
            {
             Print("Removendo RickManager do grafico");
             ExpertRemove();
            }
+         else if(InpRemoveExpert && !ok)
+            Print("EA mantido no grafico: AutoTrading nao foi desligado");
          return;
         }
 
@@ -214,6 +241,7 @@ bool DisableAutoTrading()
       Print("ERRO: importacoes DLL bloqueadas - nao e possivel desligar o AutoTrading.");
       Alert("RickManager: NAO consegui desligar o AutoTrading. ",
             "Marque 'Permitir importacoes DLL' nas propriedades do EA e recarregue.");
+      AutoTradeFallback();
       return false;
      }
 
@@ -244,8 +272,56 @@ bool DisableAutoTrading()
      }
 
    Print("ERRO: nao foi possivel desligar o AutoTrading");
-   Alert("RickManager: falha ao desligar o AutoTrading - desligue manualmente (Ctrl+E)");
+   AutoTradeFallback();
    return false;
+  }
+
+//+------------------------------------------------------------------+
+//| Plano B (sem DLL): fecha os outros graficos, o que descarrega     |
+//| todos os EAs anexados a eles. Nao depende de permissao de DLL.    |
+//+------------------------------------------------------------------+
+void AutoTradeFallback()
+  {
+   if(InpCloseOtherChartsOnFail)
+     {
+      int killed = CloseOtherCharts();
+      Print("Plano B: ", killed, " graficos fechados (EAs descarregados)");
+      Alert("RickManager: nao consegui desligar o AutoTrading. ",
+            killed, " graficos foram fechados para parar os EAs. ",
+            "Desligue o AutoTrading manualmente (Ctrl+E).");
+     }
+   else
+      Alert("RickManager: falha ao desligar o AutoTrading - ",
+            "desligue manualmente (Ctrl+E) AGORA, os EAs continuam operando.");
+  }
+
+//+------------------------------------------------------------------+
+//| Fecha todos os graficos menos o deste EA                          |
+//+------------------------------------------------------------------+
+int CloseOtherCharts()
+  {
+   long me = ChartID();
+   long ids[];
+   int  n = 0;
+
+   // coleta antes de fechar: fechar durante a iteracao quebra o ChartNext
+   long id = ChartFirst();
+   while(id >= 0)
+     {
+      if(id != me)
+        {
+         ArrayResize(ids, n + 1);
+         ids[n++] = id;
+        }
+      id = ChartNext(id);
+     }
+
+   for(int i = 0; i < n; i++)
+     {
+      Print("Fechando grafico ", ids[i], " ", ChartSymbol(ids[i]));
+      ChartClose(ids[i]);
+     }
+   return n;
   }
 
 //+------------------------------------------------------------------+
@@ -356,16 +432,51 @@ void CloseAllAccountPositions()
 //+------------------------------------------------------------------+
 void StartNewCycle()
   {
+   // espera o saldo refletir os fechamentos: ler o saldo cedo demais deixava
+   // a base do ciclo defasada e a meta disparava na primeira ordem seguinte
+   WaitForAccountSettle();
+
    g_cycleCount++;
    g_cycleStart     = AccountInfoDouble(ACCOUNT_BALANCE);
    g_cycleStartTime = TimeCurrent();
    g_closing        = false;
    g_stopped        = false;
    g_autoDisabled   = false;
+   g_cooldownUntil  = GetTickCount64() + (ulong)MathMax(InpCooldownSec, 0) * 1000;
    g_status         = "Ativo";
 
    Print("=== NOVO CICLO ", g_cycleCount, " INICIADO === Saldo: ",
          DoubleToString(g_cycleStart, 2));
+  }
+
+//+------------------------------------------------------------------+
+//| Espera o saldo da conta parar de mudar apos os fechamentos        |
+//+------------------------------------------------------------------+
+void WaitForAccountSettle()
+  {
+   double last   = AccountInfoDouble(ACCOUNT_BALANCE);
+   int    stable = 0;
+
+   for(int i = 0; i < 40 && !IsStopped(); i++)   // ate ~6 segundos
+     {
+      Sleep(150);
+      double bal = AccountInfoDouble(ACCOUNT_BALANCE);
+
+      if(bal == last && PositionsTotal() == 0)
+        {
+         stable++;
+         if(stable >= 3)
+            return;
+        }
+      else
+        {
+         stable = 0;
+         last   = bal;
+        }
+     }
+
+   Print("Aviso: saldo nao estabilizou em 6s (posicoes restantes: ",
+         PositionsTotal(), ") - base do ciclo pode ficar imprecisa");
   }
 
 //+------------------------------------------------------------------+
