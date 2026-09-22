@@ -6,15 +6,15 @@ abertas** (qualquer par, qualquer robô, qualquer magic number) e, quando o cicl
 terminal — para os outros EAs não continuarem abrindo ordem.
 
 - Código: `RickManager.mq5`
-- Pronto pra usar (não precisa compilar): `downloads/RickManager-V2.ex5`
+- Pronto pra usar (não precisa compilar): `downloads/RickManager.ex5`
 - Página: https://rickea.vercel.app/ (categoria **Robôs / EAs**, grátis)
 
 ## Instalação
 
-1. Baixe o **`RickManager-V2.ex5`** na página.
+1. Baixe o **`RickManager.ex5`** na página.
 2. MT5 → **Arquivo → Abrir Pasta de Dados** → `MQL5/Experts/` → cole o arquivo lá.
 3. **Reinicie o MT5** (ou clique direito no Navegador → Atualizar).
-4. Arraste **RickManager-V2** para **um gráfico qualquer** (ele lê a conta inteira, não
+4. Arraste **RickManager** para **um gráfico qualquer** (ele lê a conta inteira, não
    importa o par).
 5. Na aba **Comum**, marque ☑ **Permitir importações DLL**.
 
