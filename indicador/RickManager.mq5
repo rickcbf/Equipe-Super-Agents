@@ -3,10 +3,11 @@
 //|                          Gerenciador de Conta por Ciclo - MT5     |
 //+------------------------------------------------------------------+
 #property copyright "RickEA"
-#property version   "1.10"
+#property version   "1.20"
 #property description "Gerenciador de conta por ciclo (lucro/prejuizo)"
 #property description "Fecha TODAS as posicoes ao atingir target"
-#property description "Desliga o botao AutoTrading (Ctrl+E) do terminal"
+#property description "Desliga o botao AutoTrading: WM_COMMAND + Ctrl+E real"
+#property description "Apaga tambem as ordens pendentes ao bater a meta"
 #property description "Funciona por saldo total, nao por par"
 #property description  "Telegram: https://t.me/+6jbcqyJ5O7YyNDgx "
 #property description  "https://www.youtube.com/channel/UCVYoJ1Z9t5BpleQinwHD4Rw"
@@ -21,11 +22,20 @@
    int  PostMessageW(long hWnd, uint Msg, long wParam, long lParam);
    long GetParent(long hWnd);
    long GetAncestor(long hWnd, uint gaFlags);
+   long GetForegroundWindow();
+   int  SetForegroundWindow(long hWnd);
+   int  ShowWindow(long hWnd, int nCmdShow);
+   int  IsIconic(long hWnd);
+   void keybd_event(uchar bVk, uchar bScan, uint dwFlags, ulong dwExtraInfo);
 #import
 
 #define WM_COMMAND        0x0111
 #define GA_ROOT           2
 #define ID_AUTOTRADING    33020   // comando do botao AutoTrading (Ctrl+E) no MT5
+#define VK_CONTROL        0x11
+#define VK_KEY_E          0x45
+#define KEYEVENTF_KEYUP   0x0002
+#define SW_RESTORE        9
 
 //+------------------------------------------------------------------+
 //| Inputs                                                            |
@@ -34,6 +44,7 @@ input string   _hdr1_            = "=== GERENCIAMENTO POR CICLO ==="; // =======
 input double   InpTargetProfit   = 10.0;        // Meta de Lucro ($) - valor positivo
 input double   InpTargetLoss     = -50000.0;    // Meta de Prejuizo ($) - valor negativo (ex: -5)
 input bool     InpCloseOnTarget  = true;        // Fechar todas posicoes ao atingir meta
+input bool     InpDeletePending  = true;        // Apagar ordens pendentes ao atingir meta
 input bool     InpDisableAutoTrade = true;      // Desabilitar AutoTrading ao atingir meta
 input bool     InpRemoveExpert   = false;       // Remover este EA do grafico ao parar
 input bool     InpResumeOnManualEnable = true;  // Novo ciclo se religar AutoTrading na mao
@@ -93,6 +104,13 @@ int OnInit()
    Print("RickManager iniciado | Saldo inicial: ", g_cycleStart,
          " | Meta lucro: ", InpTargetProfit,
          " | Meta prejuizo: ", InpTargetLoss);
+
+   Print("Diagnostico | DLLs permitidas: ",
+         (MQLInfoInteger(MQL_DLLS_ALLOWED) ? "SIM" : "NAO"),
+         " | AutoTrading: ",
+         (TerminalInfoInteger(TERMINAL_TRADE_ALLOWED) ? "LIGADO" : "DESLIGADO"),
+         " | EA autorizado: ",
+         (MQLInfoInteger(MQL_TRADE_ALLOWED) ? "SIM" : "NAO"));
 
    if(InpDisableAutoTrade && !MQLInfoInteger(MQL_DLLS_ALLOWED))
       Alert("RickManager: marque 'Permitir importacoes DLL' nas propriedades do EA, ",
@@ -182,6 +200,11 @@ void CheckCycle()
       if(InpCloseOnTarget)
          CloseAllAccountPositions();
 
+      // ordens pendentes disparam no servidor mesmo com o AutoTrading
+      // desligado - se nao apagar, o ciclo "parado" ainda abre posicao
+      if(InpDeletePending)
+         DeleteAllPendingOrders();
+
       g_lastCycleResult = cyclePnL;
       g_closedCycles++;
 
@@ -218,9 +241,13 @@ void CheckCycle()
   }
 
 //+------------------------------------------------------------------+
-//| Desliga de fato o botao AutoTrading do terminal (Ctrl+E)          |
-//| Nao existe funcao MQL5 para isso: e preciso enviar o comando      |
-//| WM_COMMAND/33020 para a janela principal do MetaTrader.           |
+//| Desliga de fato o botao AutoTrading do terminal.                  |
+//| Nao existe funcao MQL5 para isso. Dois metodos, nessa ordem:      |
+//|  1) WM_COMMAND/33020 para a janela principal (silencioso, mas     |
+//|     nem todo build do MT5 aceita esse id de comando);             |
+//|  2) Ctrl+E de verdade via keybd_event, exatamente como se voce    |
+//|     apertasse no teclado (traz o terminal para frente e devolve   |
+//|     o foco para a janela que estava antes).                       |
 //+------------------------------------------------------------------+
 bool DisableAutoTrading()
   {
@@ -233,7 +260,7 @@ bool DisableAutoTrading()
    if(MQLInfoInteger(MQL_TESTER))
      {
       Print("Modo tester: AutoTrading nao pode ser desligado pelo terminal");
-      return false;
+      return false;   // no tester nao existe botao para desligar
      }
 
    if(!MQLInfoInteger(MQL_DLLS_ALLOWED))
@@ -249,31 +276,94 @@ bool DisableAutoTrading()
    if(hwnd == 0)
      {
       Print("ERRO: janela principal do terminal nao encontrada");
+      AutoTradeFallback();
       return false;
      }
 
-   // Ate 3 tentativas: PostMessage e assincrono, o terminal processa
-   // o comando na thread da interface.
-   for(int attempt = 1; attempt <= 3; attempt++)
+   Print("Desligando AutoTrading | janela do terminal: ", hwnd);
+
+   // --- Metodo 1: mensagem de comando (nao rouba o foco) ---
+   for(int attempt = 1; attempt <= 2; attempt++)
      {
-      PostMessageW(hwnd, WM_COMMAND, ID_AUTOTRADING, 0);
+      int posted = PostMessageW(hwnd, WM_COMMAND, ID_AUTOTRADING, 0);
+      Print("Metodo 1 (WM_COMMAND) tentativa ", attempt,
+            " | PostMessage retornou ", posted);
 
-      for(int i = 0; i < 20; i++)
+      if(WaitAutoTradeOff(1500))
         {
-         Sleep(100);
-         if(!TerminalInfoInteger(TERMINAL_TRADE_ALLOWED))
-           {
-            Print("AutoTrading DESABILITADO (tentativa ", attempt, ")");
-            return true;
-           }
+         Print("AutoTrading DESABILITADO pelo metodo 1 (WM_COMMAND)");
+         return true;
         }
-
-      Print("AutoTrading ainda ligado apos tentativa ", attempt, " - repetindo");
      }
 
-   Print("ERRO: nao foi possivel desligar o AutoTrading");
+   // --- Metodo 2: Ctrl+E real no teclado ---
+   for(int attempt = 1; attempt <= 2; attempt++)
+     {
+      Print("Metodo 2 (Ctrl+E real) tentativa ", attempt);
+
+      if(!SendCtrlE(hwnd))
+         break;
+
+      if(WaitAutoTradeOff(2000))
+        {
+         Print("AutoTrading DESABILITADO pelo metodo 2 (Ctrl+E real)");
+         return true;
+        }
+     }
+
+   Print("ERRO: nao foi possivel desligar o AutoTrading pelos dois metodos");
    AutoTradeFallback();
    return false;
+  }
+
+//+------------------------------------------------------------------+
+//| Espera o AutoTrading apagar (PostMessage e teclado sao assincronos)|
+//+------------------------------------------------------------------+
+bool WaitAutoTradeOff(int timeoutMs)
+  {
+   int steps = timeoutMs / 100;
+   for(int i = 0; i < steps && !IsStopped(); i++)
+     {
+      Sleep(100);
+      if(!TerminalInfoInteger(TERMINAL_TRADE_ALLOWED))
+         return true;
+     }
+   return false;
+  }
+
+//+------------------------------------------------------------------+
+//| Manda um Ctrl+E de verdade para o terminal                        |
+//+------------------------------------------------------------------+
+bool SendCtrlE(long hwnd)
+  {
+   long prev = GetForegroundWindow();
+
+   if(IsIconic(hwnd) != 0)
+      ShowWindow(hwnd, SW_RESTORE);
+
+   SetForegroundWindow(hwnd);
+   Sleep(250);
+
+   // se o Windows nao deixou o terminal vir para frente, NAO envia a
+   // tecla: ela iria parar no programa que estiver em foco
+   if(GetForegroundWindow() != hwnd)
+     {
+      Print("Nao consegui trazer o terminal para frente - Ctrl+E nao enviado");
+      return false;
+     }
+
+   keybd_event(VK_CONTROL, 0, 0, 0);
+   keybd_event(VK_KEY_E,   0, 0, 0);
+   keybd_event(VK_KEY_E,   0, KEYEVENTF_KEYUP, 0);
+   keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
+
+   Sleep(300);
+
+   // devolve o foco para onde estava
+   if(prev != 0 && prev != hwnd)
+      SetForegroundWindow(prev);
+
+   return true;
   }
 
 //+------------------------------------------------------------------+
@@ -428,6 +518,47 @@ void CloseAllAccountPositions()
   }
 
 //+------------------------------------------------------------------+
+//| Apaga TODAS as ordens pendentes da conta                          |
+//| Pendente dispara no servidor mesmo com o AutoTrading desligado.   |
+//+------------------------------------------------------------------+
+void DeleteAllPendingOrders()
+  {
+   int total = OrdersTotal();
+   if(total == 0)
+      return;
+
+   Print("Apagando ", total, " ordens pendentes...");
+
+   for(int attempt = 0; attempt < 3; attempt++)
+     {
+      int remaining = 0;
+      for(int i = OrdersTotal() - 1; i >= 0; i--)
+        {
+         ulong ticket = OrderGetTicket(i);
+         if(ticket == 0) continue;
+
+         string sym = OrderGetString(ORDER_SYMBOL);
+
+         if(g_trade.OrderDelete(ticket))
+            Print("Apagada pendente #", ticket, " ", sym);
+         else
+           {
+            Print("Erro apagando pendente #", ticket, " ", sym,
+                  " retcode=", g_trade.ResultRetcode());
+            remaining++;
+           }
+        }
+
+      if(OrdersTotal() == 0 || remaining == 0)
+         break;
+
+      Sleep(500);
+     }
+
+   Print("Ordens pendentes restantes: ", OrdersTotal());
+  }
+
+//+------------------------------------------------------------------+
 //| Start a new cycle                                                 |
 //+------------------------------------------------------------------+
 void StartNewCycle()
@@ -538,7 +669,8 @@ void UpdatePanel(double cyclePnL, double floating)
                        (g_lastCycleResult >= 0) ? InpColorProfit : InpColorLoss);
      }
 
-   SetLabelText("RM_Pos",      "Posicoes abertas: " + IntegerToString(PositionsTotal()));
+   SetLabelText("RM_Pos",      "Posicoes: " + IntegerToString(PositionsTotal()) +
+                " | Pendentes: " + IntegerToString(OrdersTotal()));
    SetLabelText("RM_Time",     "Tempo ciclo: " + IntegerToString(hrs) + "h " +
                 IntegerToString(mins) + "m");
 
