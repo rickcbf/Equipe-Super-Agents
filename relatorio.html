@@ -53,6 +53,11 @@
   .foot{color:var(--mut);font-size:12px;margin-top:18px;text-align:center}
   .toolbar{display:flex;gap:10px;justify-content:flex-end;margin:10px 0}
   svg{display:block;width:100%;height:auto}
+  .bar{position:relative;height:8px;background:var(--panel2);border-radius:4px;min-width:90px;overflow:hidden}
+  .bar i{position:absolute;top:0;bottom:0;border-radius:4px}
+  .botname{font-weight:700;color:var(--ink)}
+  .botsub{color:var(--mut);font-size:11px}
+  .note{color:var(--mut);font-size:12px;margin-top:8px}
 
   @media print{
     body{background:#fff;color:#111}
@@ -99,6 +104,12 @@
       <h3>Curva de capital (saldo)</h3>
       <div id="equity"></div>
     </div>
+    <div class="card" id="botswrap" style="display:none">
+      <h3>Resultado por robô (EA)</h3>
+      <div class="scroll" style="max-height:none"><table id="bots"></table></div>
+      <div class="note">Robô identificado pelo <b>comentário</b> que o EA grava na abertura da posição.
+        Posições sem comentário aparecem como <i>Manual / sem comentário</i>.</div>
+    </div>
     <div class="grid" id="kpis2"></div>
     <div class="card">
       <h3>Operações fechadas</h3>
@@ -128,6 +139,7 @@ function fmt(n,dec){ dec=(dec==null)?2:dec;
   if(!isFinite(n)) return '—';
   return n.toLocaleString('pt-BR',{minimumFractionDigits:dec,maximumFractionDigits:dec});
 }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch];}); }
 function cls(n){ return n>0?'pos':(n<0?'neg':'neu'); }
 function has(txt,arr){ txt=(txt||'').toLowerCase(); for(var i=0;i<arr.length;i++) if(txt.indexOf(arr[i])>-1) return true; return false; }
 
@@ -301,7 +313,9 @@ function analyze(text){
     var c=prows[i];
     var profit=parseNum(c[c.length-1]);          // Lucro = última célula (colspan=2)
     if(!isFinite(profit)) continue;
-    trades.push({time:c[0],symbol:c[2]||'',type:(c[3]||'').toLowerCase(),profit:profit,balance:NaN});
+    // coluna oculta de comentário (nome do robô) vem logo após o Tipo -> linha com 14+ células
+    var bot=(c.length>=14)?(c[4]||'').trim():'';
+    trades.push({time:c[0],symbol:c[2]||'',type:(c[3]||'').toLowerCase(),bot:bot,profit:profit,balance:NaN});
   }
   /* fallback: Negócios/Deals com coluna Saldo */
   if(!trades.length){
@@ -364,7 +378,29 @@ function analyze(text){
   var ret=(capBase!==0 && isFinite(capBase))?net/Math.abs(capBase)*100
           :(startBal!==0?(endBal-startBal)/startBal*100:0);
 
-  return {acct:acct,src:src,hasSummary:hasSummary,state:state,
+  /* ---------- resultado por robô (comentário da posição) ---------- */
+  var bots=[];
+  if(src==='positions'){
+    var bmap={};
+    for(var b=0;b<trades.length;b++){ var t=trades[b], key=t.bot||'';
+      var o=bmap[key]||(bmap[key]={name:key,n:0,net:0,gp:0,gl:0,w:0,l:0,best:0,worst:0,run:0,peak:0,dd:0,syms:{}});
+      o.n++; o.net+=t.profit; o.run+=t.profit;
+      if(t.profit>0){o.gp+=t.profit;o.w++;} else if(t.profit<0){o.gl+=t.profit;o.l++;}
+      o.best=Math.max(o.best,t.profit); o.worst=Math.min(o.worst,t.profit);
+      if(o.run>o.peak)o.peak=o.run; o.dd=Math.max(o.dd,o.peak-o.run);
+      if(t.symbol) o.syms[t.symbol]=1;
+    }
+    for(var bk in bmap){ var q=bmap[bk];
+      q.winRate=q.n?q.w/q.n*100:0;
+      q.pf=q.gl!==0?q.gp/Math.abs(q.gl):(q.gp>0?Infinity:0);
+      q.avg=q.n?q.net/q.n:0;
+      q.syms=Object.keys(q.syms).join(', ');
+      bots.push(q);
+    }
+    bots.sort(function(x,y){return y.net-x.net;});
+  }
+
+  return {acct:acct,src:src,bots:bots,hasSummary:hasSummary,state:state,
     trades:trades,equity:equity,haveBal:haveBal,startBal:startBal,endBal:endBal,
     net:net,gp:gp,gl:gl,pf:pf,recovery:sm.recovery,sharpe:sm.sharpe,
     n:n,wins:wins,losses:losses,winRate:winRate,
@@ -461,17 +497,40 @@ function render(a){
   ];
   document.getElementById('kpis2').innerHTML=k2.join('');
 
+  // resultado por robô
+  var bw=document.getElementById('botswrap');
+  var showBots=a.bots.length>1 || (a.bots.length===1 && a.bots[0].name!=='');
+  if(showBots){
+    var maxAbs=0; a.bots.forEach(function(b){ maxAbs=Math.max(maxAbs,Math.abs(b.net)); });
+    var bh='<thead><tr><th class="l">Robô</th><th>Operações</th><th>Acerto</th><th>Fator de lucro</th>'
+      +'<th>Média/op.</th><th>Maior ganho</th><th>Maior perda</th><th>DD máx.</th><th>Resultado</th><th class="l" style="width:130px"></th></tr></thead><tbody>';
+    a.bots.forEach(function(b){
+      var w=maxAbs?Math.abs(b.net)/maxAbs*50:0;
+      var bar='<div class="bar"><i style="left:'+(b.net>=0?50:50-w)+'%;width:'+w+'%;background:'+(b.net>=0?'var(--green)':'var(--red)')+'"></i>'
+        +'<i style="left:50%;width:1px;background:var(--line)"></i></div>';
+      bh+='<tr><td class="l"><div class="botname">'+esc(b.name||'Manual / sem comentário')+'</div><div class="botsub">'+esc(b.syms)+'</div></td>'
+        +'<td>'+b.n+'</td><td class="'+(b.winRate>=50?'pos':'neu')+'">'+fmt(b.winRate,1)+'%</td>'
+        +'<td class="'+(b.pf>=1?'pos':'neg')+'">'+(b.pf===Infinity?'∞':fmt(b.pf,2))+'</td>'
+        +'<td class="'+cls(b.avg)+'">'+money(b.avg)+'</td>'
+        +'<td class="pos">'+money(b.best)+'</td><td class="neg">'+money(b.worst)+'</td>'
+        +'<td class="'+(b.dd>0?'neg':'neu')+'">'+money(-b.dd)+'</td>'
+        +'<td class="'+cls(b.net)+'"><b>'+money(b.net)+'</b></td><td class="l">'+bar+'</td></tr>';
+    });
+    document.getElementById('bots').innerHTML=bh+'</tbody>';
+    bw.style.display='block';
+  } else bw.style.display='none';
+
   // tabela de operações
-  var th='<thead><tr><th class="l">#</th><th class="l">Horário (abertura)</th><th class="l">Ativo</th><th class="l">Tipo</th><th>Resultado</th><th>Acumulado</th></tr></thead>';
+  var th='<thead><tr><th class="l">#</th><th class="l">Horário (abertura)</th><th class="l">Ativo</th><th class="l">Tipo</th>'+(showBots?'<th class="l">Robô</th>':'')+'<th>Resultado</th><th>Acumulado</th></tr></thead>';
   var tb='<tbody>';
   for(var i=0;i<a.trades.length;i++){ var t=a.trades[i];
     tb+='<tr><td class="l">'+(i+1)+'</td><td class="l">'+(t.time||'')+'</td><td class="l">'+(t.symbol||'')
-      +'</td><td class="l">'+(t.type||'')+'</td><td class="'+cls(t.profit)+'">'+money(t.profit)
+      +'</td><td class="l">'+(t.type||'')+'</td>'+(showBots?'<td class="l">'+esc(t.bot||'Manual')+'</td>':'')+'<td class="'+cls(t.profit)+'">'+money(t.profit)
       +'</td><td>'+(a.equity[i+1]!=null?money(a.equity[i+1]):'—')+'</td></tr>';
   }
   tb+='</tbody>';
   document.getElementById('trades').innerHTML=th+tb;
-  if(!a.trades.length) document.getElementById('trades').innerHTML=th+'<tbody><tr><td colspan="6" class="l" style="color:#8fa1b7">Sem operações fechadas nesta exportação (só o resumo).</td></tr></tbody>';
+  if(!a.trades.length) document.getElementById('trades').innerHTML=th+'<tbody><tr><td colspan="7" class="l" style="color:#8fa1b7">Sem operações fechadas nesta exportação (só o resumo).</td></tr></tbody>';
 
   document.getElementById('gendate').textContent=new Date().toLocaleString('pt-BR');
   document.getElementById('drop').style.display='none';

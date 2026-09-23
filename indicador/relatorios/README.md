@@ -17,7 +17,14 @@ e **nenhum dado sai do PC** de quem usa.
 ## O que calcula
 Lucro líquido, retorno, **fator de lucro**, **% de acerto**, **curva de capital**, **drawdown máx.**,
 payoff, recuperação, Sharpe, R:R realizado, maior ganho/perda, sequências, **estado da conta**
-(saldo, capital líquido, **flutuante P/L**) e a tabela de todas as operações.
+(saldo, capital líquido, **flutuante P/L**), **resultado por robô (EA)** e a tabela de todas as operações.
+
+### Resultado por robô
+Cada EA grava um **comentário** na abertura da posição (ex.: `RickEAGoldNews`). O MT5 exporta
+esse comentário numa coluna oculta da tabela **Posições**; o relatório agrupa por ele e mostra, por
+robô: operações, acerto, fator de lucro, média/op., maior ganho/perda, DD máx. e resultado.
+Posições sem comentário = *Manual / sem comentário*. (Só funciona quando o relatório tem a tabela
+de Posições.)
 
 ## Técnico
 - Lê relatório em **português e inglês** (detecta colunas pelos nomes e usa o bloco oficial "Resultados").
