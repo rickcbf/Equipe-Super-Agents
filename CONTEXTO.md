@@ -120,3 +120,13 @@ C:\Users\rickc\Projetos\
 - Baixar tudo de uma vez: no GitHub, botão **Code → Download ZIP**.
 ```
 ```
+
+---
+
+## 🖥️ Ferramentas locais (rodam no PC do usuário)
+- `ferramentas-locais/relatorio-mt5/RelatorioMT5-RickEA.html` — gerador de relatório do MT5 no
+  **layout escuro RickEA** (KPIs, curva de saldo, resultado por EA/comentário, ativos, posições
+  abertas, fluxo de caixa, pontos de atenção). Arrasta o `ReportHistory-*.html`; tudo offline.
+- `Instalar-na-Area-de-Trabalho.bat` copia para `%LOCALAPPDATA%\RickEA\RelatorioMT5` e cria o
+  atalho na Área de Trabalho. Pacote pronto: `ferramentas-locais/RelatorioMT5-RickEA-local.zip`.
+- A versão web gratuita continua sendo `relatorio.html` (/relatorio), com o layout antigo.
