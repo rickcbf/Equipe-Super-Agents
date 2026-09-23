@@ -130,3 +130,8 @@ C:\Users\rickc\Projetos\
 - `Instalar-na-Area-de-Trabalho.bat` copia para `%LOCALAPPDATA%\RickEA\RelatorioMT5` e cria o
   atalho na Área de Trabalho. Pacote pronto: `ferramentas-locais/RelatorioMT5-RickEA-local.zip`.
 - A versão web gratuita continua sendo `relatorio.html` (/relatorio), com o layout antigo.
+
+- **RickEA Relatório de Performance Pro (R$ 9,99) — em planejamento.** Anúncio já no ar dentro do
+  `relatorio.html` (faixa na tela inicial + card personalizado com cadeados após gerar o relatório)
+  e card na loja (`index.html`, sem checkout → botão WhatsApp). Quando criar o produto na Hotmart:
+  colar o link em `PRO_CHECKOUT` (relatorio.html) e em `checkout` do card na loja.
