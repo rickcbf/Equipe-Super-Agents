@@ -1,0 +1,152 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="local.css">
+<style>
+:root{--bg:#070B15;--bg1:#0E1525;--bg2:#141E30;--bg3:#1B2840;--bd:#263248;--bd2:#2E3D55;--tx:#E6ECF5;--tx2:#8898BB;--tx3:#5B6F8F;--g:#0ECFA8;--r:#FF4768;--b:#5B8CF7;--gold:#E8B64D}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--tx)}
+.c{position:relative;overflow:hidden;background:
+  radial-gradient(900px 600px at 85% 10%,rgba(91,140,247,.16),transparent 60%),
+  radial-gradient(700px 500px at 0% 100%,rgba(14,207,168,.10),transparent 60%),var(--bg)}
+.c::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(38,50,72,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(38,50,72,.35) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(180deg,rgba(0,0,0,.9),rgba(0,0,0,.2))}
+.brand{font-family:'DM Sans';font-weight:600;color:var(--g);letter-spacing:-.2px;display:flex;align-items:center;gap:12px}
+.pro{font-family:'JetBrains Mono';font-weight:600;color:#1a1400;background:var(--gold);border-radius:6px;letter-spacing:.12em}
+h1{font-family:'DM Sans';font-weight:600;letter-spacing:-.035em;line-height:1.02}
+h1 em{font-style:normal;color:var(--gold)}
+.lead{color:var(--tx2);line-height:1.45}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:1px solid var(--bd2);background:rgba(14,21,37,.8);border-radius:999px;color:var(--tx);font-weight:500;display:flex;align-items:center;gap:8px}
+.chip i{width:7px;height:7px;border-radius:50%;background:var(--g);display:inline-block}
+.foot{display:flex;justify-content:space-between;align-items:center;color:var(--tx3);font-family:'JetBrains Mono'}
+/* janela */
+.win{background:var(--bg1);border:1px solid var(--bd2);border-radius:18px;box-shadow:0 40px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.02);overflow:hidden}
+.bar{display:flex;align-items:center;gap:7px;padding:12px 16px;border-bottom:1px solid var(--bd);background:#0B111E}
+.bar b{width:10px;height:10px;border-radius:50%;background:#2A3548}
+.bar span{margin-left:10px;font-family:'JetBrains Mono';font-size:11px;color:var(--tx3)}
+.in{padding:20px;display:grid;gap:14px}
+.row{display:grid;gap:12px}
+.card{background:var(--bg);border:1px solid var(--bd);border-radius:12px;padding:14px}
+.lab{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--tx2);font-weight:500}
+.val{font-family:'JetBrains Mono';font-weight:600;font-size:22px;margin-top:6px}
+.sub{font-size:10px;color:var(--tx3);margin-top:4px}
+.ring{display:flex;align-items:center;gap:16px}
+.bars{display:grid;gap:7px;flex:1}
+.bl{display:flex;justify-content:space-between;font-size:10px;color:var(--tx2)}
+.bt{height:5px;border-radius:3px;background:var(--bg3);overflow:hidden;margin-top:3px}
+.bt i{display:block;height:100%;border-radius:3px}
+.hm{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-top:10px}
+.hm i{height:14px;border-radius:3px;display:block}
+.plan{display:grid;gap:8px;margin-top:10px}
+.pi{display:flex;gap:10px;align-items:center;font-size:11.5px;color:var(--tx)}
+.pi b{width:20px;height:20px;border-radius:50%;background:var(--bg3);color:var(--gold);font-family:'JetBrains Mono';font-size:10px;display:grid;place-items:center;flex:0 0 auto}
+.tag{margin-left:auto;font-size:8.5px;font-weight:600;letter-spacing:.06em;padding:2px 6px;border-radius:4px;text-transform:uppercase}
+.tag.r{color:var(--r);background:rgba(255,71,104,.12)}.tag.y{color:#F59E0B;background:rgba(245,158,11,.12)}
+
+/* ===== quadrada 1200 ===== */
+.sq{width:1200px;height:1200px;padding:72px 72px 56px;display:flex;flex-direction:column}
+.sq .brand{font-size:28px}.sq .pro{font-size:15px;padding:4px 10px}
+.sq h1{font-size:84px;margin-top:30px}
+.sq .lead{font-size:24px;margin-top:18px;max-width:900px}
+.sq .chips{margin-top:28px}.sq .chip{font-size:17px;padding:10px 18px}
+.sq .win{margin-top:40px;margin-right:-140px;margin-bottom:auto}
+.sq .foot{margin-top:28px}
+.sq .foot{font-size:15px}
+/* ===== paisagem 1280x720 ===== */
+.ls{width:1280px;height:720px;padding:0 0 0 64px;display:grid;grid-template-columns:520px 1fr;gap:40px;align-items:center}
+.ls .brand{font-size:24px}.ls .pro{font-size:12px;padding:3px 8px}
+.ls h1{font-size:58px;margin-top:24px}
+.ls .lead{font-size:18px;margin-top:16px}
+.ls .chips{margin-top:22px;gap:8px}.ls .chip{font-size:13.5px;padding:8px 14px}
+.ls .foot{font-size:12px;margin-top:34px;justify-content:flex-start;gap:18px}
+.ls .win{margin-right:-80px}
+</style></head><body>
+
+<template id="win">
+<div class="win">
+  <div class="bar"><b></b><b></b><b></b><span>RickEA Relatório Pro · Conta #0000000 · MetaTrader 5</span></div>
+  <div class="in">
+    <div class="row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="card"><div class="lab">Lucro líquido</div><div class="val" style="color:var(--g)">+$4.215</div><div class="sub">312 posições</div></div>
+      <div class="card"><div class="lab">Taxa de acerto</div><div class="val" style="color:var(--g)">64,8%</div><div class="sub">202 wins · 110 losses</div></div>
+      <div class="card"><div class="lab">Fator de lucro</div><div class="val" style="color:var(--gold)">2,37</div><div class="sub">ganhos / perdas</div></div>
+      <div class="card"><div class="lab">Max drawdown</div><div class="val" style="color:var(--r)">8,4%</div><div class="sub">5 perdas seguidas</div></div>
+    </div>
+    <div class="row" style="grid-template-columns:1.05fr 1fr">
+      <div class="card ring">
+        <svg width="112" height="112" viewBox="0 0 140 140"><circle cx="70" cy="70" r="54" fill="none" stroke="#1B2840" stroke-width="13"/><circle cx="70" cy="70" r="54" fill="none" stroke="#0ECFA8" stroke-width="13" stroke-linecap="round" stroke-dasharray="339.3" stroke-dashoffset="61" transform="rotate(-90 70 70)"/><text x="70" y="76" text-anchor="middle" fill="#E6ECF5" font-family="JetBrains Mono" font-size="38" font-weight="600">82</text><text x="70" y="98" text-anchor="middle" fill="#5B6F8F" font-size="12" font-family="DM Sans">de 100</text></svg>
+        <div class="bars">
+          <div class="lab">Nota da conta</div>
+          <div><div class="bl"><span>Lucratividade</span><span>18/20</span></div><div class="bt"><i style="width:90%;background:var(--g)"></i></div></div>
+          <div><div class="bl"><span>Drawdown</span><span>16/20</span></div><div class="bt"><i style="width:80%;background:var(--g)"></i></div></div>
+          <div><div class="bl"><span>Gestão de risco</span><span>11/20</span></div><div class="bt"><i style="width:55%;background:#F59E0B"></i></div></div>
+          <div><div class="bl"><span>Robustez</span><span>19/20</span></div><div class="bt"><i style="width:95%;background:var(--g)"></i></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="lab">Risco de quebra · Monte Carlo</div>
+        <svg viewBox="0 0 400 150" width="100%" height="150" style="margin-top:8px;display:block">
+          <path d="M0 130 C80 118 160 92 240 70 C300 52 350 30 400 12 L400 72 C350 86 300 98 240 108 C160 120 80 128 0 130Z" fill="rgba(91,140,247,.16)"/>
+          <path d="M0 130 C80 122 160 106 240 90 C300 78 350 64 400 52 L400 84 C350 92 300 100 240 106 C160 116 80 126 0 130Z" fill="rgba(91,140,247,.3)"/>
+          <path d="M0 130 C80 124 160 110 240 98 C300 88 350 78 400 68" fill="none" stroke="#5B8CF7" stroke-width="2.5"/>
+          <line x1="0" y1="130" x2="400" y2="130" stroke="#2E3D55"/>
+        </svg>
+        <div class="sub" style="margin-top:4px">1.000 cenários · chance de cair 30%: <span style="color:var(--g);font-family:'JetBrains Mono'">2,1%</span></div>
+      </div>
+    </div>
+    <div class="row" style="grid-template-columns:1fr 1.05fr">
+      <div class="card">
+        <div class="lab">Plano de melhoria</div>
+        <div class="plan">
+          <div class="pi"><b>1</b>Colocar stop em todas as entradas<span class="tag r">Alto</span></div>
+          <div class="pi"><b>2</b>Padronizar o lote em 1% de risco<span class="tag r">Alto</span></div>
+          <div class="pi"><b>3</b>Evitar operar às 16h<span class="tag y">Médio</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="lab">Mapa de dia e horário</div>
+        <div class="hm" id="hm"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+
+<div class="c sq" id="sq">
+  <div class="brand">RickEA Investments <span class="pro">PRO</span></div>
+  <h1>Relatório de Performance<br><em>Pro</em></h1>
+  <p class="lead">O diagnóstico completo da sua conta MetaTrader 5, com o que mudar para operar melhor.</p>
+  <div class="chips">
+    <span class="chip"><i></i>Nota da conta 0–100</span>
+    <span class="chip"><i></i>Lote proporcional</span>
+    <span class="chip"><i></i>Monte Carlo</span>
+    <span class="chip"><i></i>Plano de melhoria</span>
+  </div>
+  <div class="slot"></div>
+  <div class="foot"><span>METATRADER 5 · ROBÔS E MANUAL · 100% NO SEU PC</span><span>@ri.chartrader</span></div>
+</div>
+
+<div style="height:40px"></div>
+
+<div class="c ls" id="ls">
+  <div>
+    <div class="brand">RickEA Investments <span class="pro">PRO</span></div>
+    <h1>Relatório de<br>Performance <em>Pro</em></h1>
+    <p class="lead">O diagnóstico completo da sua conta MetaTrader 5, com o que mudar para operar melhor.</p>
+    <div class="chips">
+      <span class="chip"><i></i>Nota da conta 0–100</span>
+      <span class="chip"><i></i>Lote proporcional</span>
+      <span class="chip"><i></i>Monte Carlo</span>
+      <span class="chip"><i></i>Plano de melhoria</span>
+    </div>
+    <div class="foot"><span>METATRADER 5</span><span>100% NO SEU PC</span><span>@ri.chartrader</span></div>
+  </div>
+  <div class="slot"></div>
+</div>
+
+<script>
+var t=document.getElementById('win').content;
+document.querySelectorAll('.slot').forEach(function(s){ s.replaceWith(t.cloneNode(true)); });
+var vals=[.2,-.1,.5,.8,0,-.6,.3,.9,.1,-.2,.4,.6, .1,.3,-.4,.2,.7,.5,-.8,.2,0,.4,.9,.3, .6,-.2,.2,.1,.4,-.3,.8,.5,.2,-.1,.3,.7];
+document.querySelectorAll('.hm').forEach(function(h){ h.innerHTML=vals.map(function(v){
+  var c=v>=0?'14,207,168':'255,71,104'; return '<i style="background:'+(v===0?'#141E30':'rgba('+c+','+(0.25+Math.abs(v)*0.7).toFixed(2)+')')+'"></i>'; }).join(''); });
+</script>
+</body></html>
