@@ -18,6 +18,7 @@ Marca de trading **RickEA Investments** / Instagram **@ri.chartrader**. Ebook
 - **Checkout ebook Teoria de Dow (Hotmart):** https://pay.hotmart.com/M107215100L · cupom **RICK50** → R$10,00
 - **Checkout ebook Código dos Traders de Elite (Hotmart):** https://pay.hotmart.com/T106424524D · R$9,99 (de R$37) · capa `assets/capa-traders-elite.png`
 - **Checkout MCP TradingView Gold (Hotmart):** https://pay.hotmart.com/M106450067D · R$49 (de R$97) · página `/mcp-tradingview`
+- **Checkout RickEA Relatório de Performance Pro (Hotmart):** https://pay.hotmart.com/U107742297G · R$9,99 · página `/relatorio-pro` · capa `assets/capa-relatorio-pro.png`
 - **Checkout RickEA Mentoria — Mentalidade e Sucesso (Hotmart):** https://pay.hotmart.com/G106467310N · R$49,99 · página `/mentoria` · capa `assets/capa-mentoria.png`
 - **Skill que automatiza:** `rickea-instagram` (ver seção Skill)
 
@@ -42,6 +43,7 @@ Equipe-Super-Agents/
 ├── traders-elite.html     ← página de vendas do Código dos Traders de Elite (/traders-elite) — NÃO mover
 ├── mcp-tradingview.html   ← página de vendas do MCP TradingView Gold (/mcp-tradingview) — NÃO mover
 ├── mentoria.html          ← página de vendas da RickEA Mentoria (/mentoria) — NÃO mover
+├── relatorio-pro.html     ← página de vendas do Relatório de Performance Pro (/relatorio-pro) — NÃO mover
 ├── png/ · referencias/    ← assets originais da campanha MCP (fonte; usados pela página) 
 ├── obrigado.html          ← página de obrigado do ebook Teoria de Dow (/obrigado) — NÃO mover
 ├── obrigado-elite.html    ← obrigado + UPSELL (Traders de Elite → Teoria de Dow) (/obrigado-elite) — NÃO mover
@@ -136,5 +138,5 @@ C:\Users\rickc\Projetos\
   (HTML + instalador .bat + LEIA-ME). Código: `produto-pro/src/` (pro.js, pro.css, pro-sections.html);
   `python3 produto-pro/src/build.py` monta o HTML final a partir do gerador local + módulos Pro.
   Recursos: nota da conta 0–100, plano de melhoria, lote proporcional, Monte Carlo, mapa dia×hora,
-  risco × retorno, simulador "e se". Anúncio no `relatorio.html` e card na loja: falta o link da
-  Hotmart em `PRO_CHECKOUT` (relatorio.html) e em `checkout` do card (index.html).
+  risco × retorno, simulador "e se". Página de vendas `/relatorio-pro`; checkout ligado no anúncio do `relatorio.html`
+  (`PRO_CHECKOUT`) e no card da loja. Para trocar o link: `CHECKOUT` no fim do `relatorio-pro.html`.
