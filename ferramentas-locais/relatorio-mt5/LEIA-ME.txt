@@ -1,0 +1,23 @@
+RELATORIO MT5 - RickEA (versao local)
+=====================================
+
+INSTALAR (uma vez so)
+1. Extraia o .zip numa pasta qualquer.
+2. Clique duas vezes em "Instalar-na-Area-de-Trabalho.bat".
+3. Vai aparecer o atalho "Relatorio MT5 - RickEA" na Area de Trabalho.
+
+Se o Windows mostrar "O Windows protegeu o computador", clique em
+"Mais informacoes" e depois em "Executar assim mesmo".
+
+Sem instalador: copie o arquivo RelatorioMT5-RickEA.html para a Area de
+Trabalho. Ele funciona do mesmo jeito com dois cliques.
+
+USAR
+1. No MT5: Caixa de Ferramentas (Ctrl+T) > aba Historico.
+2. Botao direito > escolha o periodo (ex.: Todo o historico).
+3. Botao direito > Relatorio > HTML. Salve o arquivo.
+4. Abra o atalho e arraste o arquivo salvo para a janela.
+5. Para guardar: botao "Salvar em PDF / Imprimir" > destino "Salvar como PDF".
+
+O arquivo e lido so no seu computador. Nada e enviado para a internet.
+Sem internet o programa funciona igual; so as fontes mudam para as do Windows.

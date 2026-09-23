@@ -59,6 +59,32 @@
   .botsub{color:var(--mut);font-size:11px}
   .note{color:var(--mut);font-size:12px;margin-top:8px}
 
+  /* ---------- oferta PRO ---------- */
+  .pro{position:relative;overflow:hidden;border:1px solid #6b5220;border-radius:16px;margin:18px 0;
+    background:radial-gradient(120% 140% at 100% 0%,#2a2110 0%,#141820 55%,#11151d 100%);padding:22px 22px 20px}
+  .pro-tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+    color:#1a1400;background:var(--gold);border-radius:6px;padding:3px 9px}
+  .pro h3{margin:10px 0 4px;font-size:20px;line-height:1.25;color:var(--ink);text-transform:none;letter-spacing:0}
+  .pro .sub{color:var(--mut);margin:0 0 14px;max-width:62ch}
+  .pro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px,100%),1fr));gap:10px;margin:0 0 16px}
+  .lock{background:rgba(12,15,20,.65);border:1px solid #2a3344;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+  .lock .q{font-size:12.5px;color:#c9d4e3}
+  .lock .a{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:800}
+  .lock .blur{filter:blur(6px);user-select:none;color:var(--gold)}
+  .lock .pad{font-size:11px;color:#7f8ea3}
+  .pro-buy{display:flex;align-items:center;gap:14px 20px;flex-wrap:wrap}
+  .pro-price{display:flex;flex-direction:column}
+  .pro-price b{font-size:28px;color:var(--gold);line-height:1}
+  .pro-price span{font-size:12px;color:var(--mut);margin-top:4px}
+  .pro-buy .btn{margin-top:0;font-size:15px;padding:13px 22px;text-decoration:none}
+  .pro-pays{display:flex;gap:6px;flex-wrap:wrap}
+  .pro-pays i{font-style:normal;font-size:10.5px;font-weight:700;color:#c9d4e3;border:1px solid #2a3344;border-radius:6px;padding:3px 7px}
+  .pro-strip{display:flex;align-items:center;justify-content:space-between;gap:10px 16px;flex-wrap:wrap;margin:14px 0 0;
+    border:1px solid #6b5220;border-radius:14px;padding:14px 16px;background:linear-gradient(90deg,#211a0d,#131923)}
+  .pro-strip p{margin:0;color:#d9c79c;font-size:13.5px}
+  .pro-strip p b{color:var(--gold)}
+  .pro-strip .btn{margin-top:0;text-decoration:none}
+
   @media print{
     body{background:#fff;color:#111}
     .wrap{max-width:none}
@@ -92,6 +118,12 @@
     <div class="err" id="err"></div>
   </div>
 
+
+  <div class="pro-strip noprint" id="proStrip">
+    <p><b>Novo · RickEA Relatório de Performance Pro</b> — lote ideal pro seu saldo, risco de quebra e um plano de melhoria da sua conta. <b>R$ 9,99</b></p>
+    <a class="btn" href="/relatorio-pro" target="_blank" rel="noopener" style="text-decoration:none">Conhecer o Pro</a>
+  </div>
+
   <div id="report">
     <div class="toolbar noprint">
       <button class="btn ghost" id="another">Carregar outro</button>
@@ -109,6 +141,24 @@
       <div class="scroll" style="max-height:none"><table id="bots"></table></div>
       <div class="note">Robô identificado pelo <b>comentário</b> que o EA grava na abertura da posição.
         Posições sem comentário aparecem como <i>Manual / sem comentário</i>.</div>
+    </div>
+    <div class="pro noprint" id="proAd">
+      <span class="pro-tag">RickEA Relatório de Performance Pro</span>
+      <h3>Este relatório mostra o que aconteceu. O Pro mostra o que fazer agora.</h3>
+      <p class="sub" id="proSub">O Pro lê o mesmo arquivo e responde as perguntas que decidem se a conta cresce ou quebra.</p>
+      <div class="pro-grid">
+        <div class="lock"><span class="q" id="proQ1">Qual lote usar para arriscar 1% por operação?</span><span class="a">🔒 <span class="blur">0,00 lote</span></span><span class="pad">Calculadora de lote proporcional por ativo</span></div>
+        <div class="lock"><span class="q">Qual a chance de a conta quebrar com o risco atual?</span><span class="a">🔒 <span class="blur">00,0%</span></span><span class="pad">Risco de ruína + 1.000 cenários de Monte Carlo</span></div>
+        <div class="lock"><span class="q">Em que dia e horário você perde dinheiro?</span><span class="a">🔒 <span class="blur">Qua · 00h</span></span><span class="pad">Mapa de calor por dia da semana e hora</span></div>
+        <div class="lock"><span class="q">Quanto a conta teria rendido cortando os piores trades?</span><span class="a">🔒 <span class="blur">+$0.000</span></span><span class="pad">Simulador “e se”: sem o pior robô, ativo ou horário</span></div>
+        <div class="lock"><span class="q">Seus stops estão curtos ou longos demais?</span><span class="a">🔒 <span class="blur">R:R 0,0</span></span><span class="pad">Análise de risco × retorno por robô e por ativo</span></div>
+        <div class="lock"><span class="q">O que mudar primeiro para melhorar?</span><span class="a">🔒 <span class="blur">5 passos</span></span><span class="pad">Plano de melhoria com nota de 0 a 100 para a conta</span></div>
+      </div>
+      <div class="pro-buy">
+        <div class="pro-price"><b>R$ 9,99</b><span>pagamento único · roda no seu PC · nada é enviado</span></div>
+        <a class="btn pro-cta" href="#" target="_blank" rel="noopener">Quero o Pro por R$ 9,99</a>
+        <div class="pro-pays"><i>PIX</i><i>DÉBITO</i><i>CRÉDITO</i></div>
+      </div>
     </div>
     <div class="grid" id="kpis2"></div>
     <div class="card">
@@ -217,7 +267,7 @@ function analyze(text){
     for(var i=0;i<rows.length;i++){
       var c=rowCells(rows[i]);
       for(var j=0;j<c.length;j++){
-        var raw=c[j].trim(), low=raw.toLowerCase();
+        var raw=c[j].trim(), low=raw.toLowerCase().replace(/\s+:/g,':');
         for(var li=0;li<labels.length;li++){
           var lab=labels[li];
           if(low===lab || low===lab+':'){                    // rótulo e valor em células separadas
@@ -245,7 +295,7 @@ function analyze(text){
     for(var i=0;i<rows.length;i++){
       var c=rowCells(rows[i]);
       for(var j=0;j<c.length;j++){
-        var low=c[j].trim().toLowerCase();
+        var low=c[j].trim().toLowerCase().replace(/\s+:/g,':');
         for(var li=0;li<labels.length;li++){
           var lab=labels[li];
           if(low===lab || low===lab+':' || low.indexOf(lab+':')===0){
@@ -532,10 +582,29 @@ function render(a){
   document.getElementById('trades').innerHTML=th+tb;
   if(!a.trades.length) document.getElementById('trades').innerHTML=th+'<tbody><tr><td colspan="7" class="l" style="color:#8fa1b7">Sem operações fechadas nesta exportação (só o resumo).</td></tr></tbody>';
 
+  proPersonalize(a);
   document.getElementById('gendate').textContent=new Date().toLocaleString('pt-BR');
   document.getElementById('drop').style.display='none';
+  document.getElementById('proStrip').style.display='none';
   document.getElementById('report').style.display='block';
   window.scrollTo(0,0);
+}
+
+
+/* ---------- oferta PRO ---------- */
+// Cole aqui o link da Hotmart quando o produto estiver criado. Vazio = abre o WhatsApp.
+var PRO_CHECKOUT = "https://pay.hotmart.com/U107742297G";
+var PRO_WPP = "https://wa.me/17702562736?text=" + encodeURIComponent("Ola! Quero o RickEA Relatorio de Performance Pro (R$ 9,99).");
+Array.prototype.forEach.call(document.querySelectorAll('.pro-cta'),function(a){ a.href = PRO_CHECKOUT || PRO_WPP; });
+function proPersonalize(a){
+  var bal = isFinite(a.state.balance) ? a.state.balance : a.endBal;
+  var cur = a.acct.cur ? a.acct.cur+' ' : '';
+  if(isFinite(bal) && bal>0)
+    document.getElementById('proQ1').textContent='Qual lote usar para arriscar 1% ('+cur+fmt(bal*0.01)+') por operação?';
+  var sub='O Pro lê o mesmo arquivo e responde as perguntas que decidem se a conta cresce ou quebra.';
+  if(isFinite(a.maxDDpct) && a.maxDDpct>0)
+    sub='Sua conta já teve um drawdown de '+fmt(a.maxDDpct,2)+'%'+(a.maxCL?' e '+a.maxCL+' perdas seguidas':'')+'. O Pro mostra o lote certo para o seu saldo e o que mudar para reduzir esse risco.';
+  document.getElementById('proSub').textContent=sub;
 }
 
 /* ---------- entrada de arquivo ---------- */
@@ -560,6 +629,7 @@ document.getElementById('print').onclick=function(){ window.print(); };
 document.getElementById('another').onclick=function(){
   document.getElementById('report').style.display='none';
   document.getElementById('drop').style.display='block';
+  document.getElementById('proStrip').style.display='';
   document.getElementById('file').value='';
 };
 </script>

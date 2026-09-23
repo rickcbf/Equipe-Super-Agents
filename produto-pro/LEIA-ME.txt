@@ -1,0 +1,37 @@
+RickEA RELATORIO DE PERFORMANCE PRO
+===================================
+Obrigado pela compra!
+
+INSTALAR (uma vez so)
+1. Extraia o .zip numa pasta qualquer.
+2. Clique duas vezes em "Instalar-na-Area-de-Trabalho.bat".
+3. Vai aparecer o atalho "RickEA Relatorio Pro" na Area de Trabalho.
+
+Se o Windows mostrar "O Windows protegeu o computador", clique em
+"Mais informacoes" e depois em "Executar assim mesmo".
+Sem instalador: copie RelatorioPro-RickEA.html para a Area de Trabalho.
+
+USAR
+1. No MT5: Caixa de Ferramentas (Ctrl+T) > aba Historico.
+2. Botao direito > escolha o periodo (ex.: Todo o historico).
+3. Botao direito > Relatorio > HTML. Salve o arquivo.
+4. Abra o atalho e arraste o arquivo salvo para a janela.
+5. Para guardar: botao "Salvar em PDF / Imprimir" > "Salvar como PDF".
+
+O QUE O PRO MOSTRA
+- Nota da conta (0 a 100) em 5 criterios
+- Plano de melhoria com as 5 acoes de maior impacto
+- Calculadora de lote proporcional ao saldo e ao risco por operacao
+- Risco de quebra por Monte Carlo (1.000 cenarios)
+- Mapa de dia e horario de lucro e prejuizo
+- Risco x retorno por robo e por ativo, com diagnostico
+- Simulador "E se": sem o pior robo, ativo, horario ou dia
+- Tudo do relatorio completo: curva de saldo, resultado por EA,
+  ativos, posicoes abertas, fluxo de caixa e pontos de atencao
+
+O arquivo do MT5 e lido so no seu computador. Nada e enviado.
+
+Conteudo educativo. Nao e recomendacao de investimento.
+Resultados passados nao garantem resultados futuros.
+
+Duvidas: WhatsApp RickEA +1 770 256 2736 - Instagram @ri.chartrader

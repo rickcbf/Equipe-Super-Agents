@@ -1,0 +1,55 @@
+/* ---------- PRO ---------- */
+.pro-badge{display:inline-block;vertical-align:middle;margin-left:8px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em;color:#1a1400;background:var(--gold);border-radius:5px;padding:2px 7px;-webkit-text-fill-color:#1a1400}
+.score-panel{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:center}
+.sc-ring{display:flex;flex-direction:column;align-items:center;gap:6px}
+.ring{width:160px;height:160px}
+.sc-grade{font-family:var(--display);font-weight:700;font-size:15px}
+.sc-parts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:14px 18px}
+.sc-part{display:flex;flex-direction:column;gap:6px}
+.sc-top{display:flex;justify-content:space-between;font-size:12px;color:var(--txt)}
+.sc-d{font-size:11px;color:var(--txt3)}
+.plan{list-style:none;display:flex;flex-direction:column;gap:14px}
+.plan-item{display:grid;grid-template-columns:32px 1fr;gap:12px;align-items:start;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.plan-item:last-child{border-bottom:none;padding-bottom:0}
+.plan-n{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--bg3);color:var(--gold);font-weight:600}
+.plan-h{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap;margin-bottom:4px}
+.plan-h b{font-family:var(--display);font-size:14px}
+.plan-item p{font-size:12.5px;color:var(--txt2);line-height:1.55;max-width:80ch}
+.lot-controls,.mc-controls{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end;margin-bottom:18px}
+.field{display:flex;flex-direction:column;gap:6px}
+.lot-in{background:var(--bg);color:var(--txt);border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-size:13px;width:130px}
+.lot-in:focus{outline:2px solid var(--green);outline-offset:1px}
+.lot-table td .lot-in{width:110px;text-align:right}
+.lot-table td{vertical-align:top}
+.lot-table td .note{margin-top:3px;white-space:nowrap}
+.lot-big{font-size:15px;font-weight:600;color:var(--gold)}
+.lot-over{margin-top:10px;font-size:12.5px;color:var(--txt2);line-height:1.55}
+.lot-over b{color:var(--red);font-weight:600}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{background:var(--bg);color:var(--txt2);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-size:12.5px}
+.chips button[aria-pressed="true"]{background:var(--green-bg);border-color:var(--green);color:var(--green);font-weight:600}
+.mc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr));gap:10px}
+.mc-tile{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;flex-direction:column;gap:5px}
+.mc-v{font-size:20px;font-weight:600;line-height:1.1}
+canvas#mcChart{width:100%;height:240px;display:block}
+canvas#wiChart{width:100%;height:200px;display:block}
+.heat{border-collapse:separate;border-spacing:3px;min-width:760px}
+.heat th{font-size:9.5px;padding:0 0 4px;border:none;text-align:center;letter-spacing:0}
+.heat th.hm-day{text-align:left;padding-right:6px;font-size:11px;color:var(--txt2)}
+.heat td{padding:0;border:none}
+.hm-c{height:26px;min-width:24px;border-radius:4px}
+.hm-empty{background:var(--bg2)}
+.hm-tot{font-size:11px;padding-left:10px!important;text-align:right}
+.hm-foot{font-size:9px;text-align:center!important;padding-top:4px!important}
+.sub-h{font-family:var(--display);font-size:13px;font-weight:700;color:var(--txt2);margin-bottom:8px}
+.rr-table{min-width:980px}
+.rr-table td:last-child{text-align:left;white-space:normal;min-width:190px}
+.rr-table th:last-child{text-align:left}
+.rr-table td .chip{white-space:normal;display:inline-block;line-height:1.4}
+.wi-opts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.wi-opt{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 11px;font-size:12.5px;color:var(--txt2);cursor:pointer}
+.wi-opt input{accent-color:#0ECFA8}
+.wi-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:24px;align-items:start}
+.wi-table{min-width:360px}
+.disclaimer{margin-top:28px;font-size:11px;color:var(--txt3);line-height:1.6;max-width:90ch}
+@media (max-width:760px){.score-panel{grid-template-columns:1fr}.wi-grid{grid-template-columns:1fr}}
