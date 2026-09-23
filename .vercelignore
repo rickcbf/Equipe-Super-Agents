@@ -4,3 +4,6 @@ indicador/
 *.mq5
 *.mq4
 *.cs
+
+# Produto pago (RickEA Relatorio de Performance Pro): entregue pela Hotmart, NAO vai pro site.
+produto-pro/

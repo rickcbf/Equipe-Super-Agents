@@ -1,0 +1,84 @@
+    <!-- ========== PRO: nota + plano ========== -->
+    <div class="section-head"><h2>Nota da Conta</h2><span class="sh-sub">5 critérios de 0 a 20, calculados a partir das suas operações</span></div>
+    <div class="panel score-panel" id="proScore"></div>
+
+    <div class="section-head"><h2>Plano de Melhoria</h2><span class="sh-sub">as ações com maior impacto no seu resultado, em ordem de prioridade</span></div>
+    <div class="panel"><ol class="plan" id="proPlan"></ol></div>
+
+    <!-- ========== PRO: lote ========== -->
+    <div class="section-head"><h2>Calculadora de Lote Proporcional</h2><span class="sh-sub">lote para arriscar uma porcentagem fixa do saldo em cada operação</span></div>
+    <div class="panel">
+      <div class="lot-controls">
+        <label class="field"><span class="kpi-label">Saldo da conta ($)</span><input class="lot-in mono" id="lotBal" type="number" step="any" min="0"></label>
+        <div class="field"><span class="kpi-label">Risco por operação</span>
+          <div class="chips" id="riskChips"><button type="button" data-v="0.5">0,5%</button><button type="button" data-v="1">1%</button><button type="button" data-v="2">2%</button><button type="button" data-v="3">3%</button></div>
+        </div>
+        <label class="field"><span class="kpi-label">Outro (%)</span><input class="lot-in mono" id="lotRisk" type="number" step="0.1" min="0.1"></label>
+        <div class="field"><span class="kpi-label">Perda máxima por operação</span><span class="mc-v mono" id="lotBudget" style="color:var(--gold)">—</span></div>
+      </div>
+      <div class="tbl-wrap">
+        <table class="lot-table">
+          <thead><tr><th>Ativo</th><th>Distância do stop (preço)</th><th>Custo do stop em 0,01</th><th>Lote ideal</th><th>Lote que você usa</th><th>Situação</th></tr></thead>
+          <tbody id="lotBody"></tbody>
+        </table>
+      </div>
+      <p class="note" style="margin-top:12px">Lote ideal = perda máxima ÷ (distância do stop × valor do ponto). O valor do ponto é estimado a partir das suas próprias operações em cada ativo. Edite a distância do stop para testar outro cenário. * O stop é grande demais para o saldo mesmo no lote mínimo.</p>
+      <p class="lot-over" id="lotOver"></p>
+    </div>
+
+    <!-- ========== PRO: monte carlo ========== -->
+    <div class="section-head"><h2>Risco de Quebra · Monte Carlo</h2><span class="sh-sub">o que pode acontecer nos próximos trades se o seu padrão se repetir</span></div>
+    <div class="panel" id="mcBox">
+      <div class="mc-controls">
+        <div class="field"><span class="kpi-label">Próximos</span><div class="chips" id="mcN"><button type="button" data-v="50">50 trades</button><button type="button" data-v="100">100 trades</button><button type="button" data-v="250">250 trades</button></div></div>
+        <div class="field"><span class="kpi-label">Tamanho do lote</span><div class="chips" id="mcMult"><button type="button" data-v="0.5">Metade</button><button type="button" data-v="1">Atual</button><button type="button" data-v="2">Dobro</button></div></div>
+      </div>
+      <div class="mc-grid" id="mcTiles"></div>
+      <div class="chart-legend" style="margin:18px 0 8px">
+        <span class="legend-item"><span class="legend-dot" style="background:#5B8CF7"></span>Cenário mediano</span>
+        <span class="legend-item"><span class="legend-dot" style="background:rgba(91,140,247,.45)"></span>50% dos cenários</span>
+        <span class="legend-item"><span class="legend-dot" style="background:rgba(91,140,247,.2)"></span>90% dos cenários</span>
+      </div>
+      <canvas id="mcChart" height="240" role="img" aria-label="Faixas de resultado da simulação de Monte Carlo"></canvas>
+      <p class="note" id="mcNote" style="margin-top:10px"></p>
+    </div>
+
+    <!-- ========== PRO: mapa de calor ========== -->
+    <div class="section-head"><h2>Mapa de Dia e Horário</h2><span class="sh-sub">resultado pelo horário de abertura (horário do servidor da corretora)</span></div>
+    <div class="panel">
+      <div class="mc-grid" id="heatTiles" style="margin-bottom:18px"></div>
+      <div class="tbl-wrap"><table class="heat" id="heatTable"></table></div>
+      <div class="chart-legend" style="margin-top:12px">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Lucro</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Prejuízo</span>
+        <span class="legend-item">cor mais forte = valor maior · passe o mouse para ver o valor</span>
+      </div>
+    </div>
+
+    <!-- ========== PRO: risco x retorno ========== -->
+    <div class="section-head"><h2>Risco × Retorno</h2><span class="sh-sub">se cada robô e cada ativo tem vantagem estatística</span></div>
+    <div class="panel">
+      <h3 class="sub-h">Por robô</h3>
+      <div class="tbl-wrap"><table class="rr-table"><thead><tr><th>Robô</th><th>Trades</th><th>Acerto</th><th>Ganho médio</th><th>Perda média</th><th>R:R</th><th>Acerto mínimo</th><th>Vantagem (p.p.)</th><th>Por trade</th><th>Tempo ganho / perda</th><th>Diagnóstico</th></tr></thead><tbody id="rrBots"></tbody></table></div>
+      <h3 class="sub-h" style="margin-top:22px">Por ativo</h3>
+      <div class="tbl-wrap"><table class="rr-table"><thead><tr><th>Ativo</th><th>Trades</th><th>Acerto</th><th>Ganho médio</th><th>Perda média</th><th>R:R</th><th>Acerto mínimo</th><th>Vantagem (p.p.)</th><th>Por trade</th><th>Tempo ganho / perda</th><th>Diagnóstico</th></tr></thead><tbody id="rrSyms"></tbody></table></div>
+      <p class="note" style="margin-top:12px">Acerto mínimo é a taxa de acerto necessária para empatar com esse R:R. Vantagem é quanto o seu acerto real fica acima (ou abaixo) desse mínimo.</p>
+    </div>
+
+    <!-- ========== PRO: e se ========== -->
+    <div class="section-head"><h2>Simulador “E se”</h2><span class="sh-sub">marque o que tirar e veja como o período teria terminado</span></div>
+    <div class="panel">
+      <div class="wi-opts" id="wiOpts"></div>
+      <div class="wi-grid">
+        <div class="tbl-wrap"><table class="wi-table" id="wiTable"></table></div>
+        <div>
+          <div class="chart-legend" style="margin-bottom:8px">
+            <span class="legend-item"><span class="legend-dot" style="background:rgba(136,152,187,.8)"></span>Real</span>
+            <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Simulado</span>
+          </div>
+          <canvas id="wiChart" height="200" role="img" aria-label="Resultado acumulado real e simulado"></canvas>
+        </div>
+      </div>
+      <p class="note" style="margin-top:12px">A simulação usa só o histórico. Tirar o que deu errado no passado não garante o mesmo resultado no futuro.</p>
+    </div>
+

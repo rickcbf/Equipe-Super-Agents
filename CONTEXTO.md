@@ -131,7 +131,10 @@ C:\Users\rickc\Projetos\
   atalho na Área de Trabalho. Pacote pronto: `ferramentas-locais/RelatorioMT5-RickEA-local.zip`.
 - A versão web gratuita continua sendo `relatorio.html` (/relatorio), com o layout antigo.
 
-- **RickEA Relatório de Performance Pro (R$ 9,99) — em planejamento.** Anúncio já no ar dentro do
-  `relatorio.html` (faixa na tela inicial + card personalizado com cadeados após gerar o relatório)
-  e card na loja (`index.html`, sem checkout → botão WhatsApp). Quando criar o produto na Hotmart:
-  colar o link em `PRO_CHECKOUT` (relatorio.html) e em `checkout` do card na loja.
+- **RickEA Relatório de Performance Pro (R$ 9,99) — pronto para vender.** Pasta `produto-pro/`
+  (fora do site via `.vercelignore`). Entrega da Hotmart: `produto-pro/RickEA-Relatorio-Pro.zip`
+  (HTML + instalador .bat + LEIA-ME). Código: `produto-pro/src/` (pro.js, pro.css, pro-sections.html);
+  `python3 produto-pro/src/build.py` monta o HTML final a partir do gerador local + módulos Pro.
+  Recursos: nota da conta 0–100, plano de melhoria, lote proporcional, Monte Carlo, mapa dia×hora,
+  risco × retorno, simulador "e se". Anúncio no `relatorio.html` e card na loja: falta o link da
+  Hotmart em `PRO_CHECKOUT` (relatorio.html) e em `checkout` do card (index.html).
