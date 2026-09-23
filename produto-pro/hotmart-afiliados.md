@@ -13,7 +13,7 @@ POR QUE ESSE PRODUTO VENDE
 • Entrega imediata: o comprador baixa e usa na hora com o próprio histórico.
 
 O QUE VOCÊ RECEBE COMO AFILIADO
-• Comissão de [X]% sobre cada venda.
+• Comissão de 10% sobre cada venda.
 • Capa em alta resolução (quadrada e horizontal) para posts, stories e anúncios.
 • Textos prontos com os principais argumentos do produto.
 • Suporte direto com o produtor pelo Instagram @ri.chartrader.
@@ -33,4 +33,4 @@ Dúvidas: Instagram @ri.chartrader
 
 ## Versão curta (se o campo tiver limite menor)
 
-Ferramenta para traders de MetaTrader 5 por apenas R$ 9,99: o comprador arrasta o histórico da conta e recebe nota de 0 a 100, plano de melhoria, lote ideal e risco de quebra por Monte Carlo. Preço de impulso, público enorme (Forex, ouro, índices, robôs), página de vendas pronta, garantia de 7 dias e comissão de [X]%. Divulgue sem prometer lucro: é uma ferramenta educativa de análise.
+Ferramenta para traders de MetaTrader 5 por apenas R$ 9,99: o comprador arrasta o histórico da conta e recebe nota de 0 a 100, plano de melhoria, lote ideal e risco de quebra por Monte Carlo. Preço de impulso, público enorme (Forex, ouro, índices, robôs), página de vendas pronta, garantia de 7 dias e comissão de 10%. Divulgue sem prometer lucro: é uma ferramenta educativa de análise.
