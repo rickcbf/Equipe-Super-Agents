@@ -237,6 +237,13 @@
   .lic li{color:var(--tx2);font-size:15.5px;padding-left:22px;position:relative}
   .lic li::before{content:'';position:absolute;left:0;top:9px;width:8px;height:8px;border-radius:50%;background:#ff8a1f}
   .lic li b{color:var(--tx)}
+  .promo{background:linear-gradient(90deg,#ff8a1f,#ffb35c);color:#1a0f02;text-align:center;font-weight:700;font-size:14px;padding:9px 16px;line-height:1.35}
+  .promo code,.cupom code{font-family:var(--mono);font-weight:800;letter-spacing:.06em}
+  .promo code{background:rgba(0,0,0,.14);border-radius:6px;padding:2px 7px}
+  .cupom{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:6px 0 14px;padding:12px 14px;border:1px dashed #ff8a1f;border-radius:12px;background:rgba(255,138,31,.08)}
+  .cupom b{color:#ff8a1f;font-size:22px;font-family:var(--mono)}
+  .cupom small{display:block;color:var(--tx2);font-size:12.5px}
+  .cupom button{background:transparent;color:#ff8a1f;border:1px solid #ff8a1f;border-radius:8px;padding:7px 12px;font:600 13px inherit;cursor:pointer}
   .lic-pill{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.06em;color:#ff8a1f;border:1px solid rgba(255,138,31,.5);background:rgba(255,138,31,.08);border-radius:999px;padding:6px 12px}
   .cfg{display:grid;grid-template-columns:repeat(2,1fr);gap:0;background:var(--bg1);border:1px solid var(--bd);border-radius:var(--radius);overflow:hidden}
   .cfg div{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;gap:12px;font-size:14.5px}
@@ -247,10 +254,12 @@
 </head>
 <body>
 
+<div class="promo" role="note">🔥 <b>50% OFF</b> na licença com o cupom <code>RICK50</code>. O desconto já vem aplicado no checkout.</div>
+
 <nav class="nav" aria-label="Topo">
   <div class="wrap">
     <a class="logo" href="/"><span>Rick<b>EA</b> Investments</span></a>
-    <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J" target="_blank" rel="noopener">Comprar licença</a>
+    <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J?offDiscount=RICK50" target="_blank" rel="noopener">Comprar licença</a>
   </div>
 </nav>
 
@@ -261,8 +270,9 @@
       <h1>Opere a zona de Fibonacci com regras. <em>O FiboGrid faz o grid por você.</em></h1>
       <p class="lead">O RickEA FiboGrid identifica a pernada, desenha a Fibonacci e abre um grid de ordens só dentro da zona de retração, com stop e take da cesta definidos antes da primeira entrada.</p>
       <div class="hero-cta">
-        <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J" target="_blank" rel="noopener">Quero o RickEA FiboGrid</a>
+        <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J?offDiscount=RICK50" target="_blank" rel="noopener">Quero o RickEA FiboGrid</a>
         <span class="lic-pill">LICENÇA DE 3 MESES</span>
+        <span class="lic-pill">CUPOM RICK50 · 50% OFF</span>
         <div class="pays"><span>PIX</span><span>DÉBITO</span><span>CRÉDITO</span></div>
       </div>
       <div class="trust" style="margin-top:22px">
@@ -372,7 +382,11 @@
       <div class="offer-r">
         <div class="lab">Licença de 3 meses</div>
         <div class="big-price" style="font-size:40px;color:#ff8a1f">RickEA FiboGrid</div>
-        <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J" target="_blank" rel="noopener">Comprar licença agora</a>
+        <div class="cupom">
+          <div><small>Cupom de desconto</small><b>RICK50</b> <span style="font-weight:700">· 50% OFF</span><small>Já aplicado ao clicar em comprar</small></div>
+          <button type="button" class="js-copy">Copiar cupom</button>
+        </div>
+        <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J?offDiscount=RICK50" target="_blank" rel="noopener">Comprar licença agora</a>
         <div class="pays"><span>PIX</span><span>DÉBITO</span><span>CRÉDITO</span></div>
         <div class="guar">
           <svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true" style="flex:0 0 auto"><circle cx="12" cy="12" r="10" fill="rgba(255,138,31,.12)" stroke="#ff8a1f" stroke-width="1.5"/><text x="12" y="16" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700" fill="#ff8a1f">7</text></svg>
@@ -403,8 +417,8 @@
 <section class="final">
   <div class="wrap">
     <h2>Deixe o grid na zona de Fibonacci com o robô. Você cuida da estratégia.</h2>
-    <p>Licença de 3 meses com todos os recursos liberados e garantia de 7 dias.</p>
-    <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J" target="_blank" rel="noopener">Quero o RickEA FiboGrid</a>
+    <p>Licença de 3 meses com todos os recursos liberados, garantia de 7 dias e <b style="color:#ff8a1f">50% OFF com o cupom RICK50</b>.</p>
+    <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J?offDiscount=RICK50" target="_blank" rel="noopener">Quero o RickEA FiboGrid</a>
   </div>
 </section>
 
@@ -416,14 +430,21 @@
 </footer>
 
 <div class="sticky" aria-label="Comprar">
-  <div><b style="font-size:16px">RickEA FiboGrid</b><small>licença de 3 meses · garantia de 7 dias</small></div>
-  <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J" target="_blank" rel="noopener">Comprar</a>
+  <div><b style="font-size:16px">RickEA FiboGrid</b><small>50% OFF · cupom RICK50</small></div>
+  <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J?offDiscount=RICK50" target="_blank" rel="noopener">Comprar</a>
 </div>
 
 <script>
   // Link de pagamento da Hotmart (um lugar só para trocar)
-  var CHECKOUT = "https://pay.hotmart.com/Y107764003J";
+  var CUPOM = "RICK50";
+  var CHECKOUT = "https://pay.hotmart.com/Y107764003J?offDiscount=" + CUPOM;
   document.querySelectorAll(".js-buy").forEach(function(a){ a.href = CHECKOUT; });
+  document.querySelectorAll(".js-copy").forEach(function(b){
+    b.addEventListener("click", function(){
+      var ok = function(){ b.textContent = "Copiado!"; setTimeout(function(){ b.textContent = "Copiar cupom"; }, 1800); };
+      if (navigator.clipboard) navigator.clipboard.writeText(CUPOM).then(ok, ok); else ok();
+    });
+  });
 </script>
 </body>
 </html>

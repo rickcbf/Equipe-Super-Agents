@@ -19,7 +19,7 @@ Marca de trading **RickEA Investments** / Instagram **@ri.chartrader**. Ebook
 - **Checkout ebook Código dos Traders de Elite (Hotmart):** https://pay.hotmart.com/T106424524D · R$9,99 (de R$37) · capa `assets/capa-traders-elite.png`
 - **Checkout MCP TradingView Gold (Hotmart):** https://pay.hotmart.com/M106450067D · R$49 (de R$97) · página `/mcp-tradingview`
 - **Checkout RickEA Relatório de Performance Pro (Hotmart):** https://pay.hotmart.com/Q107762850I · R$9,99 · página `/relatorio-pro` · capa `assets/capa-relatorio-pro.png`
-- **Checkout RickEA FiboGrid (Hotmart):** https://pay.hotmart.com/Y107764003J · licença de 3 meses · página `/fibogrid` · capa `assets/capa-fibogrid.png`
+- **Checkout RickEA FiboGrid (Hotmart):** https://pay.hotmart.com/Y107764003J (links do site usam `?offDiscount=RICK50` = cupom RICK50, 50% OFF) · licença de 3 meses · página `/fibogrid` · capa `assets/capa-fibogrid.png`
 - **Licença FiboGrid por cliente:** abrir `indicador/Gerador-Licenca-FiboGrid.html` (local, não vai pro site), informar nome + conta MT5 + data da compra → baixa o `.mq5` com vencimento em compra + 90 dias e travado na conta. Compilar (F7, X64 Regular) e enviar só o `.ex5`. Modelo: `indicador/RickEA_FiboGrid_v4_Licenca.mq5`; se alterar o modelo, rodar `python3 indicador/licenca/build.py`.
 - **Checkout RickEA Mentoria — Mentalidade e Sucesso (Hotmart):** https://pay.hotmart.com/G106467310N · R$49,99 · página `/mentoria` · capa `assets/capa-mentoria.png`
 - **Skill que automatiza:** `rickea-instagram` (ver seção Skill)
