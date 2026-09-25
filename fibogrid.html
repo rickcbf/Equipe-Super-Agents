@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RickEA FiboGrid — Robô de grid na zona de Fibonacci para MT5</title>
+<meta name="description" content="RickEA FiboGrid: robô (EA) para MetaTrader 5 que opera um grid de ordens só dentro da zona de retração de Fibonacci, com Fibo automática ou manual, stop na Fibo e take da cesta. Licença de 3 meses." />
+<meta property="og:title" content="RickEA FiboGrid — Robô para MT5" />
+<meta property="og:description" content="Grid automático na zona de Fibonacci, com Fibo manual ou automática, filtro de direção, stop na Fibo e take da cesta. Licença de 3 meses." />
+<meta property="og:image" content="/assets/capa-fibogrid.png" />
+<meta property="og:type" content="website" />
+<link rel="icon" type="image/png" sizes="256x256" href="/assets/favicon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#070B15; --bg1:#0E1525; --bg2:#141E30; --bg3:#1B2840;
+    --bd:#263248; --bd2:#2E3D55;
+    --tx:#E6ECF5; --tx2:#8FA0C0; --tx3:#5B6F8F;
+    --g:#0ECFA8; --g-bg:rgba(14,207,168,.10); --r:#FF4768; --r-bg:rgba(255,71,104,.10);
+    --b:#5B8CF7; --gold:#E8B64D; --amber:#F59E0B; --amber-bg:rgba(245,158,11,.12);
+    --sans:'DM Sans','Segoe UI',system-ui,sans-serif; --mono:'JetBrains Mono',Consolas,monospace;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{background:var(--bg);color:var(--tx);font-family:var(--sans);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit}
+  img{max-width:100%;display:block}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  :focus-visible{outline:2px solid var(--g);outline-offset:3px}
+
+  /* ---------- botões ---------- */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;font-weight:700;border-radius:12px;padding:16px 26px;font-size:17px;transition:transform .15s,box-shadow .15s,background .15s}
+  .btn-buy{background:var(--g);color:#032019;box-shadow:0 12px 32px -10px rgba(14,207,168,.55)}
+  .btn-buy:hover{transform:translateY(-1px);box-shadow:0 16px 36px -10px rgba(14,207,168,.7)}
+  .btn-ghost{border:1px solid var(--bd2);color:var(--tx);font-weight:600}
+  .btn-ghost:hover{background:var(--bg1)}
+  .pays{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .pays span{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--tx2);border:1px solid var(--bd);border-radius:6px;padding:4px 8px}
+
+  /* ---------- topo ---------- */
+  .nav{position:sticky;top:0;z-index:20;background:rgba(7,11,21,.82);backdrop-filter:blur(10px);border-bottom:1px solid rgba(38,50,72,.6)}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:700;color:var(--g);font-size:17px}
+  .tag-pro{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;color:#1a1400;background:var(--gold);border-radius:5px;padding:2px 7px}
+  .nav .btn{padding:10px 18px;font-size:14px}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;overflow:hidden;padding:72px 0 88px;background:
+    radial-gradient(800px 520px at 88% 0%,rgba(91,140,247,.16),transparent 60%),
+    radial-gradient(640px 460px at 0% 100%,rgba(14,207,168,.09),transparent 60%)}
+  .hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(38,50,72,.32) 1px,transparent 1px),linear-gradient(90deg,rgba(38,50,72,.32) 1px,transparent 1px);background-size:48px 48px;-webkit-mask-image:linear-gradient(180deg,#000,transparent 90%);mask-image:linear-gradient(180deg,#000,transparent 90%);pointer-events:none}
+  .hero .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:48px;align-items:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--g);background:var(--g-bg);border:1px solid rgba(14,207,168,.25);border-radius:999px;padding:6px 14px}
+  .eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--g)}
+  h1{font-size:clamp(34px,4.6vw,54px);line-height:1.06;letter-spacing:-.035em;font-weight:700;margin-top:20px;text-wrap:balance}
+  h1 em{font-style:normal;color:var(--gold)}
+  .hero .lead{font-size:19px;color:var(--tx2);margin-top:18px;max-width:54ch}
+  .hero-cta{display:flex;flex-direction:column;gap:14px;margin-top:30px;align-items:flex-start}
+  .price-line{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .price-line b{font-family:var(--mono);font-size:30px;color:var(--gold);font-weight:600}
+  .price-line span{color:var(--tx2);font-size:14px}
+  .trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:6px;font-size:13.5px;color:var(--tx2)}
+  .trust span{display:flex;align-items:center;gap:7px}
+  .trust span::before{content:'';width:16px;height:16px;border-radius:50%;background:var(--g-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.2l2.2 2.2 4.8-4.8' fill='none' stroke='%230ECFA8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
+
+  /* ---------- janela do produto ---------- */
+  .win{background:var(--bg1);border:1px solid var(--bd2);border-radius:18px;box-shadow:0 40px 90px -20px rgba(0,0,0,.7);overflow:hidden}
+  .win-bar{display:flex;align-items:center;gap:7px;padding:11px 16px;border-bottom:1px solid var(--bd);background:#0B111E}
+  .win-bar b{width:10px;height:10px;border-radius:50%;background:#2A3548}
+  .win-bar span{margin-left:10px;font-family:var(--mono);font-size:11px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .win-in{padding:16px;display:grid;gap:12px}
+  .w-row{display:grid;gap:10px}
+  .w-card{background:var(--bg);border:1px solid var(--bd);border-radius:11px;padding:12px;min-width:0}
+  .w-lab{font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--tx2);font-weight:600}
+  .w-val{font-family:var(--mono);font-weight:600;font-size:19px;margin-top:5px}
+  .w-sub{font-size:10px;color:var(--tx3);margin-top:3px}
+  .w-score{display:flex;align-items:center;gap:14px}
+  .w-bars{display:grid;gap:6px;flex:1;min-width:0}
+  .w-bl{display:flex;justify-content:space-between;font-size:10px;color:var(--tx2)}
+  .w-bt{height:5px;border-radius:3px;background:var(--bg3);overflow:hidden;margin-top:3px}
+  .w-bt i{display:block;height:100%;border-radius:3px}
+  .w-plan{display:grid;gap:7px;margin-top:9px}
+  .w-pi{display:flex;gap:9px;align-items:center;font-size:11.5px}
+  .w-pi b{width:19px;height:19px;border-radius:50%;background:var(--bg3);color:var(--gold);font-family:var(--mono);font-size:10px;display:grid;place-items:center;flex:0 0 auto}
+  .w-tag{margin-left:auto;font-size:8.5px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:4px;text-transform:uppercase;white-space:nowrap}
+  .w-tag.r{color:var(--r);background:var(--r-bg)}.w-tag.y{color:var(--amber);background:var(--amber-bg)}
+
+  /* ---------- seções ---------- */
+  section{padding:88px 0}
+  .s-head{max-width:720px;margin-bottom:44px}
+  .s-kicker{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--g)}
+  h2{font-size:clamp(28px,3.4vw,40px);line-height:1.12;letter-spacing:-.03em;font-weight:700;margin-top:10px;text-wrap:balance}
+  .s-head p{color:var(--tx2);font-size:17.5px;margin-top:14px}
+  .alt{background:linear-gradient(180deg,#0A1020,#070B15)}
+
+  /* problema */
+  .pains{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .pain{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--radius);padding:24px}
+  .pain .q{font-family:var(--mono);font-size:13px;color:var(--r);font-weight:600}
+  .pain h3{font-size:19px;letter-spacing:-.01em;margin-top:10px;line-height:1.3}
+  .pain p{color:var(--tx2);font-size:15px;margin-top:8px}
+
+  /* recursos */
+  .feats{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+  .feat{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column;gap:12px;grid-column:span 2}
+  .feat.wide{grid-column:span 3}
+  .feat h3{font-size:19px;letter-spacing:-.01em;line-height:1.3}
+  .feat p{color:var(--tx2);font-size:15px}
+  .feat .viz{margin-top:auto;padding-top:8px}
+  .num{font-family:var(--mono);font-size:12px;color:var(--gold);font-weight:600;letter-spacing:.06em}
+  .lot-demo{display:grid;grid-template-columns:auto 1fr auto;gap:6px 14px;font-size:13px;align-items:center}
+  .lot-demo .h{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em}
+  .lot-demo .ok{color:var(--g)}.lot-demo .bad{color:var(--r)}
+  .chip{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 7px;border-radius:5px;white-space:nowrap}
+  .chip.ok{color:var(--g);background:var(--g-bg)}.chip.bad{color:var(--r);background:var(--r-bg)}.chip.warn{color:var(--amber);background:var(--amber-bg)}
+  .mc-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .mc-tiles div{background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px}
+  .mc-tiles b{display:block;font-family:var(--mono);font-size:17px;margin-top:3px}
+  .mc-tiles span{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em}
+  .hm{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
+  .hm i{height:14px;border-radius:3px;display:block}
+  .wi{display:grid;gap:6px;font-size:13px}
+  .wi label{display:flex;align-items:center;gap:8px;color:var(--tx2)}
+  .wi .box{width:15px;height:15px;border-radius:4px;border:1px solid var(--bd2);display:grid;place-items:center;flex:0 0 auto}
+  .wi .box.on{background:var(--g);border-color:var(--g)}
+  .wi .res{margin-top:6px;padding-top:10px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;font-family:var(--mono)}
+
+  /* grátis x pro */
+  .cmp{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--radius);overflow:hidden}
+  .cmp table{width:100%;border-collapse:collapse}
+  .cmp th,.cmp td{padding:15px 20px;border-bottom:1px solid var(--bd);text-align:center;font-size:15px}
+  .cmp th:first-child,.cmp td:first-child{text-align:left}
+  .cmp thead th{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--tx2);font-weight:600;background:#0B111E}
+  .cmp thead th.pro{color:var(--gold)}
+  .cmp tbody tr:last-child td{border-bottom:none}
+  .cmp td.pro{background:rgba(232,182,77,.04)}
+  .y{color:var(--g);font-weight:700}.n{color:var(--tx3)}
+  .cmp-note{margin-top:14px;color:var(--tx2);font-size:14.5px}
+  .cmp-note a{color:var(--g)}
+
+  /* como funciona */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:s}
+  .step{background:var(--bg1);border:1px solid var(--bd);border-radius:var(--radius);padding:24px}
+  .step .n{font-family:var(--mono);font-size:13px;font-weight:600;color:#032019;background:var(--g);width:30px;height:30px;border-radius:50%;display:grid;place-items:center}
+  .step h3{font-size:18px;margin-top:14px}
+  .step p{color:var(--tx2);font-size:15px;margin-top:6px}
+  .kbd{font-family:var(--mono);font-size:13px;color:var(--tx);background:var(--bg3);border:1px solid var(--bd2);border-radius:5px;padding:1px 6px;white-space:nowrap}
+  .priv{margin-top:18px;display:flex;gap:14px;align-items:flex-start;background:var(--bg1);border:1px solid var(--bd);border-radius:var(--radius);padding:20px 22px}
+  .priv svg{flex:0 0 auto;margin-top:2px}
+  .priv p{color:var(--tx2);font-size:15px}
+  .priv b{color:var(--tx)}
+
+  /* oferta */
+  .offer{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:0;background:var(--bg1);border:1px solid rgba(232,182,77,.35);border-radius:20px;overflow:hidden;box-shadow:0 40px 80px -30px rgba(0,0,0,.7)}
+  .offer-l{padding:40px}
+  .offer-l h2{margin-top:6px}
+  .incl{list-style:none;display:grid;gap:11px;margin-top:24px}
+  .incl li{display:flex;gap:11px;font-size:15.5px;color:var(--tx)}
+  .incl li::before{content:'';flex:0 0 auto;margin-top:4px;width:18px;height:18px;border-radius:50%;background:var(--g-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.2l2.2 2.2 4.8-4.8' fill='none' stroke='%230ECFA8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/18px no-repeat}
+  .offer-r{padding:40px;background:radial-gradient(420px 320px at 70% 0%,rgba(232,182,77,.12),transparent 70%),#0B111E;border-left:1px solid var(--bd);display:flex;flex-direction:column;gap:16px;justify-content:center}
+  .offer-r .lab{font-size:13px;color:var(--tx2);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+  .big-price{font-family:var(--mono);font-size:56px;font-weight:600;color:var(--gold);line-height:1}
+  .big-price small{font-size:22px;vertical-align:top;margin-right:4px}
+  .offer-r .btn{width:100%}
+  .guar{display:flex;gap:12px;align-items:flex-start;font-size:14px;color:var(--tx2);border-top:1px solid var(--bd);padding-top:16px}
+  .guar b{color:var(--tx)}
+
+  /* faq */
+  .faq{display:grid;gap:10px;max-width:820px}
+  details{background:var(--bg1);border:1px solid var(--bd);border-radius:12px}
+  summary{cursor:pointer;list-style:none;padding:18px 22px;font-weight:600;font-size:16.5px;display:flex;justify-content:space-between;gap:16px}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:'+';font-family:var(--mono);color:var(--g);font-size:20px;line-height:1}
+  details[open] summary::after{content:'−'}
+  details .ans{padding:0 22px 18px;color:var(--tx2);font-size:15px}
+
+  /* rodapé */
+  .final{text-align:center;padding:80px 0}
+  .final h2{max-width:720px;margin:0 auto}
+  .final p{color:var(--tx2);margin:14px auto 0;max-width:560px}
+  .final .btn{margin-top:28px}
+  footer{border-top:1px solid var(--bd);padding:32px 0 110px;color:var(--tx3);font-size:13px}
+  footer .wrap{display:flex;flex-direction:column;gap:12px}
+  footer .row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  footer a{color:var(--tx2)}
+
+  /* barra fixa mobile */
+  .sticky{position:fixed;left:0;right:0;bottom:0;z-index:30;display:none;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));background:rgba(11,17,30,.96);border-top:1px solid var(--bd);backdrop-filter:blur(8px)}
+  .sticky b{font-family:var(--mono);color:var(--gold);font-size:20px}
+  .sticky small{display:block;font-size:11px;color:var(--tx3)}
+  .sticky .btn{padding:12px 18px;font-size:15px}
+
+  @media (max-width:960px){
+    .hero .wrap{grid-template-columns:1fr}
+    .feats{grid-template-columns:1fr 1fr}
+    .feat,.feat.wide{grid-column:span 1}
+    .offer{grid-template-columns:1fr}
+    .offer-r{border-left:none;border-top:1px solid var(--bd)}
+  }
+  @media (max-width:720px){
+    .wrap{padding:0 16px}
+    .hero{padding:44px 0 56px}
+    section{padding:60px 0}
+    .pains,.steps,.feats{grid-template-columns:1fr}
+    .nav .btn{display:none}
+    .sticky{display:flex}
+    .offer-l,.offer-r{padding:26px 20px}
+    .cmp th,.cmp td{padding:12px 12px;font-size:14px}
+    .big-price{font-size:46px}
+    .w-row.k4{grid-template-columns:1fr 1fr!important}
+    .w-row.two{grid-template-columns:1fr!important}
+  }
+</style>
+<style>
+  /* FiboGrid: azul + laranja, como a capa */
+  :root{ --g:#1f7bff; --g-bg:rgba(31,123,255,.12); --gold:#ff8a1f; }
+  .btn-buy{color:#fff;box-shadow:0 12px 32px -10px rgba(31,123,255,.6)}
+  .btn-buy:hover{box-shadow:0 16px 36px -10px rgba(31,123,255,.75)}
+  .logo{color:#e9eefb} .logo b{color:#1f7bff}
+  .tag-pro{background:#ff8a1f}
+  .step .n{color:#fff}
+  .hero-img{border:2px solid #1d6af0;border-radius:16px;overflow:hidden;box-shadow:0 0 34px rgba(29,106,240,.4),0 40px 90px -30px rgba(0,0,0,.8)}
+  .hero-img img{width:100%;height:auto;display:block}
+  .lic{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;background:linear-gradient(135deg,rgba(255,138,31,.10),rgba(31,123,255,.06));border:1.5px solid rgba(255,138,31,.55);border-radius:18px;padding:28px 30px}
+  .lic-badge{width:112px;height:112px;border-radius:50%;border:3px solid #ff8a1f;display:grid;place-items:center;text-align:center;font-family:var(--mono);color:#ff8a1f;background:rgba(255,138,31,.08)}
+  .lic-badge b{display:block;font-size:40px;line-height:1}
+  .lic-badge span{font-size:12px;letter-spacing:.1em}
+  .lic h2{font-size:clamp(24px,2.8vw,32px);margin-top:0}
+  .lic ul{list-style:none;display:grid;gap:8px;margin-top:12px}
+  .lic li{color:var(--tx2);font-size:15.5px;padding-left:22px;position:relative}
+  .lic li::before{content:'';position:absolute;left:0;top:9px;width:8px;height:8px;border-radius:50%;background:#ff8a1f}
+  .lic li b{color:var(--tx)}
+  .lic-pill{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.06em;color:#ff8a1f;border:1px solid rgba(255,138,31,.5);background:rgba(255,138,31,.08);border-radius:999px;padding:6px 12px}
+  .cfg{display:grid;grid-template-columns:repeat(2,1fr);gap:0;background:var(--bg1);border:1px solid var(--bd);border-radius:var(--radius);overflow:hidden}
+  .cfg div{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;gap:12px;font-size:14.5px}
+  .cfg div:nth-child(odd){border-right:1px solid var(--bd)}
+  .cfg span{color:var(--tx2)} .cfg b{font-family:var(--mono);font-weight:600;font-size:13.5px;text-align:right}
+  @media (max-width:720px){.lic{grid-template-columns:1fr;justify-items:start}.cfg{grid-template-columns:1fr}.cfg div:nth-child(odd){border-right:none}}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Topo">
+  <div class="wrap">
+    <a class="logo" href="/"><span>Rick<b>EA</b> Investments</span></a>
+    <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J" target="_blank" rel="noopener">Comprar licença</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow"><i></i>Robô (EA) para MetaTrader 5</span>
+      <h1>Opere a zona de Fibonacci com regras. <em>O FiboGrid faz o grid por você.</em></h1>
+      <p class="lead">O RickEA FiboGrid identifica a pernada, desenha a Fibonacci e abre um grid de ordens só dentro da zona de retração, com stop e take da cesta definidos antes da primeira entrada.</p>
+      <div class="hero-cta">
+        <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J" target="_blank" rel="noopener">Quero o RickEA FiboGrid</a>
+        <span class="lic-pill">LICENÇA DE 3 MESES</span>
+        <div class="pays"><span>PIX</span><span>DÉBITO</span><span>CRÉDITO</span></div>
+      </div>
+      <div class="trust" style="margin-top:22px">
+        <span>Fibo manual ou automática</span>
+        <span>Stop na Fibo</span>
+        <span>Garantia de 7 dias</span>
+      </div>
+    </div>
+    <div class="hero-img"><img src="/assets/capa-fibogrid.png" alt="RickEA FiboGrid rodando no MetaTrader 5 em XAUUSD, com a zona de compra da Fibonacci, o painel do robô e a linha de stop" width="1920" height="1080" /></div>
+  </div>
+</header>
+
+<section class="alt" id="problema">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="s-kicker">O problema</div>
+      <h2>Retração de Fibonacci funciona. Operar ela na mão, todo dia, não.</h2>
+      <p>Esperar o preço voltar para a zona, entrar em partes, calcular o preço médio e sair no ponto certo exige tempo de tela e disciplina.</p>
+    </div>
+    <div class="pains">
+      <div class="pain"><div class="q">“Entrei cedo demais.”</div><h3>Entrada fora da zona</h3><p>Sem regra, a ansiedade faz entrar antes da retração ou longe dela.</p></div>
+      <div class="pain"><div class="q">“Segurei e virou.”</div><h3>Sem stop definido</h3><p>Grid sem limite claro vira prejuízo grande quando a pernada não se sustenta.</p></div>
+      <div class="pain"><div class="q">“Saí no zero a zero.”</div><h3>Saída sem critério</h3><p>Fechar ordem por ordem, sem olhar o resultado da cesta, deixa lucro na mesa.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="recursos">
+  <div class="wrap">
+    <div class="s-head">
+      <div class="s-kicker">O que o FiboGrid faz</div>
+      <h2>Tudo o que você configura, o robô executa sem hesitar</h2>
+    </div>
+    <div class="feats">
+      <article class="feat wide"><div class="num">01 · FIBO AUTO OU MANUAL</div><h3>Você escolhe a pernada</h3><p>No modo automático o robô encontra a última pernada sozinho. No modo manual você arrasta os pontos da Fibonacci no gráfico e o robô opera pela Fibo que você posicionou. O botão FIBO AUTO reposiciona com um clique.</p></article>
+      <article class="feat wide"><div class="num">02 · GRID NA ZONA</div><h3>Entradas só dentro da retração</h3><p>As ordens abrem apenas entre 0% e 38,2% da pernada, respeitando o espaçamento em pontos e o número máximo de ordens que você definir.</p></article>
+      <article class="feat"><div class="num">03 · DIREÇÃO</div><h3>Só compras, só vendas ou ambos</h3><p>Filtre a direção de acordo com a sua leitura de tendência.</p></article>
+      <article class="feat"><div class="num">04 · STOP NA FIBO</div><h3>Limite claro para errar</h3><p>A cesta fecha quando o preço passa do extremo da pernada, com SL também no servidor. Moveu a Fibo? O SL acompanha.</p></article>
+      <article class="feat"><div class="num">05 · TAKE DA CESTA</div><h3>Saída pelo resultado total</h3><p>Alvo em dinheiro fixo, valor por ordem ou pontos a partir do preço médio.</p></article>
+      <article class="feat wide"><div class="num">06 · PROTEÇÕES</div><h3>Perda máxima e sem reentrada no mesmo lugar</h3><p>Defina uma perda máxima da cesta em dinheiro. Depois de um stop ou take, o robô pode esperar uma nova pernada antes de voltar a operar.</p></article>
+      <article class="feat wide"><div class="num">07 · PAINEL NO GRÁFICO</div><h3>Tudo à vista</h3><p>Pernada, retração atual, stop, ordens abertas, lotes, preço médio, flutuante e alvo, além da zona colorida, dos níveis da Fibo, do preço grande no canto e de alertas no celular.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="config">
+  <div class="wrap">
+    <div class="s-head"><div class="s-kicker">Configurações principais</div><h2>Você ajusta o risco. O robô segue à risca.</h2></div>
+    <div class="cfg">
+      <div><span>Modo da Fibo</span><b>Automática / Manual</b></div>
+      <div><span>Direção</span><b>Compras / Vendas / Ambas</b></div>
+      <div><span>Zona de entrada</span><b>0% a 38,2%</b></div>
+      <div><span>Stop da cesta</span><b>% da pernada além do extremo</b></div>
+      <div><span>Lote e multiplicador</span><b>Configurável</b></div>
+      <div><span>Espaçamento do grid</span><b>Em pontos</b></div>
+      <div><span>Máximo de ordens</span><b>Configurável</b></div>
+      <div><span>Take da cesta</span><b>US$ total · por ordem · pontos</b></div>
+    </div>
+  </div>
+</section>
+
+<section id="licenca">
+  <div class="wrap">
+    <div class="lic">
+      <div class="lic-badge"><div><b>3</b><span>MESES</span></div></div>
+      <div>
+        <h2>Licença de uso por 3 meses</h2>
+        <ul>
+          <li>O RickEA FiboGrid é vendido com <b>licença válida por 3 meses</b> a partir da data da compra.</li>
+          <li>A licença é <b>individual, para 1 conta MT5</b> (real ou demo). Após a compra, você informa o número da sua conta e recebe o robô liberado para ela.</li>
+          <li>Durante esse período o robô funciona com <b>todos os recursos liberados</b>.</li>
+          <li>Ao fim da licença, o robô <b>para de abrir novas operações</b>. Ordens que estiverem abertas continuam protegidas pelo stop e pelo take até fecharem.</li>
+          <li>Para continuar usando, basta <b>renovar a licença</b> pela Hotmart.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="como">
+  <div class="wrap">
+    <div class="s-head"><div class="s-kicker">Como funciona</div><h2>Instalado e operando em poucos minutos</h2></div>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>Compre e informe sua conta</h3><p>Após o pagamento, envie o número da sua conta MT5 e receba o robô liberado para ela, junto com o guia de instalação.</p></div>
+      <div class="step"><div class="n">2</div><h3>Instale no MT5</h3><p>Copie o arquivo para <span class="kbd">MQL5 → Experts</span>, arraste o robô para o gráfico e ative o <span class="kbd">Algotrading</span>.</p></div>
+      <div class="step"><div class="n">3</div><h3>Configure e acompanhe</h3><p>Escolha a Fibo, a direção, o lote e o alvo. O painel mostra tudo em tempo real.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="oferta">
+  <div class="wrap">
+    <div class="offer">
+      <div class="offer-l">
+        <div class="s-kicker">RickEA FiboGrid · MetaTrader 5</div>
+        <h2>O que você recebe</h2>
+        <ul class="incl">
+          <li>Robô RickEA FiboGrid (.ex5) pronto para usar</li>
+          <li>Fibo automática ou manual, com botão FIBO AUTO</li>
+          <li>Filtro somente compras / somente vendas</li>
+          <li>Stop na Fibo, take da cesta e perda máxima</li>
+          <li>Painel, zona colorida e alertas no celular</li>
+          <li>Guia de instalação e configuração</li>
+          <li>Licença de uso por 3 meses</li>
+        </ul>
+      </div>
+      <div class="offer-r">
+        <div class="lab">Licença de 3 meses</div>
+        <div class="big-price" style="font-size:40px;color:#ff8a1f">RickEA FiboGrid</div>
+        <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J" target="_blank" rel="noopener">Comprar licença agora</a>
+        <div class="pays"><span>PIX</span><span>DÉBITO</span><span>CRÉDITO</span></div>
+        <div class="guar">
+          <svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true" style="flex:0 0 auto"><circle cx="12" cy="12" r="10" fill="rgba(255,138,31,.12)" stroke="#ff8a1f" stroke-width="1.5"/><text x="12" y="16" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" font-weight="700" fill="#ff8a1f">7</text></svg>
+          <span><b>Garantia de 7 dias.</b> Se não gostar, peça o reembolso pela Hotmart dentro do prazo e devolvemos 100% do valor.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="faq">
+  <div class="wrap">
+    <div class="s-head"><div class="s-kicker">Dúvidas</div><h2>Perguntas frequentes</h2></div>
+    <div class="faq">
+      <details><summary>Por quanto tempo posso usar?</summary><div class="ans">A licença vale por 3 meses a partir da data da compra. Depois disso o robô para de abrir novas operações e você pode renovar pela Hotmart.</div></details>
+      <details><summary>O que acontece com as ordens abertas quando a licença vence?</summary><div class="ans">Elas continuam protegidas: stop na Fibo, take da cesta e perda máxima seguem funcionando até todas fecharem. O robô só deixa de abrir ordens novas.</div></details>
+      <details><summary>Funciona em qual ativo?</summary><div class="ans">Em qualquer ativo do MetaTrader 5: Forex, ouro (XAUUSD), índices ou cripto. Ajuste o espaçamento do grid e o lote ao ativo e ao seu saldo.</div></details>
+      <details><summary>Funciona no MetaTrader 4?</summary><div class="ans">Não. O RickEA FiboGrid é exclusivo para MetaTrader 5.</div></details>
+      <details><summary>Posso testar antes em conta demo?</summary><div class="ans">Sim, e recomendamos. O testador de estratégia do MT5 funciona sem restrição. Para rodar em conta demo, informe o número da conta demo no lugar da conta real. A licença vale para 1 conta.</div></details>
+      <details><summary>Posso usar em mais de uma conta?</summary><div class="ans">Cada licença libera 1 conta MT5. Para usar em outra conta, adquira uma licença adicional ou fale com @ri.chartrader.</div></details>
+      <details><summary>Preciso deixar o computador ligado?</summary><div class="ans">Sim. Como todo robô de MT5, ele opera enquanto o terminal estiver aberto e conectado. Uma VPS mantém o robô rodando 24 horas.</div></details>
+      <details><summary>O robô garante lucro?</summary><div class="ans">Não. Nenhum robô garante resultado. O FiboGrid executa as regras que você configura, com stop e limites de perda, mas o mercado envolve risco.</div></details>
+      <details><summary>E se eu não gostar?</summary><div class="ans">Você tem 7 dias de garantia incondicional. Basta pedir o reembolso pela Hotmart dentro do prazo e devolvemos 100% do valor.</div></details>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2>Deixe o grid na zona de Fibonacci com o robô. Você cuida da estratégia.</h2>
+    <p>Licença de 3 meses com todos os recursos liberados e garantia de 7 dias.</p>
+    <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J" target="_blank" rel="noopener">Quero o RickEA FiboGrid</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="row"><span>RickEA Investments · <a href="https://www.instagram.com/ri.chartrader/" target="_blank" rel="noopener">@ri.chartrader</a></span><span><a href="/">Ver todos os produtos</a></span></div>
+    <p>Estratégias de grid aumentam a exposição quando o preço vai contra a posição. Use lote compatível com o seu saldo e teste em conta demo. Conteúdo educativo, não é recomendação de investimento. Resultados passados não garantem resultados futuros. Operar alavancado envolve risco de perda do capital.</p>
+  </div>
+</footer>
+
+<div class="sticky" aria-label="Comprar">
+  <div><b style="font-size:16px">RickEA FiboGrid</b><small>licença de 3 meses · garantia de 7 dias</small></div>
+  <a class="btn btn-buy js-buy" href="https://pay.hotmart.com/Y107764003J" target="_blank" rel="noopener">Comprar</a>
+</div>
+
+<script>
+  // Link de pagamento da Hotmart (um lugar só para trocar)
+  var CHECKOUT = "https://pay.hotmart.com/Y107764003J";
+  document.querySelectorAll(".js-buy").forEach(function(a){ a.href = CHECKOUT; });
+</script>
+</body>
+</html>
