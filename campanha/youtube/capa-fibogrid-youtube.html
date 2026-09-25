@@ -1,0 +1,111 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="local.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#05080f}
+.t{position:relative;width:1280px;height:720px;overflow:hidden;font-family:'Inter',sans-serif;color:#fff;
+ background:radial-gradient(700px 500px at 75% 45%,rgba(30,90,220,.18),transparent 70%),radial-gradient(500px 400px at 0% 100%,rgba(30,90,220,.12),transparent 70%),#05080f}
+.t::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(80,120,200,.10) 1px,transparent 1.2px);background-size:14px 14px;opacity:.6}
+.circuit{position:absolute;left:0;bottom:0}
+.logo{position:absolute;right:52px;top:14px;text-align:right}
+.logo .l1{font-family:'Oswald';font-weight:700;font-style:italic;font-size:54px;letter-spacing:-1px;line-height:1}
+.logo .l1 b{color:#1f7bff;font-weight:700}
+.logo .l2{font-family:'Inter';font-weight:500;font-size:16px;letter-spacing:.42em;margin-top:2px;color:#e8eefc}
+.left{position:absolute;left:30px;top:140px;width:420px}
+.h1{font-family:'Oswald';font-weight:700;font-size:118px;line-height:.92;letter-spacing:-2px;color:#e9ecf2;text-shadow:0 6px 22px rgba(0,0,0,.6)}
+.h2{font-family:'Oswald';font-weight:700;font-size:118px;line-height:.95;letter-spacing:-2px;color:#1f7bff;text-shadow:0 0 28px rgba(31,123,255,.35)}
+.bar{width:88px;height:4px;background:#ff7a1a;margin:22px 0 18px;border-radius:2px}
+.sub{font-family:'Oswald';font-weight:500;font-size:30px;line-height:1.25;color:#e8eefc}
+.badge{margin-top:34px;display:inline-flex;align-items:center;gap:16px;padding:14px 26px 14px 20px;border:2px solid #1f6fe8;border-radius:14px;
+ background:linear-gradient(180deg,rgba(20,40,80,.55),rgba(8,14,28,.55));box-shadow:0 0 22px rgba(31,111,232,.25) inset}
+.badge span{font-family:'Oswald';font-weight:700;font-size:30px;letter-spacing:.5px}
+.chart{position:absolute;left:442px;top:112px;width:806px;height:432px;border:2px solid #1d6af0;border-radius:18px;
+ box-shadow:0 0 30px rgba(29,106,240,.45),0 0 2px rgba(120,170,255,.9) inset;background:rgba(3,6,14,.92);overflow:hidden}
+canvas{display:block}
+.chips{position:absolute;left:442px;top:566px;display:flex;gap:12px}
+.chip{font-family:'Oswald';font-weight:500;font-size:22px;letter-spacing:.4px;padding:8px 16px;border-radius:10px;border:1.5px solid rgba(90,140,230,.55);background:rgba(10,18,36,.8);color:#dfe7f7}
+.chip i{font-style:normal;color:#ff7a1a;margin-right:8px}
+</style></head><body>
+<div class="t" id="t">
+  <svg class="circuit" width="520" height="220" viewBox="0 0 520 220" aria-hidden="true">
+    <path d="M0 210 L120 210 L200 130 L440 130" stroke="#1d6af0" stroke-opacity=".55" stroke-width="2" fill="none"/>
+    <path d="M60 220 L160 220 L240 160 L360 160" stroke="#1d6af0" stroke-opacity=".3" stroke-width="2" fill="none"/>
+    <circle cx="200" cy="130" r="4" fill="#1f7bff"/><circle cx="440" cy="130" r="3" fill="#1f7bff"/>
+  </svg>
+  <div class="logo"><div class="l1">Rick<b>EA</b></div><div class="l2">Investments</div></div>
+  <div class="left">
+    <div class="h1">RickEA</div>
+    <div class="h2">FiboGrid</div>
+    <div class="bar"></div>
+    <div class="sub">Robô de grid automático na<br>zona de Fibonacci</div>
+    <div class="badge">
+      <svg width="44" height="50" viewBox="0 0 24 27"><path d="M12 1.5l9 3.6v7c0 5.6-3.8 10.5-9 12.4C6.8 22.6 3 17.7 3 12.1v-7L12 1.5z" fill="none" stroke="#1f7bff" stroke-width="2"/><path d="M7.8 13.2l2.9 2.9 5.6-5.8" fill="none" stroke="#1f7bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>ROBÔ PARA MT5</span>
+    </div>
+  </div>
+  <div class="chart"><canvas id="c" width="806" height="432"></canvas></div>
+  <div class="chips"><div class="chip"><i>●</i>FIBO MANUAL OU AUTO</div><div class="chip"><i>●</i>SÓ COMPRAS / SÓ VENDAS</div><div class="chip"><i>●</i>STOP NA FIBO</div></div>
+</div>
+<script>
+// Replica do print do MT5 com o RickEA FiboGrid v4 (XAUUSD M5)
+const c=document.getElementById('c'),x=c.getContext('2d'),W=806,H=432,AX=64,PW=W-AX;
+x.fillStyle='#000';x.fillRect(0,0,W,H);
+let sd=7;function r(){sd=(sd*16807)%2147483647;return (sd-1)/2147483646;}
+// precos (mesmos do print)
+const P100=4315.66,P0=4256.44,STOP=4197.22,NOW=4277.10;
+const vTop=4345,vBot=4188;
+const Y=v=>10+(H-20)*(1-(v-vBot)/(vTop-vBot));
+// serie: lateral, sobe do fundo (0%) ate o topo (100%) e retrai
+const N=170,cs=[];let p=4284;
+for(let i=0;i<N;i++){
+  let tgt;
+  if(i<95) tgt=4282+Math.sin(i/9)*8+Math.sin(i/3.7)*3-(i>80?(i-80)*1.6:0);
+  else if(i<100) tgt=4262-(i-95)*1.1;
+  else if(i<140) tgt=P0+ (i-100)/40*(P100-P0);
+  else tgt=P100-(i-140)/30*(P100-NOW)+Math.sin(i/2.3)*2.5;
+  const o=p, cl=tgt+(r()-0.5)*3.2;
+  const hi=Math.max(o,cl)+r()*2.2, lo=Math.min(o,cl)-r()*2.2;
+  cs.push({o,cl,hi,lo});p=cl;
+}
+cs[100].lo=P0; cs[140].hi=P100; cs[N-1].cl=NOW;
+const cw=PW/N;
+// zona de compra 0 - 38.2 (retangulo verde, como no print)
+const zx=cw*100, zw=cw*62;
+x.fillStyle='rgba(0,110,0,.55)';x.fillRect(zx,Y(4279.06),zw,Y(P0)-Y(4279.06));
+// niveis
+function lv(v,col,dash,txt){const y=Y(v);x.setLineDash(dash);x.strokeStyle=col;x.lineWidth=1;x.beginPath();x.moveTo(zx,y);x.lineTo(PW,y);x.stroke();x.setLineDash([]);
+  x.fillStyle=col;x.font='500 10px Consolas,"JetBrains Mono",monospace';x.textAlign='right';x.fillText(txt,PW-4,y-3);}
+lv(P100,'#cfd8e6',[],'100.0%  4315.66');
+lv(4293.04,'#1fd41f',[3,3],'61.8%  4293.04');
+lv(4286.05,'#1fd41f',[3,3],'50.0%  4286.05');
+lv(4279.06,'#1fd41f',[3,3],'38.2%  4279.06');
+lv(4270.42,'#cfd8e6',[3,3],'23.6%  4270.42');
+lv(P0,'#cfd8e6',[],'0.0%  4256.44');
+// stop
+x.setLineDash([6,4]);x.strokeStyle='#ffb000';x.beginPath();x.moveTo(0,Y(STOP));x.lineTo(PW,Y(STOP));x.stroke();x.setLineDash([]);
+x.fillStyle='#ffb000';x.font='700 11px Consolas,monospace';x.textAlign='right';x.fillText('STOP 100.0% 4197.22',PW-8,Y(STOP)+4);
+// velas estilo MT5 (verde/branco e vermelho)
+cs.forEach((k,i)=>{const cx=i*cw+cw/2,up=k.cl>=k.o,col=up?'#20e020':'#ff3030';
+  x.strokeStyle=col;x.lineWidth=1;x.beginPath();x.moveTo(cx,Y(k.hi));x.lineTo(cx,Y(k.lo));x.stroke();
+  const y1=Y(Math.max(k.o,k.cl)),y2=Y(Math.min(k.o,k.cl));x.fillStyle=up?'#000':'#ff3030';x.fillRect(cx-cw*0.35,y1,cw*0.7,Math.max(1,y2-y1));x.strokeRect(cx-cw*0.35,y1,cw*0.7,Math.max(1,y2-y1));});
+// pernada (linha verde da Fibo)
+x.strokeStyle='#39ff39';x.lineWidth=2.2;x.beginPath();x.moveTo(zx,Y(P0));x.lineTo(cw*140+cw/2,Y(P100));x.stroke();
+x.fillStyle='#bfc8d6';x.fillRect(zx-3,Y(P0)-3,6,6);x.fillRect(cw*140+cw/2-3,Y(P100)-3,6,6);
+// texto da zona
+x.fillStyle='#39ff39';x.font='700 19px "Arial Black",Oswald,sans-serif';x.textAlign='center';x.fillText('FIBO BUY ZONE 0 - 38.0',zx+zw/2,Y(4266)+7);
+// preco atual
+x.strokeStyle='rgba(120,200,120,.6)';x.beginPath();x.moveTo(0,Y(NOW));x.lineTo(PW,Y(NOW));x.stroke();
+// painel do robo (canto superior esquerdo)
+const L=[['RICKEA FIBO GRID v4  XAUUSD   [SOMENTE COMPRAS]','#e8e8e8'],['Fibo MANUAL: QUEDA -> grid de COMPRA','#20e020'],['0%: 4256.44   38.0%: 4278.94   100%: 4315.66','#20e020'],
+ ['Retracao agora: 35.2%   STOP: 4197.22','#ffb000'],['Ordens: 1/6   Lotes: 0.05   Medio: 4278.61','#e8e8e8'],['Flutuante: US$ -7.55   Alvo: US$ 5.00','#ff3030']];
+x.font='500 11.5px Consolas,"JetBrains Mono",monospace';x.textAlign='left';L.forEach((l,i)=>{x.fillStyle=l[1];x.fillText(l[0],10,20+i*15);});
+// preco grande
+x.fillStyle='#ff1a1a';x.font='700 38px Arial,"Inter",sans-serif';x.textAlign='right';x.fillText('4277.10',PW-10,48);
+// botao FIBO AUTO
+x.fillStyle='#1a2c55';x.strokeStyle='#c0c8d8';x.lineWidth=1;x.fillRect(12,H-38,98,24);x.strokeRect(12,H-38,98,24);
+x.fillStyle='#fff';x.font='700 11px Arial';x.textAlign='center';x.fillText('FIBO AUTO',61,H-22);
+// eixo de precos
+x.fillStyle='#000';x.fillRect(PW,0,AX,H);x.strokeStyle='#606878';x.beginPath();x.moveTo(PW,0);x.lineTo(PW,H);x.stroke();
+x.font='500 10px Consolas,monospace';x.textAlign='left';
+for(let v=4190;v<=4340;v+=10.5){const y=Y(v);x.fillStyle='#9aa3b2';x.fillText(v.toFixed(2),PW+6,y+3);}
+x.fillStyle='#1fd41f';x.fillRect(PW+2,Y(NOW)-8,AX-4,16);x.fillStyle='#000';x.font='700 10px Consolas,monospace';x.fillText('4277.10',PW+6,Y(NOW)+4);
+</script></body></html>
