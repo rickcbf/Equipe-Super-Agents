@@ -32,6 +32,13 @@ Indicador de tendência. **Está pronto e perfeito na MetaTrader 5** (código em
 - **Recomendação:** projeto separado — repositório próprio (ex.: `rickea-x-trend`) ou pasta
   `indicador/` neste repo. Definir ao começar.
 
+### 3) RickEA SuperTrend Bot — Robô MT5
+Robô (EA) em cima do indicador **RickEA SuperTrend V-2**. Entra na virada de cor da SuperTrend, só em vela de força + volume.
+- **Código:** `indicador/supertrend-bot/RickEA_SuperTrend_Bot.mq5` (arquivo único, com o logo embutido)
+- **Indicador original:** `indicador/supertrend-bot/RickEA_SuperTrend_V-2_original.mq5`
+- **Manual:** `indicador/supertrend-bot/README.md` · logo regerado por `gerar_logo_mq5.py`
+- **Status:** v1.00 escrita, aguardando compilação/teste do usuário (F7).
+
 ---
 
 ## 🗂️ Estrutura deste repositório
