@@ -87,7 +87,7 @@ input int            InpVolumePeriodo    = 20;         // Periodo da media de vo
 input double         InpVolumeMult       = 1.2;        // Volume >= media x este fator
 input bool           InpVolumeReal       = false;      // Usar volume real (false = volume de ticks)
 input bool           InpFiltroEMA        = false;      // Filtro extra: preco acima/abaixo da EMA
-input bool           InpFiltroADX        = false;      // Filtro extra: ADX na faixa min/max do dia
+input bool           InpFiltroADX        = false;      // Filtro extra: ADX na faixa min/max
 
 input group "=== Lote ==="
 input ENUM_LOTE_MODO InpLoteModo         = LOTE_FIXO;  // Tipo de lote
@@ -149,50 +149,17 @@ input ENUM_LOGO_POS  InpLogoPos          = LOGO_CENTRO; // Posicao do logo
 input int            InpLogoTamanho      = 260;        // Tamanho do logo (px)
 input int            InpLogoOpacidade    = 45;         // Opacidade do logo (0-255)
 
-input group "=== Indicador base (igual ao RickEA SuperTrend V-2) ==="
+input group "=== Indicador base (SuperTrend / EMA / ADX) ==="
 input int            InpADX_RisingBars   = 2;          // ADX deve subir por X candles consecutivos
 input bool           InpOnlyOneSignalPerFlip = true;   // Setas so quando muda a direcao do Supertrend
 input ENUM_ADX_LINHA InpADXLinha         = ADX_LINHA_MINUS; // Linha do ADX usada (original usa -DI)
 
-input group "=== Segunda ==="
-input int            Mon_ATR_Period      = 10;
-input double         Mon_ST_Mult         = 3.0;
-input int            Mon_EMA_Period      = 50;
-input int            Mon_ADX_Period      = 14;
-input double         Mon_ADX_Min         = 15.0;
-input double         Mon_ADX_Max         = 45.0;
-
-input group "=== Terca ==="
-input int            Tue_ATR_Period      = 10;
-input double         Tue_ST_Mult         = 3.0;
-input int            Tue_EMA_Period      = 50;
-input int            Tue_ADX_Period      = 14;
-input double         Tue_ADX_Min         = 15.0;
-input double         Tue_ADX_Max         = 45.0;
-
-input group "=== Quarta ==="
-input int            Wed_ATR_Period      = 10;
-input double         Wed_ST_Mult         = 3.0;
-input int            Wed_EMA_Period      = 50;
-input int            Wed_ADX_Period      = 14;
-input double         Wed_ADX_Min         = 15.0;
-input double         Wed_ADX_Max         = 45.0;
-
-input group "=== Quinta ==="
-input int            Thu_ATR_Period      = 10;
-input double         Thu_ST_Mult         = 3.0;
-input int            Thu_EMA_Period      = 50;
-input int            Thu_ADX_Period      = 14;
-input double         Thu_ADX_Min         = 15.0;
-input double         Thu_ADX_Max         = 45.0;
-
-input group "=== Sexta ==="
-input int            Fri_ATR_Period      = 10;
-input double         Fri_ST_Mult         = 3.0;
-input int            Fri_EMA_Period      = 50;
-input int            Fri_ADX_Period      = 14;
-input double         Fri_ADX_Min         = 15.0;
-input double         Fri_ADX_Max         = 45.0;
+input int            InpATR_Period       = 10;         // Periodo do ATR
+input double         InpST_Mult          = 3.0;        // Multiplicador da SuperTrend
+input int            InpEMA_Period       = 50;         // Periodo da EMA
+input int            InpADX_Period       = 14;         // Periodo do ADX
+input double         InpADX_Min          = 15.0;       // ADX minimo
+input double         InpADX_Max          = 45.0;       // ADX maximo
 
 //+------------------------------------------------------------------+
 //| Globais                                                          |
@@ -206,7 +173,7 @@ CTrade   trade;
 int      hEMA = INVALID_HANDLE, hADX = INVALID_HANDLE, hATR = INVALID_HANDLE;
 int      gLastEMA = -1, gLastADX = -1, gLastATR = -1;
 
-// parametros do dia (candle 0), como no indicador original
+// parametros gerais (mesmos para todos os dias)
 int      pATR = 10, pEMA = 50, pADX = 14;
 double   pMult = 3.0, pADXMin = 15.0, pADXMax = 45.0;
 
@@ -284,43 +251,6 @@ string Sinal(double v)
    return (v >= 0 ? "+" : "") + DoubleToString(v, 2);
   }
 
-//+------------------------------------------------------------------+
-//| Parametros por dia da semana (igual ao indicador)                |
-//+------------------------------------------------------------------+
-bool GetParamsByWeekday(datetime t, int &atrPeriod, double &stMult, int &emaPeriod,
-                        int &adxPeriod, double &adxMin, double &adxMax)
-  {
-   MqlDateTime dt;
-   TimeToStruct(t, dt);
-   switch(dt.day_of_week)
-     {
-      case 1:
-         atrPeriod = Mon_ATR_Period; stMult = Mon_ST_Mult; emaPeriod = Mon_EMA_Period;
-         adxPeriod = Mon_ADX_Period; adxMin = Mon_ADX_Min; adxMax = Mon_ADX_Max;
-         return true;
-      case 2:
-         atrPeriod = Tue_ATR_Period; stMult = Tue_ST_Mult; emaPeriod = Tue_EMA_Period;
-         adxPeriod = Tue_ADX_Period; adxMin = Tue_ADX_Min; adxMax = Tue_ADX_Max;
-         return true;
-      case 3:
-         atrPeriod = Wed_ATR_Period; stMult = Wed_ST_Mult; emaPeriod = Wed_EMA_Period;
-         adxPeriod = Wed_ADX_Period; adxMin = Wed_ADX_Min; adxMax = Wed_ADX_Max;
-         return true;
-      case 4:
-         atrPeriod = Thu_ATR_Period; stMult = Thu_ST_Mult; emaPeriod = Thu_EMA_Period;
-         adxPeriod = Thu_ADX_Period; adxMin = Thu_ADX_Min; adxMax = Thu_ADX_Max;
-         return true;
-      case 5:
-         atrPeriod = Fri_ATR_Period; stMult = Fri_ST_Mult; emaPeriod = Fri_EMA_Period;
-         adxPeriod = Fri_ADX_Period; adxMin = Fri_ADX_Min; adxMax = Fri_ADX_Max;
-         return true;
-      default:
-         atrPeriod = Mon_ATR_Period; stMult = Mon_ST_Mult; emaPeriod = Mon_EMA_Period;
-         adxPeriod = Mon_ADX_Period; adxMin = Mon_ADX_Min; adxMax = Mon_ADX_Max;
-         return false;
-     }
-  }
-
 bool EnsureHandles()
   {
    if(hEMA == INVALID_HANDLE || pEMA != gLastEMA)
@@ -349,7 +279,9 @@ bool EnsureHandles()
 //+------------------------------------------------------------------+
 bool Calcular()
   {
-   GetParamsByWeekday(TimeCurrent(), pATR, pMult, pEMA, pADX, pADXMin, pADXMax);
+   pATR = MathMax(1, InpATR_Period);  pMult   = InpST_Mult;
+   pEMA = MathMax(1, InpEMA_Period);  pADX    = MathMax(1, InpADX_Period);
+   pADXMin = InpADX_Min;              pADXMax = InpADX_Max;
    if(!EnsureHandles())
       return false;
 
@@ -456,11 +388,6 @@ bool ADXRising(int i, int risingBars)
 int SinalIndicador(int i)
   {
    if(i + 1 >= gN) return 0;
-   int a, e, x;
-   double m, mn, mx;
-   if(!GetParamsByWeekday(gRates[i].time, a, m, e, x, mn, mx))
-      return 0;
-
    bool adxIn   = (gADX[i] >= pADXMin && gADX[i] <= pADXMax);
    bool adxRise = ADXRising(i, InpADX_RisingBars);
 

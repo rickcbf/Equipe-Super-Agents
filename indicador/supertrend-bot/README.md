@@ -20,7 +20,8 @@ Arquivo único: `RickEA_SuperTrend_Bot.mq5`. Não precisa de indicador nem de im
 - A vela de entrada precisa ser **de força** (corpo ≥ 60% do tamanho da vela e tamanho ≥ 1× ATR) e ter **volume** ≥ 1,2× a média de 20 velas. É o filtro anti-lateral.
 - Se a vela da virada não passar no filtro, o robô aceita a primeira vela de força nas próximas `InpJanelaVirada` velas (padrão 3).
 - `Uma entrada por ciclo = true`: só uma operação por cor. Com `false`, reentra no mesmo ciclo em novas velas de força quando estiver zerado.
-- Filtros extras opcionais: preço acima/abaixo da EMA e ADX dentro da faixa do dia.
+- Filtros extras opcionais: preço acima/abaixo da EMA e ADX dentro da faixa mín/máx.
+- Parâmetros do indicador únicos para todos os dias: período do ATR, multiplicador, EMA, período do ADX e faixa mín/máx (sem ajuste por dia da semana).
 
 ## Gestão
 | Item | Opções |
