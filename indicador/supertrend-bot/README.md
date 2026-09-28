@@ -40,3 +40,24 @@ Arquivo único: `RickEA_SuperTrend_Bot.mq5`. Não precisa de indicador nem de im
 - O indicador original lê o **buffer 2 do ADX (−DI)** e não a linha principal. Para as setas saírem iguais, o padrão do robô é `-DI`. Dá para trocar em *"Linha do ADX usada"*.
 - No Strategy Tester o "horário do PC" passa a ser o horário simulado (é assim no MT5).
 - Para trocar o logo: substitua `assets/logo-rickea.webp` e rode `python3 indicador/supertrend-bot/gerar_logo_mq5.py`.
+
+## V2 para venda (licença com validade)
+Modelo: `RickEA_SuperTrend_Bot_V2_Licenca.mq5`. É igual à V1, com três linhas de licença no topo:
+
+```
+#define LIC_CLIENTE "CLIENTE"                  // nome no painel
+#define LIC_CONTA   0                          // conta MT5 liberada (0 = qualquer)
+#define LIC_VENCE   D'2026.12.31 23:59:59'     // vencimento (horário do servidor)
+```
+
+- Conta diferente da liberada → o robô não inicia e mostra um alerta com a conta certa.
+- Depois do vencimento → não abre ordens novas, só gerencia as abertas (stop, BE, trailing, metas), e avisa para renovar com @ri.chartrader.
+- O painel mostra o cliente e a validade (laranja quando faltam 15 dias ou menos, vermelho quando expirou).
+- No Strategy Tester a trava de conta é ignorada; a validade continua valendo.
+
+### Gerar a licença de um cliente
+1. Abra `indicador/supertrend-bot/Gerador-Licenca-SuperTrendBot.html` no navegador (é local, não vai para o site).
+2. Informe nome, conta MT5, data da compra e dias de licença → baixa o `.mq5` do cliente já preenchido.
+3. Compile no MetaEditor (F7, X64 Regular) e envie **só o `.ex5`**.
+
+Alterou o modelo V2? Rode `python3 indicador/supertrend-bot/licenca/build.py` para atualizar o gerador. O `gerar_logo_mq5.py` já faz isso sozinho.

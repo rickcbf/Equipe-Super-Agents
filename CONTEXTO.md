@@ -37,7 +37,9 @@ Robô (EA) em cima do indicador **RickEA SuperTrend V-2**. Entra na virada de co
 - **Código:** `indicador/supertrend-bot/RickEA_SuperTrend_Bot.mq5` (arquivo único, com o logo embutido)
 - **Indicador original:** `indicador/supertrend-bot/RickEA_SuperTrend_V-2_original.mq5`
 - **Manual:** `indicador/supertrend-bot/README.md` · logo regerado por `gerar_logo_mq5.py`
-- **Status:** v1.00 escrita, aguardando compilação/teste do usuário (F7).
+- **V2 para venda (licença):** modelo `indicador/supertrend-bot/RickEA_SuperTrend_Bot_V2_Licenca.mq5` (validade pelo horário do servidor + trava de conta, igual ao FiboGrid)
+- **Licença por cliente:** abrir `indicador/supertrend-bot/Gerador-Licenca-SuperTrendBot.html` (local), informar nome + conta MT5 + data da compra + dias → baixa o `.mq5`; compilar (F7, X64 Regular) e enviar só o `.ex5`. Se alterar o modelo, rodar `python3 indicador/supertrend-bot/licenca/build.py`.
+- **Status:** v1.00 e V2 escritas, aguardando compilação/teste do usuário (F7).
 
 ---
 

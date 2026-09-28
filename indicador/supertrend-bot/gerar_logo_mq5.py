@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Embute o logo RickEA (assets/logo-rickea.webp) como array de pixels ARGB
-dentro do RickEA_SuperTrend_Bot.mq5, entre os marcadores LOGO DATA BEGIN/END.
+dentro do RickEA_SuperTrend_Bot.mq5 e do V2_Licenca, entre os marcadores LOGO DATA BEGIN/END.
 Assim o robo desenha o logo sem precisar de nenhum arquivo em MQL5/Images.
 
 Uso: python3 indicador/supertrend-bot/gerar_logo_mq5.py
@@ -11,7 +11,8 @@ from PIL import Image
 AQUI = os.path.dirname(os.path.abspath(__file__))
 RAIZ = os.path.abspath(os.path.join(AQUI, "..", ".."))
 LOGO = os.path.join(RAIZ, "assets", "logo-rickea.webp")
-MQ5 = os.path.join(AQUI, "RickEA_SuperTrend_Bot.mq5")
+ARQUIVOS = [os.path.join(AQUI, "RickEA_SuperTrend_Bot.mq5"),
+            os.path.join(AQUI, "RickEA_SuperTrend_Bot_V2_Licenca.mq5")]
 TAM = 180      # resolucao embutida (px); o EA redimensiona em tempo real
 FADE = 0.10    # borda suave (fracao do tamanho)
 
@@ -39,11 +40,16 @@ bloco = ("// === LOGO DATA BEGIN === (gerado por gerar_logo_mq5.py - nao editar 
          "uint LOGO_DATA[] =\r\n  {\r\n%s\r\n  };\r\n"
          "// === LOGO DATA END ===" % (TAM, TAM, "\r\n".join(linhas)))
 
-src = open(MQ5, "rb").read().decode("ascii").replace("\r\n", "\n")
-novo, n = re.subn(r"// === LOGO DATA BEGIN ===.*?// === LOGO DATA END ===",
-                  lambda m: bloco, src, flags=re.S)
-if n != 1:
-    raise SystemExit("marcadores LOGO DATA nao encontrados no .mq5")
-novo = novo.replace("\r\n", "\n").replace("\n", "\r\n")  # CRLF (MetaEditor)
-open(MQ5, "wb").write(novo.encode("ascii"))
-print("logo %dx%d embutido em %s" % (TAM, TAM, MQ5))
+for MQ5 in ARQUIVOS:
+    src = open(MQ5, "rb").read().decode("ascii").replace("\r\n", "\n")
+    novo, n = re.subn(r"// === LOGO DATA BEGIN ===.*?// === LOGO DATA END ===",
+                      lambda m: bloco, src, flags=re.S)
+    if n != 1:
+        raise SystemExit("marcadores LOGO DATA nao encontrados no .mq5")
+    novo = novo.replace("\r\n", "\n").replace("\n", "\r\n")  # CRLF (MetaEditor)
+    open(MQ5, "wb").write(novo.encode("ascii"))
+    print("logo %dx%d embutido em %s" % (TAM, TAM, MQ5))
+
+# atualiza o gerador de licenca com o modelo novo
+import subprocess, sys
+subprocess.run([sys.executable, os.path.join(AQUI, "licenca", "build.py")], check=True)
