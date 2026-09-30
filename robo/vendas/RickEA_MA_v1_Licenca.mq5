@@ -1,46 +1,28 @@
 //+------------------------------------------------------------------+
-//|                                              RickEA_MA_Vendas.mq5|
-//|            RICKEA MA - compras ACIMA da media / vendas ABAIXO    |
-//|                                                                  |
-//|  VERSAO DE VENDAS: protegida por licenca amarrada ao numero da   |
-//|  conta e com data de validade. As chaves saem do RickEA_KeyGen   |
-//|  (script no MT5) ou do rickea_keygen.py. NUNCA entregue este     |
-//|  .mq5 ao cliente - so o .ex5 compilado.                          |
-//|                                                                  |
-//|  Opcional no set: somente compras, somente vendas ou os dois,    |
-//|  grid, martingale, ciclo de take global e entrada por vela.      |
-//|  Visual: preco grande no canto superior direito, painel com      |
-//|  fundo de pouca opacidade na cor da tendencia e a logo RickEA    |
-//|  preenchendo o fundo do grafico.                                 |
+//|                          RickEA_MA_v1_Licenca.mq5                |
+//|                                Copyright 2025, Richartrader Ltd. |
+//|                                             https://www.mql5.com |
+//+------------------------------------------------------------------+
+//+------------------------------------------------------------------+
+//| LICENCA DO CLIENTE - edite SO estas 3 linhas antes de compilar    |
+//| (ou use o Gerador-Licenca-RickEA-MA.html, que preenche sozinho)   |
+//|   LIC_CLIENTE : nome do comprador (aparece no painel)             |
+//|   LIC_CONTA   : numero da conta MT5 liberada (0 = qualquer conta) |
+//|   LIC_VENCE   : data da compra + 90 dias, 23:59:59 (servidor)     |
+//+------------------------------------------------------------------+
+#define LIC_CLIENTE "CLIENTE"
+#define LIC_CONTA   0
+#define LIC_VENCE   D'2026.12.31 23:59:59'
 //+------------------------------------------------------------------+
 #property copyright "RichardTrader"
 #property link      "RICKEA MA"
-#property version   "1.10"
-#property description "RickEA MA (versao de vendas) - licenca por conta e validade."
+#property version   "1.20"
+#property description "RickEA MA - media movel com grid, martingale, take global e painel RickEA."
+#property description "Licenca de uso de 3 meses (horario do servidor)"
+#property description "Instagram:@ri.chartrader"
 
 #include <Trade/Trade.mqh>
 #include <Trade/PositionInfo.mqh>
-
-//+------------------------------------------------------------------+
-//| LICENCA - o segredo precisa ser IGUAL aqui, no RickEA_KeyGen.mq5 |
-//| e no rickea_keygen.py. Troque antes de vender a primeira copia,  |
-//| e troque de novo a cada versao nova do produto.                  |
-//+------------------------------------------------------------------+
-#define RICK_LICENSE_SECRET  "TROQUE-ESTE-SEGREDO-RICKEA-2026"
-#define RICK_LICENSE_PRODUCT "RICKEA-MA"
-#define RICK_LICENSE_PREFIX  "RMA"
-
-enum ENUM_RICK_LIC
-  {
-   LIC_OK        = 0,   // licenca valida
-   LIC_TRIAL     = 1,   // periodo de teste
-   LIC_NONE      = 2,   // sem chave
-   LIC_FORMAT    = 3,   // chave malformada
-   LIC_SIGNATURE = 4,   // assinatura nao confere
-   LIC_ACCOUNT   = 5,   // chave e de outra conta
-   LIC_EXPIRED   = 6,   // vencida
-   LIC_TRIALOVER = 7    // teste acabou
-  };
 
 //+------------------------------------------------------------------+
 //| Enums                                                            |
@@ -80,12 +62,6 @@ enum ENUM_RICK_LOGO
 //+------------------------------------------------------------------+
 //| Parametros de entrada                                            |
 //+------------------------------------------------------------------+
-input group "=== LICENCA ==="
-input string          LicenseKey       = "";          // Chave de licenca (RMA-conta-validade-XXXX-XXXX-XXXX-XXXX)
-input int             Trial_Days       = 7;           // Dias de teste em conta DEMO (0 = sem teste)
-input bool            Trial_DemoOnly   = true;        // Teste so em conta demo
-input int             Warn_DaysBefore  = 7;           // Avisar quando faltarem X dias
-
 input group "=== BASICO ==="
 input double          FIXED_LOT        = 0.01;        // FIXED_LOT (lote inicial)
 input double          STOPLOSS         = 0.0;         // STOPLOSS (pontos, 0 = OFF)
@@ -183,21 +159,23 @@ int      g_chartH     = 0;
 int      g_logoCount  = 0;
 bool     g_logoFailed = false;
 
-//--- licenca
-ENUM_RICK_LIC g_licStatus = LIC_NONE;
-bool     g_licOk      = false;    // true = pode abrir posicao nova
-datetime g_licExpiry  = 0;        // 0 = vitalicia
-int      g_licDaysLeft= -1;       // -1 = sem validade
-long     g_licAccount = 0;        // conta gravada na chave (0 = qualquer)
-datetime g_licChecked = 0;        // ultima revalidacao
+//--- validade da licenca (horario do servidor da corretora)
+const datetime LIC_EXPIRY=LIC_VENCE;
+bool     g_expiredMsg=false;    // ja avisou que expirou
 
 //+------------------------------------------------------------------+
 //| OnInit                                                           |
 //+------------------------------------------------------------------+
 int OnInit()
   {
-   ValidateLicense();
-   PrintLicense();
+   //--- licenca: conta liberada
+   if(!AccountOk())
+     {
+      Alert(EA_NAME,": esta licenca e da conta ",IntegerToString(LIC_CONTA),
+            " (",LIC_CLIENTE,"). Conta atual: ",IntegerToString(AccountInfoInteger(ACCOUNT_LOGIN)),
+            ". Fale com @ri.chartrader.");
+      return(INIT_FAILED);
+     }
 
    g_point  = SymbolInfoDouble(_Symbol,SYMBOL_POINT);
    g_digits = (int)SymbolInfoInteger(_Symbol,SYMBOL_DIGITS);
@@ -221,6 +199,27 @@ int OnInit()
      {
       Print("RickEA MA: com o grid ligado, Grid_StepPoints precisa ser maior que zero.");
       return(INIT_PARAMETERS_INCORRECT);
+     }
+
+   //--- licenca: validade vencida
+   if(Expired())
+     {
+      int open=0;
+      for(int i=PositionsTotal()-1;i>=0;i--)
+        {
+         ulong tk=PositionGetTicket(i);
+         if(tk!=0 && PositionGetString(POSITION_SYMBOL)==_Symbol &&
+            (ulong)PositionGetInteger(POSITION_MAGIC)==MagicNumber)
+            open++;
+        }
+      if(open==0)
+        {
+         Alert(EA_NAME,": a validade deste robo terminou em ",LicDate(),
+               ". Fale com @ri.chartrader para renovar.");
+         return(INIT_FAILED);
+        }
+      Print(EA_NAME,": validade encerrada - o robo so vai administrar as ",open,
+            " ordem(ns) aberta(s), sem abrir novas.");
      }
 
    g_hMA = iMA(_Symbol,MA_Timeframe,EMA,MA_Shift,MA_Method,MA_Price);
@@ -279,7 +278,6 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTimer()
   {
-   RecheckLicense();
    if(!Visual_Enable) return;
    UpdateTrend();
    DrawVisuals();
@@ -315,9 +313,17 @@ void OnTick()
    if(CloseOnReverse) ManageReverse();
    ManageTrailing();
 
-   // sem licenca valida o robo NAO abre posicao nova, mas continua cuidando
-   // do que ja esta aberto (trailing, ciclo, reversao) - ninguem fica na mao
-   int sig=(g_licOk?SignalDir(newBar):0);
+   //--- validade: depois do vencimento nao abre ordem nova, mas continua
+   //--- administrando o que ja esta aberto (trailing, take global, reversao)
+   bool expired=Expired();
+   if(expired && !g_expiredMsg)
+     {
+      g_expiredMsg=true;
+      Alert(EA_NAME,": a validade terminou em ",LicDate(),
+            ". Nenhuma ordem nova sera aberta. Fale com @ri.chartrader para renovar.");
+     }
+
+   int sig=(expired?0:SignalDir(newBar));
    if(sig!=0)
      {
       // libera o bloqueio assim que a media vira pro outro lado
@@ -762,260 +768,43 @@ void ManageTrailing()
 //+==================================================================+
 //|                            LICENCA                               |
 //+==================================================================+
-//| Chave: RMA-<conta>-<AAAAMMDD>-XXXX-XXXX-XXXX-XXXX                |
-//|   conta 0        -> vale em qualquer conta                       |
-//|   data  00000000 -> vitalicia                                    |
-//| A assinatura sao os 16 primeiros hex do SHA-256 de               |
-//|   SEGREDO|PRODUTO|conta|validade                                 |
-//| Mexeu na conta ou na data dentro da chave, a assinatura cai.     |
+//| Validade: usa o horario do servidor (nao o relogio do PC)         |
 //+------------------------------------------------------------------+
-string Sha256Hex(const string text)
+datetime ServerNow()
   {
-   uchar src[],dst[],key[];
-   int len=StringToCharArray(text,src,0,WHOLE_ARRAY,CP_UTF8);
-   if(len>0 && src[len-1]==0) ArrayResize(src,len-1);   // fora o terminador
-
-   if(CryptEncode(CRYPT_HASH_SHA256,src,key,dst)<=0) return("");
-
-   string hex="";
-   for(int i=0;i<ArraySize(dst);i++)
-      hex+=StringFormat("%02X",dst[i]);
-   return(hex);
+   datetime t=TimeTradeServer();
+   if(t<TimeCurrent())
+      t=TimeCurrent();
+   return(t);
   }
 //+------------------------------------------------------------------+
-string LicenseSignature(const string account,const string expiry)
+//| Data de vencimento no formato DD/MM/AAAA                          |
+//+------------------------------------------------------------------+
+string LicDate()
   {
-   string payload=RICK_LICENSE_SECRET+"|"+RICK_LICENSE_PRODUCT+"|"+account+"|"+expiry;
-   string hash=Sha256Hex(payload);
-   if(StringLen(hash)<16) return("");
-   return(StringSubstr(hash,0,16));
+   MqlDateTime d;
+   TimeToStruct(LIC_EXPIRY,d);
+   return(StringFormat("%02d/%02d/%04d",d.day,d.mon,d.year));
   }
 //+------------------------------------------------------------------+
-bool IsDigits(const string text)
+//| Conta liberada (LIC_CONTA=0 libera qualquer conta)                |
+//+------------------------------------------------------------------+
+bool AccountOk()
   {
-   int n=StringLen(text);
-   if(n<=0) return(false);
-   for(int i=0;i<n;i++)
-     {
-      ushort c=StringGetCharacter(text,i);
-      if(c<'0' || c>'9') return(false);
-     }
-   return(true);
+   if(LIC_CONTA==0 || MQLInfoInteger(MQL_TESTER))
+      return(true);
+   return(AccountInfoInteger(ACCOUNT_LOGIN)==(long)LIC_CONTA);
   }
 //+------------------------------------------------------------------+
-//| Valida a chave e preenche o estado da licenca                    |
-//+------------------------------------------------------------------+
-void ValidateLicense()
+bool Expired()
   {
-   g_licChecked = TimeCurrent();
-   g_licOk      = false;
-   g_licExpiry  = 0;
-   g_licDaysLeft= -1;
-   g_licAccount = 0;
-
-   string key=LicenseKey;
-   StringTrimLeft(key); StringTrimRight(key);
-   StringToUpper(key);
-
-   if(StringLen(key)==0)
-     {
-      CheckTrial();
-      return;
-     }
-
-   string part[];
-   if(StringSplit(key,'-',part)!=7 || part[0]!=RICK_LICENSE_PREFIX)
-     {
-      g_licStatus=LIC_FORMAT;
-      return;
-     }
-
-   string acc=part[1], exp=part[2];
-   if(!IsDigits(acc) || !IsDigits(exp) || StringLen(exp)!=8)
-     {
-      g_licStatus=LIC_FORMAT;
-      return;
-     }
-
-   if(LicenseSignature(acc,exp)!=part[3]+part[4]+part[5]+part[6])
-     {
-      g_licStatus=LIC_SIGNATURE;
-      return;
-     }
-
-   g_licAccount=(long)StringToInteger(acc);
-   if(g_licAccount!=0 && g_licAccount!=AccountInfoInteger(ACCOUNT_LOGIN))
-     {
-      g_licStatus=LIC_ACCOUNT;
-      return;
-     }
-
-   if(exp!="00000000")
-     {
-      MqlDateTime dt;
-      TimeToStruct(TimeCurrent(),dt);
-      dt.year =(int)StringToInteger(StringSubstr(exp,0,4));
-      dt.mon  =(int)StringToInteger(StringSubstr(exp,4,2));
-      dt.day  =(int)StringToInteger(StringSubstr(exp,6,2));
-      dt.hour =23; dt.min=59; dt.sec=59;
-      g_licExpiry=StructToTime(dt);
-
-      if(TimeCurrent()>g_licExpiry)
-        {
-         g_licStatus=LIC_EXPIRED;
-         return;
-        }
-      g_licDaysLeft=(int)((g_licExpiry-TimeCurrent())/86400);
-     }
-
-   g_licStatus=LIC_OK;
-   g_licOk=true;
+   datetime now=ServerNow();
+   return(now>0 && now>LIC_EXPIRY);
   }
 //+------------------------------------------------------------------+
-//| Periodo de teste: guarda a data do primeiro uso por conta        |
-//+------------------------------------------------------------------+
-void CheckTrial()
+int LicDaysLeft()
   {
-   if(Trial_Days<=0)
-     {
-      g_licStatus=LIC_NONE;
-      return;
-     }
-   bool isDemo=((ENUM_ACCOUNT_TRADE_MODE)AccountInfoInteger(ACCOUNT_TRADE_MODE)==ACCOUNT_TRADE_MODE_DEMO);
-   if(Trial_DemoOnly && !isDemo)
-     {
-      g_licStatus=LIC_NONE;
-      return;
-     }
-
-   string file="RickEA_MA_Trial_"+(string)AccountInfoInteger(ACCOUNT_LOGIN)+".dat";
-   datetime first=0;
-
-   int fh=FileOpen(file,FILE_READ|FILE_BIN|FILE_COMMON);
-   if(fh!=INVALID_HANDLE)
-     {
-      if(FileSize(fh)>=(ulong)sizeof(datetime)) first=(datetime)FileReadLong(fh);
-      FileClose(fh);
-     }
-   if(first<=0 || first>TimeCurrent())          // primeiro uso (ou relogio adulterado)
-     {
-      first=TimeCurrent();
-      fh=FileOpen(file,FILE_WRITE|FILE_BIN|FILE_COMMON);
-      if(fh!=INVALID_HANDLE)
-        {
-         FileWriteLong(fh,(long)first);
-         FileClose(fh);
-        }
-     }
-
-   g_licExpiry=first+(datetime)(Trial_Days*86400);
-   if(TimeCurrent()>g_licExpiry)
-     {
-      g_licStatus=LIC_TRIALOVER;
-      g_licDaysLeft=0;
-      return;
-     }
-
-   g_licDaysLeft=(int)((g_licExpiry-TimeCurrent())/86400);
-   g_licStatus=LIC_TRIAL;
-   g_licOk=true;
-  }
-//+------------------------------------------------------------------+
-void RecheckLicense()
-  {
-   if(TimeCurrent()-g_licChecked<60) return;    // uma vez por minuto basta
-   bool was=g_licOk;
-   ValidateLicense();
-   if(was && !g_licOk)
-     {
-      Print("RickEA MA: ",LicenseReason()," - nao abro posicao nova. ",
-            "As posicoes abertas continuam sendo gerenciadas.");
-      PrintLicense();
-     }
-  }
-//+------------------------------------------------------------------+
-string LicenseReason()
-  {
-   switch(g_licStatus)
-     {
-      case LIC_OK:        return("licenca valida");
-      case LIC_TRIAL:     return("periodo de teste");
-      case LIC_NONE:      return("sem chave de licenca");
-      case LIC_FORMAT:    return("chave em formato invalido");
-      case LIC_SIGNATURE: return("chave invalida (assinatura nao confere)");
-      case LIC_ACCOUNT:   return("chave e da conta "+(string)g_licAccount+", esta e a "+
-                                 (string)AccountInfoInteger(ACCOUNT_LOGIN));
-      case LIC_EXPIRED:   return("licenca vencida");
-      case LIC_TRIALOVER: return("periodo de teste encerrado");
-     }
-   return("licenca indefinida");
-  }
-//+------------------------------------------------------------------+
-string LicenseShort()
-  {
-   switch(g_licStatus)
-     {
-      case LIC_OK:    return(g_licDaysLeft<0?"VITALICIA":"OK - "+(string)g_licDaysLeft+"d");
-      case LIC_TRIAL: return("TESTE - "+(string)g_licDaysLeft+"d");
-     }
-   return("BLOQUEADO");
-  }
-//+------------------------------------------------------------------+
-void PrintLicense()
-  {
-   Print("=====================================================");
-   Print("  ",EA_NAME,"  |  conta ",AccountInfoInteger(ACCOUNT_LOGIN));
-   Print("  Licenca: ",LicenseReason());
-   if(g_licExpiry>0)
-      Print("  Validade: ",TimeToString(g_licExpiry,TIME_DATE),
-            "  (",g_licDaysLeft," dia(s))");
-   if(!g_licOk)
-     {
-      Print("  >> O robo NAO vai abrir posicao nova.");
-      Print("  >> Peca sua chave informando o numero da conta: ",
-            AccountInfoInteger(ACCOUNT_LOGIN));
-      Print("  >> ",Copyright);
-     }
-   else if(g_licDaysLeft>=0 && g_licDaysLeft<=Warn_DaysBefore)
-      Print("  >> ATENCAO: faltam ",g_licDaysLeft," dia(s) para vencer. Renove a licenca.");
-   Print("=====================================================");
-  }
-//+------------------------------------------------------------------+
-//| Aviso grande no meio do grafico quando a licenca nao esta boa    |
-//+------------------------------------------------------------------+
-void DrawLicenseWarning()
-  {
-   string n1=PFX+"LIC_1", n2=PFX+"LIC_2";
-   if(g_licOk)
-     {
-      ObjectDelete(0,n1);
-      ObjectDelete(0,n2);
-      return;
-     }
-
-   CenterText(n1,-14,StringToUpper(LicenseReason()),clrRed,16);
-   CenterText(n2, 14,"Conta "+(string)AccountInfoInteger(ACCOUNT_LOGIN)+
-                     " - peca sua chave - "+Copyright,clrWhite,10);
-  }
-//+------------------------------------------------------------------+
-void CenterText(const string name,const int dy,const string txt,const color clr,const int size)
-  {
-   if(ObjectFind(0,name)<0)
-     {
-      ObjectCreate(0,name,OBJ_LABEL,0,0,0);
-      ObjectSetInteger(0,name,OBJPROP_CORNER,CORNER_LEFT_UPPER);
-      ObjectSetInteger(0,name,OBJPROP_ANCHOR,ANCHOR_CENTER);
-      ObjectSetInteger(0,name,OBJPROP_SELECTABLE,false);
-      ObjectSetInteger(0,name,OBJPROP_HIDDEN,true);
-      ObjectSetString(0,name,OBJPROP_FONT,"Arial Black");
-     }
-   int w=(int)ChartGetInteger(0,CHART_WIDTH_IN_PIXELS);
-   int h=(int)ChartGetInteger(0,CHART_HEIGHT_IN_PIXELS);
-   ObjectSetInteger(0,name,OBJPROP_XDISTANCE,w/2);
-   ObjectSetInteger(0,name,OBJPROP_YDISTANCE,h/2+dy);
-   ObjectSetInteger(0,name,OBJPROP_FONTSIZE,size);
-   ObjectSetInteger(0,name,OBJPROP_COLOR,clr);
-   ObjectSetString(0,name,OBJPROP_TEXT,txt);
+   return((int)((LIC_EXPIRY-ServerNow())/86400));
   }
 
 //+------------------------------------------------------------------+
@@ -1048,7 +837,6 @@ color TrendColor()
 void DrawVisuals()
   {
    if(BigPrice_Show || Panel_Show) DrawPanel();
-   DrawLicenseWarning();
    ChartRedraw();
   }
 
@@ -1071,7 +859,7 @@ void DrawPanel()
    BasketInfo(-1,cs,vs,ps,bs,ws);
    double floating=pb+ps;
 
-   int rows=9;                                  // +1 linha: licenca
+   int rows=10;                                 // +2 linhas: cliente e licenca
    int panelH=headH+priceH+pad+rows*rowH+pad;
 
    // OBJ_RECTANGLE_LABEL com canto a direita mede a distancia ate a borda
@@ -1126,10 +914,15 @@ void DrawPanel()
                      StringFormat("%.2f / %.2f",floating,AccountInfoDouble(ACCOUNT_EQUITY)),
                      (floating>=0?Panel_TrendUp:Panel_TrendDown), xl,xr,y); y+=rowH;
 
-   color licClr=clrRed;
-   if(g_licStatus==LIC_OK)    licClr=(g_licDaysLeft>=0 && g_licDaysLeft<=Warn_DaysBefore)?clrOrange:Panel_TrendUp;
-   if(g_licStatus==LIC_TRIAL) licClr=clrOrange;
-   Row(PFX+"R_LIC", "Licenca", LicenseShort(), licClr, xl,xr,y);
+   //--- licenca
+   Row(PFX+"R_CLI","Cliente",LIC_CLIENTE,clrWhite,xl,xr,y); y+=rowH;
+
+   int    daysLeft=LicDaysLeft();
+   bool   venceu  =Expired();
+   string licTxt  =venceu ? "EXPIRADA em "+LicDate()
+                          : LicDate()+"  ("+IntegerToString(daysLeft)+"d)";
+   color  licClr  =venceu ? clrRed : (daysLeft<=15 ? clrOrange : Panel_TrendUp);
+   Row(PFX+"R_LIC","Licenca ate",licTxt,licClr,xl,xr,y);
   }
 
 void Row(const string id,const string label,const string value,const color vclr,

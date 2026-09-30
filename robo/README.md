@@ -10,13 +10,15 @@ alta, vermelho na baixa — o preço grande acompanha) e a **logo RickEA
 preenchendo o fundo do gráfico**.
 
 > Este README é do **RickEA MA**. O **RickEA SAR** (Parabolic SAR + ADX) tem o
-> seu próprio: [`README-SAR.md`](README-SAR.md).
+> seu próprio: [`README-SAR.md`](README-SAR.md). A **versão de vendas** (licença
+> compilada + gerador HTML) está em [`vendas/`](vendas/README-Vendas.md).
 
 ## Arquivos
 ```
 robo/
   RickEA_MA.mq5                      <- o robô (copiar para MQL5\Experts)
   RickEA_SAR.mq5                     <- robô SAR + ADX (ver README-SAR.md)
+  vendas/                            <- versão de vendas com licença (ver vendas/)
   Images/RickEA_Logo_*.bmp           <- marca d'água (copiar para MQL5\Images)
   sets/*.set                         <- presets prontos (MQL5\Presets)
   tools/make_logo_bmp.py             <- gera a logo em outro tamanho/opacidade
