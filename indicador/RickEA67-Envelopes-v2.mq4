@@ -21,7 +21,7 @@
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2024, RiCharTrader Ltd."
 #property link      "https://t.me/RickEA_IA"
-#property version   "2.10"
+#property version   "2.11"
 #property description "Envelopes + RSI (reversao a media) com SL, TP, filtros e lote por risco."
 #property strict
 
@@ -952,8 +952,7 @@ void AtualizarRodape()
 
    // Canto inferior direito: bloco empilhado de baixo para cima
    int x = 10, y = 8;
-   CriarRotulo(PFX + "Rod_Equity",  "EQUITY:  " + DoubleToString(AccountEquity(), 2),  fonte, 14, clrForestGreen, CORNER_RIGHT_LOWER, ANCHOR_RIGHT_LOWER, x, y); y += 24;
-   CriarRotulo(PFX + "Rod_Balance", "BALANCE:  " + DoubleToString(AccountBalance(), 2), fonte, 14, clrDodgerBlue,  CORNER_RIGHT_LOWER, ANCHOR_RIGHT_LOWER, x, y); y += 24;
+   // BALANCE e EQUITY removidos da tela para nao expor o saldo da conta
    CriarRotulo(PFX + "Rod_Orders",  "ALL ORDERS:  " + DoubleToString(AccountProfit(), 2), fonte, 14, clrYellow,    CORNER_RIGHT_LOWER, ANCHOR_RIGHT_LOWER, x, y); y += 24;
    CriarRotulo(PFX + "Rod_Time",    "TIME:  " + TimeToStr(TimeCurrent(), TIME_MINUTES),  fonte, 14, clrWhite,      CORNER_RIGHT_LOWER, ANCHOR_RIGHT_LOWER, x, y); y += 24;
    CriarRotulo(PFX + "Rod_Date",    "DATE:  " + TimeToStr(TimeCurrent(), TIME_DATE),     fonte, 14, clrWhite,      CORNER_RIGHT_LOWER, ANCHOR_RIGHT_LOWER, x, y); y += 26;
