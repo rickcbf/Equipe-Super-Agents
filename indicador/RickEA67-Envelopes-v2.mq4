@@ -14,12 +14,14 @@
 //|  - Magic number, filtro de spread, filtro de horario             |
 //|  - Lote fixo ou por % de risco                                   |
 //|  - Painel com preco grande (canto superior direito) e spread     |
+//|  - Envelopes, media e sinais plotados no grafico, painel         |
+//|    RickEA Monitor, nome do bot e Instagram nos cantos de baixo   |
 //|  - Correcoes: ordens de terceiros, flags travadas, loop de       |
 //|    fechamento e slippage                                         |
 //+------------------------------------------------------------------+
 #property copyright "Copyright 2024, RiCharTrader Ltd."
 #property link      "https://t.me/RickEA_IA"
-#property version   "2.00"
+#property version   "2.10"
 #property description "Envelopes + RSI (reversao a media) com SL, TP, filtros e lote por risco."
 #property strict
 
@@ -102,6 +104,18 @@ input color               CorSpread           = clrGold;  // Cor do spread
 input int                 PainelMargemX       = 10;       // Distancia da borda direita (pixels)
 input int                 PainelMargemY       = 15;       // Distancia do topo (pixels)
 
+input string              Sec8                = "===== VISUAL DO BOT =====";    // ===== VISUAL DO BOT =====
+input bool                MostrarIndicadores  = true;     // Plotar Envelopes, media e media longa no grafico
+input int                 BarrasDesenho       = 300;      // Quantos candles desenhar
+input color               CorBandas           = clrDodgerBlue; // Cor das bandas do Envelopes
+input color               CorMedia            = clrGold;  // Cor da media (SMA) do Envelopes
+input color               CorMediaLonga       = clrOrange; // Cor da media longa (filtro de tendencia)
+input bool                MostrarSinais       = true;     // Setas nos candles com confluencia Banda + RSI
+input bool                MostrarPainel       = true;     // Painel RickEA Monitor (canto superior esquerdo)
+input bool                MostrarRodape       = true;     // Nome do bot e Instagram nos cantos de baixo
+input string              NomeBot             = "RickEA67-Envelopes"; // Nome exibido no grafico
+input string              TextoInstagram      = "Instagram: @ri.chartrader"; // Propaganda (canto inferior direito)
+
 //--- Variaveis globais
 datetime g_ultimaEntrada  = 0;   // hora da ultima entrada (uma entrada por candle)
 datetime g_ultimaBarraTP  = 0;   // ultima barra em que o TP foi atualizado
@@ -109,8 +123,19 @@ datetime g_ultimoReparo   = 0;   // ultima tentativa de colocar SL/TP faltando
 datetime g_ultimoAvisoLote = 0;  // evita repetir aviso de lote por candle
 double   g_ultimoBid      = 0;   // para colorir o preco (alta/baixa)
 color    g_corPreco       = clrLime;
+string   PFX              = "RickEA67_";       // prefixo de todos os objetos do grafico
 string   OBJ_PRECO        = "RickEA67_Preco";
 string   OBJ_SPREAD       = "RickEA67_Spread";
+string   g_status         = "Iniciando...";    // o que o bot esta fazendo agora
+color    g_corStatus      = clrWhite;
+datetime g_ultimaBarraDesenho = 0;
+int      g_histTotal      = -1;                // cache das estatisticas do historico
+datetime g_histDia        = 0;
+int      g_wins           = 0;
+int      g_losses         = 0;
+double   g_somaGanhos     = 0;
+double   g_somaPerdas     = 0;
+double   g_lucroHoje      = 0;
 
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
@@ -153,7 +178,10 @@ int OnInit()
    g_ultimaEntrada = UltimaEntradaRegistrada();
 
    g_corPreco = CorPrecoAlta;
-   AtualizarPainelPreco();
+   g_ultimoBid = 0;
+   g_ultimaBarraDesenho = 0;
+   g_histTotal = -1;
+   AtualizarVisual();
 
    Print("Bot Envelopes + RSI v2 iniciado com sucesso! Magic: ", MagicNumber);
    return(INIT_SUCCEEDED);
@@ -164,8 +192,8 @@ int OnInit()
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason)
   {
-   ObjectDelete(0, OBJ_PRECO);
-   ObjectDelete(0, OBJ_SPREAD);
+   ObjectsDeleteAll(0, PFX);
+   ChartRedraw();
    Print("Bot Envelopes + RSI v2 finalizado!");
   }
 
@@ -174,19 +202,23 @@ void OnDeinit(const int reason)
 //+------------------------------------------------------------------+
 void OnTick()
   {
-   AtualizarPainelPreco();
-
    if(Bars < BarrasNecessarias())
+     {
+      DefinirStatus("Carregando historico...", clrSilver);
+      AtualizarVisual();
       return;
+     }
 
    // Saida pelo alvo, SL/TP faltando e atualizacao do TP
    GerenciarPosicoes();
 
    // Uma posicao por vez (somente as ordens deste EA contam)
    if(ContarPosicoes() > 0)
-      return;
+      DefinirStatusPosicao();
+   else
+      VerificarEntrada();
 
-   VerificarEntrada();
+   AtualizarVisual();
   }
 
 //+------------------------------------------------------------------+
@@ -195,11 +227,17 @@ void OnTick()
 void VerificarEntrada()
   {
    if(!IsTradeAllowed())
+     {
+      DefinirStatus("Trade bloqueado (ligue o AutoTrading)", clrRed);
       return;
+     }
 
    // Uma entrada por candle (evita reentrar no mesmo candle apos um stop)
    if(g_ultimaEntrada >= Time[0])
+     {
+      DefinirStatus("Aguardando o proximo candle", clrSilver);
       return;
+     }
 
    int s = UsarCandleFechado ? 1 : 0;
 
@@ -215,15 +253,29 @@ void VerificarEntrada()
       tipo = OP_SELL;
 
    if(tipo < 0)
+     {
+      DefinirStatus("Aguardando sinal (banda + RSI)", clrWhite);
       return;
+     }
 
+   string lado = (tipo == OP_BUY) ? "COMPRA" : "VENDA";
    if(!DentroDoHorario())
+     {
+      DefinirStatus("Sinal de " + lado + " ignorado: fora do horario", clrOrange);
       return;
+     }
    if(!SpreadOk())
+     {
+      DefinirStatus("Sinal de " + lado + " ignorado: spread alto", clrOrange);
       return;
+     }
    if(!TendenciaPermite(tipo))
+     {
+      DefinirStatus("Sinal de " + lado + " ignorado: contra a tendencia", clrOrange);
       return;
+     }
 
+   DefinirStatus("Sinal de " + lado + ": enviando ordem", clrYellow);
    AbrirOrdem(tipo);
   }
 
@@ -237,12 +289,16 @@ void AbrirOrdem(int tipo)
    double dist = DistanciaStop();          // 0 quando o stop esta desligado
    double lote = CalcularLote(dist);
    if(lote <= 0)
+     {
+      DefinirStatus("Entrada ignorada: lote invalido", clrOrange);
       return;
+     }
 
    ResetLastError();
    if(AccountFreeMarginCheck(Symbol(), tipo, lote) <= 0 || GetLastError() == 134)
      {
       Print("Margem insuficiente para abrir ", lote, " lotes");
+      DefinirStatus("Entrada ignorada: margem insuficiente", clrRed);
       return;
      }
 
@@ -254,7 +310,9 @@ void AbrirOrdem(int tipo)
                           0, 0, Comentario, MagicNumber, 0, cor);
    if(ticket < 0)
      {
-      Print("Erro ao abrir ordem de ", nome, ". Erro: ", GetLastError());
+      int erro = GetLastError();
+      Print("Erro ao abrir ordem de ", nome, ". Erro: ", erro);
+      DefinirStatus("Erro ao abrir " + nome + " (erro " + IntegerToString(erro) + ")", clrRed);
       return;
      }
 
@@ -607,32 +665,321 @@ void AtualizarPainelPreco()
 
    int spread = (int)MarketInfo(Symbol(), MODE_SPREAD);
 
-   CriarRotulo(OBJ_PRECO, DoubleToString(Bid, Digits), PrecoTamanho, g_corPreco, PainelMargemY);
+   CriarRotulo(OBJ_PRECO, DoubleToString(Bid, Digits), "Arial Bold", PrecoTamanho, g_corPreco,
+               CORNER_RIGHT_UPPER, ANCHOR_RIGHT_UPPER, PainelMargemX, PainelMargemY);
    // Spread logo abaixo do preco, alinhado pela direita
    int ySpread = PainelMargemY + (int)MathRound(PrecoTamanho * 1.6) + 4;
-   CriarRotulo(OBJ_SPREAD, "Spread: " + IntegerToString(spread), SpreadTamanho, CorSpread, ySpread);
+   CriarRotulo(OBJ_SPREAD, "Spread: " + IntegerToString(spread), "Arial Bold", SpreadTamanho, CorSpread,
+               CORNER_RIGHT_UPPER, ANCHOR_RIGHT_UPPER, PainelMargemX, ySpread);
+  }
 
+//+------------------------------------------------------------------+
+//| Atualiza tudo que aparece no grafico                             |
+//+------------------------------------------------------------------+
+void AtualizarVisual()
+  {
+   // No testador sem modo visual nao desenha nada (mais rapido)
+   if(IsTesting() && !IsVisualMode())
+      return;
+
+   AtualizarPainelPreco();
+   DesenharIndicadores();
+   AtualizarPainel();
+   AtualizarRodape();
    ChartRedraw();
   }
 
 //+------------------------------------------------------------------+
-//| Cria/atualiza um texto ancorado no canto superior direito        |
+//| Status mostrado no painel                                        |
 //+------------------------------------------------------------------+
-void CriarRotulo(string nome, string texto, int tamanho, color cor, int y)
+void DefinirStatus(string texto, color cor)
   {
+   g_status    = texto;
+   g_corStatus = cor;
+  }
+
+void DefinirStatusPosicao()
+  {
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+     {
+      if(!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+         continue;
+      if(OrderSymbol() != Symbol() || OrderMagicNumber() != MagicNumber)
+         continue;
+      if(OrderType() == OP_BUY)
+        { DefinirStatus("Em COMPRA - alvo: " + DoubleToString(AlvoSaida(OP_BUY), Digits), clrLime); return; }
+      if(OrderType() == OP_SELL)
+        { DefinirStatus("Em VENDA - alvo: " + DoubleToString(AlvoSaida(OP_SELL), Digits), clrRed); return; }
+     }
+  }
+
+//+------------------------------------------------------------------+
+//| Envelopes, media, media longa e setas de sinal no grafico        |
+//+------------------------------------------------------------------+
+void DesenharIndicadores()
+  {
+   if(!MostrarIndicadores && !MostrarSinais)
+      return;
+
+   int n = MathMin(BarrasDesenho, Bars - BarrasNecessarias() - 1);
+   if(n < 1)
+      return;
+
+   bool primeiraVez = (g_ultimaBarraDesenho == 0);
+   bool novaBarra   = (Time[0] != g_ultimaBarraDesenho);
+
+   // Num candle novo redesenha tudo; no mesmo candle so o trecho atual se move
+   int ate = novaBarra ? n : 1;
+
+   if(MostrarIndicadores)
+     {
+      for(int i = 0; i < ate; i++)
+        {
+         string id = IntegerToString(i);
+         Segmento(PFX + "EnvSup_" + id, i, Envelope(MODE_UPPER, i + 1), Envelope(MODE_UPPER, i), CorBandas, STYLE_SOLID, 2);
+         Segmento(PFX + "EnvInf_" + id, i, Envelope(MODE_LOWER, i + 1), Envelope(MODE_LOWER, i), CorBandas, STYLE_SOLID, 2);
+         Segmento(PFX + "EnvMed_" + id, i, MediaEnvelope(i + 1), MediaEnvelope(i), CorMedia, STYLE_DOT, 1);
+
+         if(TendenciaModo == TEND_MEDIA_LONGA)
+            Segmento(PFX + "MLonga_" + id, i,
+                     iMA(Symbol(), 0, MediaLongaPeriodo, 0, MediaLongaMetodo, PRICE_CLOSE, i + 1),
+                     iMA(Symbol(), 0, MediaLongaPeriodo, 0, MediaLongaMetodo, PRICE_CLOSE, i),
+                     CorMediaLonga, STYLE_SOLID, 2);
+        }
+     }
+
+   // Setas: candle fechado com preco na banda e RSI no nivel
+   if(MostrarSinais && novaBarra)
+     {
+      int ultimo = primeiraVez ? n : 1;
+      for(int k = 1; k <= ultimo; k++)
+        {
+         double rsi = iRSI(Symbol(), 0, RSIPeriod, PRICE_CLOSE, k);
+         if(Close[k] <= Envelope(MODE_LOWER, k) && rsi <= RSILevelLow)
+            Seta(PFX + "SigC_" + IntegerToString((long)Time[k]), Time[k], Low[k], 233, clrLime, ANCHOR_TOP);
+         else if(Close[k] >= Envelope(MODE_UPPER, k) && rsi >= RSILevelHigh)
+            Seta(PFX + "SigV_" + IntegerToString((long)Time[k]), Time[k], High[k], 234, clrRed, ANCHOR_BOTTOM);
+        }
+     }
+
+   g_ultimaBarraDesenho = Time[0];
+  }
+
+double Envelope(int linha, int shift)
+  {
+   return(iEnvelopes(Symbol(), 0, EnvelopesPeriod, MODE_SMA, 0, PRICE_CLOSE, EnvelopesDeviation, linha, shift));
+  }
+
+double MediaEnvelope(int shift)
+  {
+   return(iMA(Symbol(), 0, EnvelopesPeriod, 0, MODE_SMA, PRICE_CLOSE, shift));
+  }
+
+//+------------------------------------------------------------------+
+//| Um trecho de linha entre o candle i+1 e o candle i               |
+//+------------------------------------------------------------------+
+void Segmento(string nome, int i, double v1, double v0, color cor, int estilo, int largura)
+  {
+   if(v1 <= 0 || v0 <= 0)
+      return;
+
    if(ObjectFind(0, nome) < 0)
      {
-      ObjectCreate(0, nome, OBJ_LABEL, 0, 0, 0);
-      ObjectSetInteger(0, nome, OBJPROP_CORNER, CORNER_RIGHT_UPPER);
-      ObjectSetInteger(0, nome, OBJPROP_ANCHOR, ANCHOR_RIGHT_UPPER);
+      ObjectCreate(0, nome, OBJ_TREND, 0, Time[i + 1], v1, Time[i], v0);
+      ObjectSetInteger(0, nome, OBJPROP_RAY, false);
       ObjectSetInteger(0, nome, OBJPROP_SELECTABLE, false);
       ObjectSetInteger(0, nome, OBJPROP_HIDDEN, true);
       ObjectSetInteger(0, nome, OBJPROP_BACK, false);
      }
-   ObjectSetInteger(0, nome, OBJPROP_XDISTANCE, PainelMargemX);
+   else
+     {
+      ObjectMove(0, nome, 0, Time[i + 1], v1);
+      ObjectMove(0, nome, 1, Time[i], v0);
+     }
+   ObjectSetInteger(0, nome, OBJPROP_COLOR, cor);
+   ObjectSetInteger(0, nome, OBJPROP_STYLE, estilo);
+   ObjectSetInteger(0, nome, OBJPROP_WIDTH, largura);
+  }
+
+//+------------------------------------------------------------------+
+//| Seta de sinal                                                    |
+//+------------------------------------------------------------------+
+void Seta(string nome, datetime t, double preco, int codigo, color cor, int ancora)
+  {
+   if(ObjectFind(0, nome) >= 0)
+      return;
+   ObjectCreate(0, nome, OBJ_ARROW, 0, t, preco);
+   ObjectSetInteger(0, nome, OBJPROP_ARROWCODE, codigo);
+   ObjectSetInteger(0, nome, OBJPROP_COLOR, cor);
+   ObjectSetInteger(0, nome, OBJPROP_WIDTH, 2);
+   ObjectSetInteger(0, nome, OBJPROP_ANCHOR, ancora);
+   ObjectSetInteger(0, nome, OBJPROP_SELECTABLE, false);
+   ObjectSetInteger(0, nome, OBJPROP_HIDDEN, true);
+  }
+
+//+------------------------------------------------------------------+
+//| Painel RickEA Monitor (canto superior esquerdo)                  |
+//+------------------------------------------------------------------+
+void AtualizarPainel()
+  {
+   if(!MostrarPainel)
+      return;
+
+   AtualizarEstatisticas();
+
+   // Posicoes abertas deste EA
+   double lucroAtual = 0, lotesC = 0, lotesV = 0;
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+     {
+      if(!OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+         continue;
+      if(OrderSymbol() != Symbol() || OrderMagicNumber() != MagicNumber)
+         continue;
+      if(OrderType() == OP_BUY)
+         lotesC += OrderLots();
+      else if(OrderType() == OP_SELL)
+         lotesV += OrderLots();
+      else
+         continue;
+      lucroAtual += OrderProfit() + OrderSwap() + OrderCommission();
+     }
+
+   double saldo    = AccountBalance();
+   double drawdown = (saldo > 0 && AccountEquity() < saldo) ? (saldo - AccountEquity()) / saldo * 100.0 : 0;
+   int    totalOps = g_wins + g_losses;
+   double winRate  = (totalOps > 0) ? 100.0 * g_wins / totalOps : 0;
+   double rr       = (g_wins > 0 && g_losses > 0 && g_somaPerdas > 0)
+                     ? (g_somaGanhos / g_wins) / (g_somaPerdas / g_losses) : 0;
+
+   double rsi  = iRSI(Symbol(), 0, RSIPeriod, PRICE_CLOSE, 0);
+   color  corR = (rsi <= RSILevelLow) ? clrLime : (rsi >= RSILevelHigh) ? clrRed : clrWhite;
+
+   int x = 10, y = 20, h = 17;
+   LinhaPainel(0,  "RickEA Monitor", 12, clrWhite, x, y);
+   y += 22;
+   LinhaPainel(1,  Symbol() + " " + TextoTimeframe(), 10, clrLime, x, y);                         y += h;
+   LinhaPainel(2,  "Lucro Atual: " + DoubleToString(lucroAtual, 2), 10, lucroAtual >= 0 ? clrLime : clrRed, x, y); y += h;
+   LinhaPainel(3,  "Drawdown: " + DoubleToString(drawdown, 2) + "%", 10, clrRed, x, y);            y += h;
+   LinhaPainel(4,  "Win Rate: " + DoubleToString(winRate, 1) + "% (" + IntegerToString(g_wins) + "/" + IntegerToString(totalOps) + ")",
+               10, (totalOps == 0 || winRate >= 50) ? clrLime : clrRed, x, y);                   y += h + 6;
+   LinhaPainel(5,  "Lucro Hoje: " + DoubleToString(g_lucroHoje, 2), 10, g_lucroHoje >= 0 ? clrLime : clrRed, x, y); y += h + 6;
+   LinhaPainel(6,  "Lotes: C:" + DoubleToString(lotesC, 2) + " V:" + DoubleToString(lotesV, 2) + " T:" + DoubleToString(lotesC + lotesV, 2),
+               10, clrDeepSkyBlue, x, y);                                                         y += h;
+   LinhaPainel(7,  "R/R Medio: " + DoubleToString(rr, 2), 10, clrGold, x, y);                     y += h + 6;
+   LinhaPainel(8,  "RSI(" + IntegerToString(RSIPeriod) + "): " + DoubleToString(rsi, 1) +
+               "  [" + DoubleToString(RSILevelLow, 0) + "/" + DoubleToString(RSILevelHigh, 0) + "]", 10, corR, x, y); y += h;
+   LinhaPainel(9,  "Tendencia: " + TextoTendencia(), 10, clrSilver, x, y);                        y += h;
+   LinhaPainel(10, "Status: " + g_status, 10, g_corStatus, x, y);
+  }
+
+void LinhaPainel(int linha, string texto, int tamanho, color cor, int x, int y)
+  {
+   CriarRotulo(PFX + "Painel_" + IntegerToString(linha), texto, "Arial", tamanho, cor,
+               CORNER_LEFT_UPPER, ANCHOR_LEFT_UPPER, x, y);
+  }
+
+//+------------------------------------------------------------------+
+//| Estatisticas do historico (so recalcula quando muda)             |
+//+------------------------------------------------------------------+
+void AtualizarEstatisticas()
+  {
+   datetime hoje  = StrToTime(TimeToStr(TimeCurrent(), TIME_DATE));
+   int      total = OrdersHistoryTotal();
+   if(total == g_histTotal && hoje == g_histDia)
+      return;
+
+   g_histTotal  = total;
+   g_histDia    = hoje;
+   g_wins       = 0;
+   g_losses     = 0;
+   g_somaGanhos = 0;
+   g_somaPerdas = 0;
+   g_lucroHoje  = 0;
+
+   for(int i = total - 1; i >= 0; i--)
+     {
+      if(!OrderSelect(i, SELECT_BY_POS, MODE_HISTORY))
+         continue;
+      if(OrderSymbol() != Symbol() || OrderMagicNumber() != MagicNumber)
+         continue;
+      if(OrderType() != OP_BUY && OrderType() != OP_SELL)
+         continue;
+
+      double r = OrderProfit() + OrderSwap() + OrderCommission();
+      if(r > 0)      { g_wins++;   g_somaGanhos += r; }
+      else if(r < 0) { g_losses++; g_somaPerdas -= r; }
+
+      if(OrderCloseTime() >= hoje)
+         g_lucroHoje += r;
+     }
+  }
+
+string TextoTimeframe()
+  {
+   string tf = EnumToString((ENUM_TIMEFRAMES)Period());   // ex.: PERIOD_M15
+   return(StringSubstr(tf, 7));
+  }
+
+string TextoTendencia()
+  {
+   if(TendenciaModo == TEND_DESLIGADO)
+      return("filtro desligado");
+
+   if(TendenciaModo == TEND_INCLINACAO)
+     {
+      double incl = (iMA(Symbol(), 0, EnvelopesPeriod, 0, MODE_SMA, PRICE_CLOSE, 1) -
+                     iMA(Symbol(), 0, EnvelopesPeriod, 0, MODE_SMA, PRICE_CLOSE, 1 + InclinacaoBarras)) / Point;
+      string d = (incl > InclinacaoMinPontos) ? "ALTA" : (incl < -InclinacaoMinPontos) ? "BAIXA" : "LATERAL";
+      return(d + " (incl. " + DoubleToString(incl, 0) + " pts)");
+     }
+
+   double ml = iMA(Symbol(), 0, MediaLongaPeriodo, 0, MediaLongaMetodo, PRICE_CLOSE, 1);
+   return((Close[1] > ml ? "ALTA" : "BAIXA") + " (media " + IntegerToString(MediaLongaPeriodo) + ")");
+  }
+
+//+------------------------------------------------------------------+
+//| Nome do bot (inferior esquerdo) e Instagram (inferior direito)   |
+//+------------------------------------------------------------------+
+void AtualizarRodape()
+  {
+   if(!MostrarRodape)
+      return;
+
+   string fonte = "Times New Roman";
+
+   // Canto inferior esquerdo: nome do bot
+   CriarRotulo(PFX + "NomeEsq", NomeBot, fonte, 20, clrLime, CORNER_LEFT_LOWER, ANCHOR_LEFT_LOWER, 10, 10);
+
+   // Canto inferior direito: bloco empilhado de baixo para cima
+   int x = 10, y = 8;
+   CriarRotulo(PFX + "Rod_Equity",  "EQUITY:  " + DoubleToString(AccountEquity(), 2),  fonte, 14, clrForestGreen, CORNER_RIGHT_LOWER, ANCHOR_RIGHT_LOWER, x, y); y += 24;
+   CriarRotulo(PFX + "Rod_Balance", "BALANCE:  " + DoubleToString(AccountBalance(), 2), fonte, 14, clrDodgerBlue,  CORNER_RIGHT_LOWER, ANCHOR_RIGHT_LOWER, x, y); y += 24;
+   CriarRotulo(PFX + "Rod_Orders",  "ALL ORDERS:  " + DoubleToString(AccountProfit(), 2), fonte, 14, clrYellow,    CORNER_RIGHT_LOWER, ANCHOR_RIGHT_LOWER, x, y); y += 24;
+   CriarRotulo(PFX + "Rod_Time",    "TIME:  " + TimeToStr(TimeCurrent(), TIME_MINUTES),  fonte, 14, clrWhite,      CORNER_RIGHT_LOWER, ANCHOR_RIGHT_LOWER, x, y); y += 24;
+   CriarRotulo(PFX + "Rod_Date",    "DATE:  " + TimeToStr(TimeCurrent(), TIME_DATE),     fonte, 14, clrWhite,      CORNER_RIGHT_LOWER, ANCHOR_RIGHT_LOWER, x, y); y += 26;
+   CriarRotulo(PFX + "Rod_Nome",    NomeBot,                                             fonte, 20, clrBlue,       CORNER_RIGHT_LOWER, ANCHOR_RIGHT_LOWER, x, y); y += 32;
+   CriarRotulo(PFX + "Rod_Insta",   TextoInstagram,                                      fonte, 16, clrRed,        CORNER_RIGHT_LOWER, ANCHOR_RIGHT_LOWER, x, y);
+  }
+
+//+------------------------------------------------------------------+
+//| Cria/atualiza um texto fixo na tela                              |
+//+------------------------------------------------------------------+
+void CriarRotulo(string nome, string texto, string fonte, int tamanho, color cor,
+                 int canto, int ancora, int x, int y)
+  {
+   if(ObjectFind(0, nome) < 0)
+     {
+      ObjectCreate(0, nome, OBJ_LABEL, 0, 0, 0);
+      ObjectSetInteger(0, nome, OBJPROP_SELECTABLE, false);
+      ObjectSetInteger(0, nome, OBJPROP_HIDDEN, true);
+      ObjectSetInteger(0, nome, OBJPROP_BACK, false);
+     }
+   ObjectSetInteger(0, nome, OBJPROP_CORNER, canto);
+   ObjectSetInteger(0, nome, OBJPROP_ANCHOR, ancora);
+   ObjectSetInteger(0, nome, OBJPROP_XDISTANCE, x);
    ObjectSetInteger(0, nome, OBJPROP_YDISTANCE, y);
    ObjectSetString(0, nome, OBJPROP_TEXT, texto);
-   ObjectSetString(0, nome, OBJPROP_FONT, "Arial Bold");
+   ObjectSetString(0, nome, OBJPROP_FONT, fonte);
    ObjectSetInteger(0, nome, OBJPROP_FONTSIZE, tamanho);
    ObjectSetInteger(0, nome, OBJPROP_COLOR, cor);
   }
