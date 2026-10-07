@@ -34,6 +34,30 @@ Indicador de tendência. **Está pronto e perfeito na MetaTrader 5** (código em
 
 ---
 
+## 🤖 Robôs e indicadores: em qual branch está cada um
+
+Cada conversa grava numa branch `claude/...` própria. **Antes de dizer que um bot
+não existe, procurar em todas as branches** (comandos no `CLAUDE.md`).
+
+| Bot / indicador | Plataforma | Branch | Arquivos |
+|---|---|---|---|
+| **RickEA MA** (média móvel, grid, martingale, take global) | MT5 | `claude/sweet-meitner-622x2y` | `robo/RickEA_MA.mq5`, venda: `robo/vendas/RickEA_MA_v1_Licenca.mq5` + gerador HTML, presets em `robo/sets/` |
+| **RickEA SAR** (Parabolic SAR + ADX) | MT5 | `claude/sweet-meitner-622x2y` | `robo/RickEA_SAR.mq5`, venda: `robo/vendas/RickEA_SAR_v2_Licenca.mq5` |
+| **RickEA SuperTrend Bot** (V2 com licença) | MT5 | `claude/nice-meitner-idd17z` | `indicador/supertrend-bot/` |
+| **RickEA Fimathe Pro** | MT5 | `claude/eloquent-bardeen-13ejuc` | `experts/RickEAFimathePro.mq5` |
+| **RickEA FiboGrid EA** (versão de robô) | MT5 | `claude/loving-mayer-3zas8m` | `robo/RickEA_FiboGrid_EA.mq5` |
+| **RickEA Statistics** | MT5 + cTrader | `claude/rickea-statistics-ctrader-pvf45n` | `indicador/RickEA_Statistics.mq5` / `.cs` |
+| **RickEA50-V2** (grid, MT4 v1.10 e MT5) / **RickEA50-X** (MT5, direção) | MT4 / MT5 | `claude/affectionate-tesla-vt3rgt` | `indicador/RickEA50-*` |
+| **RickEA67-Envelopes v2** (Envelopes + RSI) | MT4 | `claude/affectionate-tesla-vt3rgt` | `indicador/RickEA67-Envelopes-v2.mq4` |
+| **FiboGrid v4 Validade2026** versão MT4 | MT4 | `claude/affectionate-tesla-vt3rgt` | `indicador/RickEA_FiboGrid_v4_Validade2026.mq4` |
+| FiboGrid v4 / FiboSetup / TOP-BOTTOM / X-Trend / RickManager | MT5 (+ cTrader no X-Trend) | `main` | `indicador/` |
+
+**Capas de produto** (YouTube 1920x1080 + Hotmart 1200x1200): `capas/<produto>/` —
+o HTML gera as duas (`?fmt=yt` / `?fmt=sq`), com as fontes em `fonts/`.
+Já feita: `capas/rickea-ma/`.
+
+---
+
 ## 🗂️ Estrutura deste repositório
 
 ```

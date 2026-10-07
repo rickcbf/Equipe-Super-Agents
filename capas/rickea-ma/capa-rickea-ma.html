@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Capa RickEA MA</title>
+<!-- Gera as capas: abrir com ?fmt=yt (YouTube 1920x1080) ou ?fmt=sq (Hotmart 1200x1200) -->
+<style>
+  @font-face{font-family:Oswald;src:url(fonts/Oswald.ttf);font-weight:200 700}
+  @font-face{font-family:Inter;src:url(fonts/Inter.ttf);font-weight:100 900}
+  @font-face{font-family:"Roboto Mono";src:url(fonts/RobotoMono.ttf);font-weight:100 700}
+  @font-face{font-family:"Barlow Condensed";src:url(fonts/BarlowCondensed-ExtraBoldItalic.ttf);font-weight:800;font-style:italic}
+  :root{--blue:#2f7bff;--blue2:#1f5fe0;--orange:#ff7a1a;--lime:#39e65a}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:#070d1c}
+  body{overflow:hidden;font-family:Inter,sans-serif;color:#eef2fb}
+  .stage{position:relative;overflow:hidden;
+    background:
+      radial-gradient(1100px 700px at 72% 45%, rgba(47,123,255,.20), transparent 60%),
+      radial-gradient(700px 500px at 10% 30%, rgba(47,123,255,.10), transparent 60%),
+      linear-gradient(180deg,#0a1226 0%, #060b18 100%);}
+  .abs{position:absolute}
+  .brand{text-align:right;line-height:.95}
+  .brand .wm{font-family:"Barlow Condensed";font-style:italic;font-weight:800;letter-spacing:-1px}
+  .brand .wm b{color:var(--blue);font-weight:800}
+  .brand .inv{font-family:Inter;font-weight:500;letter-spacing:.42em;color:#dfe6f5;margin-top:4px}
+  .title{font-family:Oswald;font-weight:700;line-height:.9;letter-spacing:-1px}
+  .title .l1{color:#f2f5fb}
+  .title .l2{color:var(--blue);text-shadow:0 0 40px rgba(47,123,255,.45)}
+  .bar{height:6px;background:var(--orange);border-radius:3px}
+  .sub{font-family:Oswald;font-weight:500;color:#e9eef9;line-height:1.2}
+  .sub em{font-style:normal;color:var(--orange)}
+  .badge{display:flex;align-items:center;gap:20px;border:3px solid var(--blue2);border-radius:18px;
+    background:rgba(18,32,70,.55);box-shadow:0 0 30px rgba(47,123,255,.25) inset;white-space:nowrap}
+  .badge span{font-family:Oswald;font-weight:600;letter-spacing:.5px}
+  .chart{border:3px solid var(--blue);border-radius:22px;overflow:hidden;background:#000;
+    box-shadow:0 0 50px rgba(47,123,255,.45), 0 0 0 1px rgba(47,123,255,.4) inset}
+  .chart canvas{position:absolute;inset:0}
+  .panel{border:1px solid var(--lime);background:#0a2a10;font-family:Arial,Helvetica,sans-serif}
+  .panel .head{display:flex;justify-content:space-between;align-items:center;background:#11421a;
+    border-bottom:1px solid var(--lime);color:#fff;font-weight:700}
+  .panel .head i{font-style:normal;color:#bfe9c7}
+  .panel .px{display:flex;justify-content:space-between;align-items:center}
+  .panel .tr{color:var(--lime);font-weight:700}
+  .panel .big{font-family:"Arial Black",Arial,sans-serif;font-weight:900;color:var(--lime)}
+  .panel .row{display:flex;justify-content:space-between}
+  .panel .k{color:#a9b9ad}
+  .panel .v{color:#fff;font-weight:700}
+  .panel .v.g{color:var(--lime)}
+  .chips{display:flex}
+  .chip{display:flex;align-items:center;border:2px solid #2a4a8f;border-radius:14px;background:rgba(14,26,58,.75);
+    font-family:Oswald;font-weight:600;color:#f1f4fb;white-space:nowrap;letter-spacing:.3px}
+  .chip i{display:block;border-radius:50%;background:var(--orange);flex:none}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <svg class="abs" id="deco"></svg>
+  <div class="abs brand" id="brand"><div class="wm" id="wm">Rick<b>EA</b></div><div class="inv" id="inv">Investments</div></div>
+  <div class="abs title" id="title"><span class="l1">RickEA</span><span class="l2">MA</span></div>
+  <div class="abs bar" id="bar"></div>
+  <div class="abs sub" id="sub">Rob&ocirc; de m&eacute;dia m&oacute;vel:<br><em>compra acima</em>, vende abaixo</div>
+  <div class="abs badge" id="badge">
+    <svg id="shield" viewBox="0 0 24 24" fill="none" stroke="#2f7bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+    <span id="badgeTxt">ROB&Ocirc; PARA MT5</span>
+  </div>
+  <div class="abs chart" id="chart">
+    <canvas id="cv"></canvas>
+    <div class="abs panel" id="panel">
+      <div class="head"><span>RickEA MA</span><i>XAUUSD H1</i></div>
+      <div class="px"><span class="tr">ALTA</span><span class="big">4291.35</span></div>
+      <div id="rows"></div>
+    </div>
+  </div>
+  <div class="abs chips" id="chips">
+    <div class="chip"><i></i>S&Oacute; COMPRAS / S&Oacute; VENDAS</div>
+    <div class="chip"><i></i>GRID + MARTINGALE</div>
+    <div class="chip"><i></i>TAKE GLOBAL DA CESTA</div>
+  </div>
+</div>
+
+<script>
+function main(){
+const fmt = new URLSearchParams(location.search).get('fmt') || 'yt';
+const SQ = fmt === 'sq';
+const W = SQ ? 1200 : 1920, H = SQ ? 1200 : 1080;
+
+const L = SQ ? {
+  brand:{right:46,top:40,wm:74,inv:16},
+  title:{left:46,top:150,size:168,block:false},
+  bar:{left:50,top:338,w:110},
+  sub:{left:48,top:362,size:40},
+  badge:{left:660,top:372,pad:'14px 28px',size:40,icon:50},
+  chart:{left:40,top:500,w:1120,h:540},
+  panel:{w:300,s:.95},
+  chips:{left:40,top:1078,w:1120,gap:16,size:30,pad:'14px 20px',dot:12},
+  candles:84
+} : {
+  brand:{right:70,top:40,wm:96,inv:22},
+  title:{left:46,top:215,size:206,block:true},
+  bar:{left:50,top:615,w:130},
+  sub:{left:48,top:645,size:50},
+  badge:{left:46,top:808,pad:'18px 34px',size:50,icon:62},
+  chart:{left:660,top:180,w:1210,h:640},
+  panel:{w:330,s:1},
+  chips:{left:660,top:852,w:1210,gap:16,size:31,pad:'14px 22px',dot:13},
+  candles:120
+};
+
+const $ = id => document.getElementById(id);
+function css(el, o){ for (const k in o) el.style[k] = typeof o[k] === 'number' && k !== 'zIndex' ? o[k] + 'px' : o[k]; }
+css($('stage'), {width:W, height:H});
+css($('brand'), {right:L.brand.right, top:L.brand.top});
+css($('wm'), {fontSize:L.brand.wm}); css($('inv'), {fontSize:L.brand.inv});
+css($('title'), {left:L.title.left, top:L.title.top, fontSize:L.title.size});
+document.querySelectorAll('.title span').forEach(s => s.style.display = L.title.block ? 'block' : 'inline');
+if (!L.title.block) document.querySelector('.title .l2').style.marginLeft = '.22em';
+css($('bar'), {left:L.bar.left, top:L.bar.top, width:L.bar.w});
+css($('sub'), {left:L.sub.left, top:L.sub.top, fontSize:L.sub.size});
+css($('badge'), {left:L.badge.left, top:L.badge.top, padding:L.badge.pad});
+css($('badgeTxt'), {fontSize:L.badge.size}); css($('shield'), {width:L.badge.icon, height:L.badge.icon});
+css($('chart'), {left:L.chart.left, top:L.chart.top, width:L.chart.w, height:L.chart.h});
+css($('chips'), {left:L.chips.left, top:L.chips.top, width:L.chips.w, gap:L.chips.gap, justifyContent:'space-between'});
+document.querySelectorAll('.chip').forEach(c => {
+  css(c, {fontSize:L.chips.size, padding:L.chips.pad, gap:L.chips.dot});
+  css(c.querySelector('i'), {width:L.chips.dot, height:L.chips.dot});
+});
+
+// ---------- painel do bot (mesmo layout do RickEA MA) ----------
+const s = L.panel.s, panel = $('panel');
+css(panel, {right:(SQ?78:96), top:14, width:L.panel.w});
+css(panel.querySelector('.head'), {padding:`${5*s}px ${11*s}px`, fontSize:15*s});
+css(panel.querySelector('.px'), {padding:`${8*s}px ${11*s}px ${4*s}px`});
+css(panel.querySelector('.tr'), {fontSize:15*s}); css(panel.querySelector('.big'), {fontSize:36*s});
+const rows = [['EMA(17) H1','4283.62',''],['Direcao','Compras e vendas',''],['Entrada','Por vela',''],
+  ['Compras','2 (0.03)  15.84','g'],['Vendas','0 (0.00)  0.00',''],['Grid / Martin','ON / ON',''],['Take global','15.84 / 20.00','g']];
+css($('rows'), {padding:`${6*s}px ${11*s}px ${10*s}px`});
+rows.forEach(([k,v,c]) => {
+  const d = document.createElement('div'); d.className = 'row';
+  css(d, {fontSize:13.5*s, lineHeight:(21*s)+'px'});
+  d.innerHTML = `<span class="k">${k}</span><span class="v ${c}">${v}</span>`;
+  $('rows').appendChild(d);
+});
+
+// ---------- grafico: velas + EMA 17 + entrada BUY + adicao do GRID ----------
+const cv = $('cv'), CW = L.chart.w, CH = L.chart.h, dpr = 2;
+cv.width = CW*dpr; cv.height = CH*dpr; css(cv, {width:CW, height:CH});
+const g = cv.getContext('2d'); g.scale(dpr,dpr);
+let seed = 11; const rnd = () => (seed = (seed*16807) % 2147483647) / 2147483647;
+const N = L.candles, LAST = 4291.35;
+const target = i => {
+  const t = i/(N-1);
+  if (t < .32) return 4262 - 20*Math.sin(t*9.5);
+  if (t < .44) return 4251 - (t-.32)*70;
+  return 4243 + Math.pow((t-.44)/.56, 1.25)*(LAST-4243) + 4*Math.sin(t*30)*(1-t);
+};
+const C = []; let prev = target(0);
+for (let i=0;i<N;i++){
+  const o = prev, c = (i === N-1) ? LAST : target(i) + (rnd()-.5)*3;
+  C.push({o, c, h:Math.max(o,c) + rnd()*2.4 + .4, l:Math.min(o,c) - rnd()*2.4 - .4}); prev = c;
+}
+if (C[N-1].o > LAST) { C[N-1].o = LAST - 1.6; C[N-1].l = Math.min(C[N-1].l, LAST - 2.2); }
+const ema = [], k = 2/18; C.forEach((b,i) => ema.push(i ? b.c*k + ema[i-1]*(1-k) : b.c));
+
+const scaleW = SQ ? 82 : 92, plotW = CW - scaleW;
+const top = SQ ? 60 : 270, bot = CH - 70;             // espaco p/ painel e rotulos
+const lo = Math.min(...C.map(b=>b.l)) - 2, hi = Math.max(...C.map(b=>b.h)) + 2;
+const Y = p => bot - (p-lo)/(hi-lo)*(bot-top);
+const plotRight = SQ ? plotW - L.panel.w - 110 : plotW;   // no quadrado o painel fica ao lado das velas
+const step = (plotRight - 20) / (N + 2), bw = Math.max(3, step*.62), X = i => 14 + step*(i+1);
+
+g.fillStyle = '#000'; g.fillRect(0,0,CW,CH);
+g.save(); g.globalAlpha = .07; g.fillStyle = '#7fa6ff'; g.font = `italic 800 ${SQ?26:30}px "Barlow Condensed"`;
+for (let yy=60, r=0; yy<CH; yy+=110, r++) for (let xx=(r%2?90:-10); xx<plotW; xx+=210) g.fillText('RickEA', xx, yy);
+g.restore();
+
+g.strokeStyle = '#2b2b2b'; g.beginPath(); g.moveTo(plotW+.5,0); g.lineTo(plotW+.5,CH); g.stroke();
+g.font = `500 ${SQ?14:15}px "Roboto Mono"`; g.fillStyle = '#9aa0a6';
+for (let p = Math.ceil(lo/10)*10; p <= hi; p += 10) { const y = Y(p); if (y > 30 && y < CH-10 && Math.abs(y - Y(LAST)) > 18) g.fillText(p.toFixed(2), plotW+8, y+5); }
+
+C.forEach((b,i) => {
+  const col = b.c >= b.o ? '#26d94a' : '#ff2d2d', x = X(i);
+  g.strokeStyle = col; g.lineWidth = 1.4; g.beginPath(); g.moveTo(x, Y(b.h)); g.lineTo(x, Y(b.l)); g.stroke();
+  const y1 = Y(Math.max(b.o,b.c)), y2 = Y(Math.min(b.o,b.c));
+  g.fillStyle = col; g.fillRect(x-bw/2, y1, bw, Math.max(1.5, y2-y1));
+});
+g.strokeStyle = '#ffc21a'; g.lineWidth = 3.2; g.shadowColor = 'rgba(255,194,26,.6)'; g.shadowBlur = 8;
+g.beginPath(); ema.forEach((v,i) => i ? g.lineTo(X(i), Y(v)) : g.moveTo(X(i), Y(v))); g.stroke(); g.shadowBlur = 0;
+const eI = Math.round(N*.16); g.font = `800 ${SQ?17:19}px Inter`; g.fillStyle = '#ffc21a';
+g.fillText('EMA 17', X(eI)-36, Y(Math.max(C[eI].h, ema[eI])) - 16);
+
+// BUY = 1o candle que fechou acima da media depois do fundo; GRID = adicao mais abaixo
+let buyI = -1; for (let i=Math.round(N*.4); i<N; i++){ if (C[i-1].c <= ema[i-1] && C[i].c > ema[i]) { buyI = i; break; } }
+if (buyI < 0) buyI = Math.round(N*.5);
+function arrow(i, label){
+  const x = X(i), y = Y(C[i].l) + 12;
+  g.fillStyle = '#2f7bff'; g.beginPath(); g.moveTo(x, y); g.lineTo(x-11, y+16); g.lineTo(x+11, y+16); g.closePath(); g.fill();
+  g.fillRect(x-4.5, y+15, 9, 13);
+  g.font = `800 ${SQ?15:17}px Inter`; g.fillStyle = '#8db8ff';
+  g.fillText(label, x - g.measureText(label).width/2, y + 48);
+}
+arrow(buyI, 'BUY');
+
+const yNow = Y(LAST);
+g.setLineDash([4,4]); g.strokeStyle = '#26d94a'; g.lineWidth = 1;
+g.beginPath(); g.moveTo(0,yNow); g.lineTo(plotW,yNow); g.stroke(); g.setLineDash([]);
+g.fillStyle = '#26d94a'; g.fillRect(plotW, yNow-12, scaleW, 24);
+g.fillStyle = '#000'; g.font = `700 ${SQ?14:15}px "Roboto Mono"`; g.fillText(LAST.toFixed(2), plotW+6, yNow+5);
+g.font = `500 ${SQ?14:15}px "Roboto Mono"`; g.fillStyle = '#c9cdd3'; g.fillText('XAUUSD, H1:  Gold Spot', 14, 26);
+
+// ---------- circuito decorativo ----------
+const deco = $('deco');
+if (!SQ) {
+  css(deco, {left:0, bottom:0, width:700, height:170});
+  deco.setAttribute('viewBox','0 0 700 170');
+  deco.innerHTML = `<polyline points="0,160 180,160 300,60 660,60" fill="none" stroke="#1f5fe0" stroke-width="3"/>
+    <circle cx="300" cy="60" r="6" fill="#2f7bff"/><circle cx="660" cy="60" r="5" fill="#2f7bff"/>
+    <polyline points="60,175 240,175 360,105 540,105" fill="none" stroke="#173f92" stroke-width="2"/>`;
+} else deco.style.display = 'none';
+
+document.body.setAttribute('data-ready','1');
+}
+document.fonts.load('700 40px Oswald').then(() => Promise.all([
+  document.fonts.load('italic 800 30px "Barlow Condensed"'), document.fonts.load('500 15px "Roboto Mono"'),
+  document.fonts.load('700 15px "Roboto Mono"'), document.fonts.load('800 18px Inter'),
+  document.fonts.load('500 18px Inter'), document.fonts.load('600 30px Oswald'), document.fonts.load('500 30px Oswald')
+])).then(main, main);
+</script>
+</body>
+</html>

@@ -7,3 +7,6 @@ indicador/
 
 # Produto pago (RickEA Relatorio de Performance Pro): entregue pela Hotmart, NAO vai pro site.
 produto-pro/
+
+# Capas de produto (HTML gerador + fontes): NAO vai pro site.
+capas/
