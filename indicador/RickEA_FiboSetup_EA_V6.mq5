@@ -1326,7 +1326,7 @@ void DrawPanel(int y0)
     //--- fundo escuro para ler por cima das velas
     int fs = Inp_PanelFontSize, lineH = fs + 8, maxLen = 0;
     for(int i = 0; i < n; i++) maxLen = MathMax(maxLen, StringLen(t[i]));
-    int w = (int)(maxLen * fs * 0.78) + 24;
+    int w = (int)(maxLen * fs * 0.95) + 30;
     int h = n * lineH + 14;
     string bg = "Fibo_PNL_BG";
     if(ObjectFind(0, bg) < 0)
