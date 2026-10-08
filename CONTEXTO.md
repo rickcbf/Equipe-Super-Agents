@@ -50,6 +50,7 @@ não existe, procurar em todas as branches** (comandos no `CLAUDE.md`).
 | **RickEA50-V2** (grid, MT4 v1.10 e MT5) / **RickEA50-X** (MT5, direção) | MT4 / MT5 | `claude/affectionate-tesla-vt3rgt` | `indicador/RickEA50-*` |
 | **RickEA67-Envelopes v2** (Envelopes + RSI) | MT4 | `claude/affectionate-tesla-vt3rgt` | `indicador/RickEA67-Envelopes-v2.mq4` |
 | **FiboGrid v4 Validade2026** versão MT4 | MT4 | `claude/affectionate-tesla-vt3rgt` | `indicador/RickEA_FiboGrid_v4_Validade2026.mq4` |
+| **RickEA FiboSetup EA v6** (Fibo 0.618/0.786, parcial, alvo; Fibo auto/manual, direcao, take/stop global, ciclo, filtro de forca, painel D/S/M) | MT5 | `claude/affectionate-tesla-vt3rgt` | `indicador/RickEA_FiboSetup_EA_V6.mq5` |
 | FiboGrid v4 / FiboSetup / TOP-BOTTOM / X-Trend / RickManager | MT5 (+ cTrader no X-Trend) | `main` | `indicador/` |
 
 **Capas de produto** (YouTube 1920x1080 + Hotmart 1200x1200): `capas/<produto>/` —
