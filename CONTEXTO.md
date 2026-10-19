@@ -34,6 +34,15 @@ Indicador de tendência. **Está pronto e perfeito na MetaTrader 5** (código em
 
 ---
 
+## 🤖 Robô RickEA Range (continuidade de 3 velas) — MT4 + MT5
+- **Código:** `indicador/RickEA_Range.mq5` (MT5) e `indicador/RickEA_Range.mq4` (MT4) · manual `indicador/README-Range.md`
+- **Branch:** `claude/homart-ebook-sales-page-pkrgkr`
+- 3 velas em sequência (máx. e mín. subindo = compra / caindo = venda) + RSI até 50 na compra e a partir
+  de 50 na venda. Stop na vela 1, alvo 1:1.5 ou 1:2. Filtro de média opcional, take/stop global, sem grid.
+  Visual RickEA (preço grande sup. direito, painel translúcido, logo marca d'água, range marcado).
+
+---
+
 ## 🗂️ Estrutura deste repositório
 
 ```
